@@ -1,91 +1,55 @@
 import Image from 'next/image'
 import { Inter } from '@next/font/google'
-import styles from './page.module.css'
+import profilePic from '../public/profile_pic.jpg'
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import { faTwitter, faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons'
+
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <main>
+        <div className="container mx-auto flex justify-center">
+            <div className="pt-24">
+                <div>
+                    <Image
+                        src={profilePic}
+                        alt={"Picture of Devon"}
+                        className="rounded-full"
+                        height={200}
+                        width={200}
+                    />
+                </div>
+                <div className="flex justify-center py-4">
+                    <h1 className="dark:text-blue-500 text-4xl font-bold ">
+                        Devon Bull
+                    </h1>
+                </div>
+                <div className="flex justify-center pt-1 flex flex-row justify-around">
+                    <a href="https://twitter.com/Devon_Bull" target="_blank" rel="noreferrer">
+                        <FontAwesomeIcon icon={faTwitter} className="dark:text-blue-500"/>
+                    </a>
+                    <a href="https://github.com/DBULL7" target="_blank" rel="noreferrer">
+                        <FontAwesomeIcon icon={faGithub} className="dark:text-white"/>
+                    </a>
+                    <a href="https://www.linkedin.com/in/bulldevon" target="_blank" rel="noreferrer">
+                        <FontAwesomeIcon icon={faLinkedin} className="dark:text-yellow-500"/>
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+        {/*<div className="border border-yellow-500 dark:text-white flex flex-row justify-around items-center">*/}
+        {/*    <div className="w-1/3 text-center border border-green-500">*/}
+        {/*        <h3 className="text-lg font-medium">Frontend</h3>*/}
+        {/*    </div>*/}
+        {/*    <div className="w-1/3 text-center border border-indigo-500">*/}
+        {/*        <h3 className="text-lg font-medium">Backend</h3>*/}
+        {/*    </div>*/}
+        {/*    <div className="w-1/3 text-center border border-r-blue-700">*/}
+        {/*        <h3 className="text-lg font-medium">Technical Lead</h3>*/}
+        {/*    </div>*/}
+        {/*</div>*/}
     </main>
   )
 }
