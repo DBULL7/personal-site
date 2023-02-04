@@ -28,13 +28,25 @@ export default function Home() {
                 </div>
                 <div className="flex justify-center pt-1 flex flex-row justify-around">
                     <a href="https://twitter.com/Devon_Bull" target="_blank" rel="noreferrer">
-                        <FontAwesomeIcon icon={faTwitter} className="dark:text-blue-500"/>
+                        <FontAwesomeIcon
+                            icon={faTwitter}
+                            className="dark:text-white"
+                            size="lg"
+                        />
                     </a>
                     <a href="https://github.com/DBULL7" target="_blank" rel="noreferrer">
-                        <FontAwesomeIcon icon={faGithub} className="dark:text-white"/>
+                        <FontAwesomeIcon
+                            icon={faGithub}
+                            className="dark:text-white"
+                            size="lg"
+                        />
                     </a>
                     <a href="https://www.linkedin.com/in/bulldevon" target="_blank" rel="noreferrer">
-                        <FontAwesomeIcon icon={faLinkedin} className="dark:text-yellow-500"/>
+                        <FontAwesomeIcon
+                            icon={faLinkedin}
+                            className="dark:text-white"
+                            size="lg"
+                        />
                     </a>
                 </div>
             </div>
