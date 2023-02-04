@@ -12,13 +12,13 @@ export default function Home() {
     <main>
         <div className="container mx-auto flex justify-center">
             <div className="pt-24">
-                <div>
+                <div className="flex justify-center">
                     <Image
                         src={profilePic}
                         alt={"Picture of Devon"}
                         className="rounded-full"
-                        height={200}
-                        width={200}
+                        height={125}
+                        width={125}
                     />
                 </div>
                 <div className="flex justify-center py-4">
