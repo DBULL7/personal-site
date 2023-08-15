@@ -117,8 +117,8 @@ export default function Home() {
             </div>
         </div>
         <div className="container mt-16 mb-4 mx-auto md:px-64 py-4">
-            <p className="text-2xl text-center">Hi there I'm Dev 👋</p>
-            <p className="pt-2 text-center">I'm a Software Engineer</p>
+            <p className="text-2xl text-center">Hi there I&apos;m Dev 👋</p>
+            <p className="pt-2 text-center">I&apos;m a Software Engineer</p>
         </div>
         <h3 className="text-2xl text-center mt-8">Programming Languages & Frameworks</h3>
         <div className="container max-w-screen-lg mx-auto px-16 md:px-32 lg:px-64 grid grid-cols-2 md:grid-cols-4 gap-4 py-6">
