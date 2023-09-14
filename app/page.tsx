@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import { Inter } from '@next/font/google'
 import profilePic from '../public/profile_pic.jpg'
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
@@ -94,26 +93,26 @@ export default function Home() {
                         Devon Bull
                     </h1>
                 </div>
-                <div className="flex justify-center pt-1 flex flex-row justify-around">
-                    <a href="https://twitter.com/Devon_Bull" target="_blank" rel="noreferrer">
-                        <FontAwesomeIcon
-                            icon={faTwitter}
-                            size="lg"
-                        />
-                    </a>
-                    <a href="https://github.com/DBULL7" target="_blank" rel="noreferrer">
-                        <FontAwesomeIcon
-                            icon={faGithub}
-                            size="lg"
-                        />
-                    </a>
-                    <a href="https://www.linkedin.com/in/bulldevon" target="_blank" rel="noreferrer">
-                        <FontAwesomeIcon
-                            icon={faLinkedin}
-                            size="lg"
-                        />
-                    </a>
-                </div>
+                {/*<div className="flex justify-center pt-1 flex flex-row justify-around">*/}
+                {/*    <a href="https://twitter.com/Devon_Bull" target="_blank" rel="noreferrer">*/}
+                {/*        <FontAwesomeIcon*/}
+                {/*            icon={faTwitter}*/}
+                {/*            size="lg"*/}
+                {/*        />*/}
+                {/*    </a>*/}
+                {/*    <a href="https://github.com/DBULL7" target="_blank" rel="noreferrer">*/}
+                {/*        <FontAwesomeIcon*/}
+                {/*            icon={faGithub}*/}
+                {/*            size="lg"*/}
+                {/*        />*/}
+                {/*    </a>*/}
+                {/*    <a href="https://www.linkedin.com/in/bulldevon" target="_blank" rel="noreferrer">*/}
+                {/*        <FontAwesomeIcon*/}
+                {/*            icon={faLinkedin}*/}
+                {/*            size="lg"*/}
+                {/*        />*/}
+                {/*    </a>*/}
+                {/*</div>*/}
             </div>
         </div>
         <div className="container mt-16 mb-4 mx-auto md:px-64 py-4">
