@@ -22,6 +22,7 @@ import {
     faDatabase, faGear, faServer,
     faShieldDog
 } from "@fortawesome/free-solid-svg-icons";
+import { Tile, tileProps } from '../components/tile'
 import styles from './page.module.css'
 
 
@@ -50,27 +51,6 @@ const tooling: tileProps[] = [
     { icon: faGitAlt, text: 'Git', link: 'https://git-scm.com' }
 ]
 
-interface tileProps {
-    icon?: IconDefinition
-    text?: string
-    link: string
-}
-
-const Tile = ({ icon, text, link }: tileProps) => {
-    return (
-        <a href={link} target="_blank" rel="noreferrer">
-            <div className="flex flex-col justify-center py-4 rounded-lg border border-gray-700 hover:border-blue-600 hover:text-blue-600">
-                {icon && <FontAwesomeIcon
-                    icon={icon}
-                    className=""
-                    size="2xl"
-                />}
-                {text && <p className="pt-2 text-center">{text}</p>}
-            </div>
-        </a>
-    )
-}
-
 export default function Home() {
     const programmingLanguagesTiles = programmingLanguagesAndFrameworks.map(({ text, icon, link }) => <Tile text={text} icon={icon} link={link} key={text} />)
     const toolingTiles = tooling.map(({ text, icon, link }) => <Tile text={text} icon={icon} link={link} key={text}/>)
@@ -93,26 +73,6 @@ export default function Home() {
                         Devon Bull
                     </h1>
                 </div>
-                {/*<div className="flex justify-center pt-1 flex flex-row justify-around">*/}
-                {/*    <a href="https://twitter.com/Devon_Bull" target="_blank" rel="noreferrer">*/}
-                {/*        <FontAwesomeIcon*/}
-                {/*            icon={faTwitter}*/}
-                {/*            size="lg"*/}
-                {/*        />*/}
-                {/*    </a>*/}
-                {/*    <a href="https://github.com/DBULL7" target="_blank" rel="noreferrer">*/}
-                {/*        <FontAwesomeIcon*/}
-                {/*            icon={faGithub}*/}
-                {/*            size="lg"*/}
-                {/*        />*/}
-                {/*    </a>*/}
-                {/*    <a href="https://www.linkedin.com/in/bulldevon" target="_blank" rel="noreferrer">*/}
-                {/*        <FontAwesomeIcon*/}
-                {/*            icon={faLinkedin}*/}
-                {/*            size="lg"*/}
-                {/*        />*/}
-                {/*    </a>*/}
-                {/*</div>*/}
             </div>
         </div>
         <div className="container mt-16 mb-4 mx-auto md:px-64 py-4">
