@@ -22,7 +22,7 @@ import {
     faDatabase, faGear, faServer,
     faShieldDog
 } from "@fortawesome/free-solid-svg-icons";
-import { Tile, tileProps } from '../components/tile'
+import { Tile, tileProps } from '@/components/tile'
 import styles from './page.module.css'
 
 
