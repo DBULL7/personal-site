@@ -1,44 +1,39 @@
-import Link from 'next/link'
-import { compareDesc, format, parseISO } from 'date-fns'
-import { allPosts, Post } from 'contentlayer/generated'
-import { useMDXComponent } from 'next-contentlayer/hooks'
-import { MDXComponents } from 'mdx/types'
+import { compareDesc } from 'date-fns'
+import { allPosts } from 'contentlayer/generated'
+import PostCard from "@/components/post-card"
+import TagsSidebar from "@/components/tags-sidebar"
 
-
-const mdxComponents: MDXComponents = {
-    // Override the default <a> element to use the next/link component.
-    a: ({ href, children }) => <Link href={href as string}>{children}</Link>,
-    // Add a custom component.
-}
-
-function PostCard(post: Post) {
-    // Parse the MDX file via the useMDXComponent hook.
-    const MDXContent = useMDXComponent(post.body.code)
-
-    return (
-        <div className="mb-8">
-            <h2 className="mb-1 text-xl">
-                <Link href={post.url} className="text-blue-700 hover:text-blue-900 dark:text-blue-400">
-                    {post.title}
-                </Link>
-            </h2>
-            <time dateTime={post.date} className="mb-2 block text-xs text-gray-600">
-                {format(parseISO(post.date), 'LLLL d, yyyy')}
-            </time>
-            <MDXContent components={mdxComponents} />
-        </div>
-    )
-}
 
 export default function Home() {
     const posts = allPosts.sort((a, b) => compareDesc(new Date(a.date), new Date(b.date)))
+    const filteredPosts = posts.filter((post) => post.draft !== true)
+
 
     return (
-        <div className="mx-auto max-w-xl py-8">
-            <h1 className="mb-8 text-center text-2xl font-black">Latest and Greatest</h1>
-            {posts.map((post: Post, idx: number) => (
-                <PostCard key={idx} {...post} />
-            ))}
-        </div>
+        <section className="mx-auto max-w-3xl px-4 sm:px-6 xl:max-w-5xl xl:px-0 dark:prose-invert">
+            <main className="mb-auto">
+                <div className="pb-6 pt-6">
+                    <h1 className="sm:hidden text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">
+                        Latest and Greatest
+                    </h1>
+                </div>
+                <div className="flex sm:space-x-24">
+                    <TagsSidebar />
+                    <div>
+                        <ul>
+                            {filteredPosts.map((post) => {
+                                return (
+                                    <PostCard key={post.path} {...post} />
+                                )
+                            })}
+                        </ul>
+                        {/*{pagination && pagination.totalPages > 1 && (*/}
+                        {/*    <Pagination currentPage={pagination.currentPage} totalPages={pagination.totalPages} />*/}
+                        {/*)}*/}
+                    </div>
+                </div>
+            </main>
+        </section>
     )
 }
+

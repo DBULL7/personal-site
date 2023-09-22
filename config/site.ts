@@ -1,10 +1,12 @@
+import * as process from "process";
+
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-    name: "Devon Bull",
+    name: "DBULL7",
     description:
         "Beautifully designed components built with Radix UI and Tailwind CSS.",
-    mainNav: [
+    mainNav: process.env.NODE_ENV === 'production' ? [] : [
         {
             title: "Home",
             href: "/",

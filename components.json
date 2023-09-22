@@ -12,6 +12,7 @@
   "aliases": {
     "components": "@/components",
     "utils": "@/lib/utils",
-    "posts": "@/posts"
+    "posts": "@/posts",
+    "css": "@/css"
   }
 }

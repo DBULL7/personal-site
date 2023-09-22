@@ -1,13 +1,7 @@
 const { withContentlayer } = require('next-contentlayer')
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  experimental: {
-    experimental: {
-      mdxRs: true,
-    },
-  },
-}
+const nextConfig = {}
 
 // export default withContentlayer(nextConfig)
 
