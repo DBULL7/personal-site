@@ -1,18 +1,24 @@
+import * as process from "process";
+
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-    name: "Devon Bull",
+    name: "DBULL7",
     description:
         "Beautifully designed components built with Radix UI and Tailwind CSS.",
-    mainNav: [
-        // {
-        //     title: "Home",
-        //     href: "/",
-        // },
+    mainNav: process.env.NODE_ENV === 'production' ? [] : [
+        {
+            title: "Home",
+            href: "/",
+        },
+        {
+            title: "Blog",
+            href: "/blog"
+        }
     ],
     links: {
         twitter: "https://twitter.com/Devon_Bull",
         github: "https://github.com/DBULL7",
-        docs: "https://ui.shadcn.com",
+        linkedin: 'https:///www.linkedin.com/in/bulldevon'
     },
 }
