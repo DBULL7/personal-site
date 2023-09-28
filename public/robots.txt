@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /blog
+Disallow: /blog/
+
+User-agent: *
+Allow: /
