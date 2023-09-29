@@ -13,6 +13,7 @@
     "components": "@/components",
     "utils": "@/lib/utils",
     "posts": "@/posts",
-    "css": "@/css"
+    "css": "@/css",
+    "hooks": "@/hooks"
   }
 }

@@ -22,6 +22,7 @@
     "@types/node": "20.7.1",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
+    "animate.css": "^4.1.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
@@ -42,6 +43,7 @@
     "remark": "^15.0.1",
     "remark-gfm": "^3.0.1",
     "remark-math": "^6.0.0",
+    "styled-components": "^6.0.8",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.1.6"

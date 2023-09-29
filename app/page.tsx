@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import profilePic from '../public/profile_pic.jpg'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import MatrixRain from '@/components/matrix-rain'
 import {
   faTwitter,
   faGithub,
@@ -25,7 +26,6 @@ import {
   faShieldDog
 } from '@fortawesome/free-solid-svg-icons'
 import { Tile, tileProps } from '@/components/tile'
-import styles from './page.module.css'
 
 const programmingLanguagesAndFrameworks: tileProps[] = [
   // TODO - add Typescript and Express.js icons but Font Awesome doesn't have it
@@ -80,6 +80,7 @@ export default function Home() {
 
   return (
     <main>
+      <MatrixRain />
       <div className="container mx-auto flex justify-center">
         <div className="pt-24">
           <div className="flex justify-center">

@@ -10,7 +10,7 @@ export interface tileProps {
 export const Tile = ({ icon, text, link }: tileProps) => {
   return (
     <a href={link} target="_blank" rel="noreferrer">
-      <div className="flex flex-col justify-center rounded-lg border border-gray-700 py-4 hover:border-blue-600 hover:text-blue-600">
+      <div className="flex flex-col justify-center rounded-lg bg-slate-50 dark:bg-slate-950 border border-gray-700 py-4 hover:border-blue-600 hover:text-blue-600">
         {icon && <FontAwesomeIcon icon={icon} className="" size="2xl" />}
         {text && <p className="pt-2 text-center">{text}</p>}
       </div>

@@ -1,0 +1,12 @@
+.matrixContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    color: #00FF00;
+    overflow: hidden;
+    z-index: -1;
+  }
