@@ -20,7 +20,7 @@
     "@tailwindcss/typography": "^0.5.10",
     "@types/mdx": "^2.0.7",
     "@types/node": "20.7.1",
-    "@types/react": "18.2.21",
+    "@types/react": "18.2.24",
     "@types/react-dom": "18.2.7",
     "animate.css": "^4.1.1",
     "class-variance-authority": "^0.7.0",
