@@ -26,6 +26,11 @@ import {
   faShieldDog
 } from '@fortawesome/free-solid-svg-icons'
 import { Tile, tileProps } from '@/components/tile'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Devon Bull - Senior Software Engineer'
+}
 
 const programmingLanguagesAndFrameworks: tileProps[] = [
   // TODO - add Typescript and Express.js icons but Font Awesome doesn't have it
