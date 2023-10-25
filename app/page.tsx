@@ -29,7 +29,9 @@ import { Tile, tileProps } from '@/components/tile'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Devon Bull - Senior Software Engineer'
+  title: 'Devon Bull - Senior Software Engineer',
+  description:
+    'Explore the portfolio and blog of Devon Bull, a Senior Software Engineer and futurist. Discover unique blog posts and technical resources.'
 }
 
 const programmingLanguagesAndFrameworks: tileProps[] = [
