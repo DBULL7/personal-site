@@ -1,15 +1,11 @@
 import Image from 'next/image'
 import profilePic from '../public/profile_pic.jpg'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import MatrixRain from '@/components/matrix-rain'
 import {
-  faTwitter,
   faGithub,
-  faLinkedin,
   faReact,
   faNodeJs,
   faJs,
-  IconDefinition,
   faGolang,
   faVuejs,
   faHtml5,
@@ -98,6 +94,7 @@ export default function Home() {
               height={125}
               width={125}
               priority
+              quality={20}
             />
           </div>
           <div className="flex justify-center py-4">
@@ -111,13 +108,13 @@ export default function Home() {
         <p className="text-center text-2xl">Hi there I&apos;m Dev 👋</p>
         <p className="pt-2 text-center">I&apos;m a Software Engineer</p>
       </div>
-      <h3 className="mt-8 text-center text-2xl">
+      <h2 className="mt-8 text-center text-2xl">
         Programming Languages & Frameworks
-      </h3>
+      </h2>
       <div className="container mx-auto grid max-w-screen-lg grid-cols-2 gap-4 px-16 py-6 md:grid-cols-4 md:px-32 lg:px-64">
         {programmingLanguagesTiles}
       </div>
-      <h3 className="mt-8 text-center text-2xl">Tooling</h3>
+      <h2 className="mt-8 text-center text-2xl">Tooling</h2>
       <div className="container mx-auto grid max-w-screen-lg grid-cols-2 gap-4 px-16 pb-16 pt-6 md:grid-cols-4 md:px-32 lg:px-64">
         {toolingTiles}
       </div>
