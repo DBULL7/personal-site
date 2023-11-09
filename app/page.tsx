@@ -97,6 +97,7 @@ export default function Home() {
               className="rounded-full"
               height={125}
               width={125}
+              priority
             />
           </div>
           <div className="flex justify-center py-4">
