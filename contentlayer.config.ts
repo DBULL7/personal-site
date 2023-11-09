@@ -7,7 +7,6 @@ import BananaSlug from 'github-slugger'
 import rehypeSlug from 'rehype-slug'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypePrismPlus from 'rehype-prism-plus'
-import rehypePresetMinify from 'rehype-preset-minify'
 // remark packages
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
@@ -83,8 +82,7 @@ export default makeSource({
     rehypePlugins: [
       rehypeSlug,
       rehypeAutolinkHeadings,
-      [rehypePrismPlus, { defaultLanguage: 'js', ignoreMissing: true }],
-      rehypePresetMinify
+      [rehypePrismPlus, { defaultLanguage: 'js', ignoreMissing: true }]
     ]
   },
   onSuccess: async (importData) => {
