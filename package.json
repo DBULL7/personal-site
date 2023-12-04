@@ -20,7 +20,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@tailwindcss/typography": "^0.5.10",
     "@types/mdx": "^2.0.10",
-    "@types/node": "20.9.3",
+    "@types/node": "20.10.3",
     "@types/react": "18.2.38",
     "@types/react-dom": "18.2.16",
     "animate.css": "^4.1.1",
