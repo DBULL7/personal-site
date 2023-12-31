@@ -6,7 +6,7 @@ import { slug } from 'github-slugger'
 import type { Post } from 'contentlayer/generated'
 import Link from 'next/link'
 import Tag from '@/components/tag'
-import siteMetadata from '@/data/siteMetadata'
+// import { siteMetadata } from '@/data/siteMetaData'
 import tagData from 'app/tag-data.json'
 import TagsSidebar from "@/components/tags-sidebar";
 import PostCard from "@/components/post-card";
