@@ -1,0 +1,76 @@
+---
+title: "Making a Christmas Light Show from Scratch"
+date: 2023-12-30
+tags: ['holidays', 'hardware', 'productivity']
+description: "Tools, tips and takeaways for building a Christmas light show from scratch"
+draft: false
+---
+
+# Making a Christmas Light Show from Scratch
+<time dateTime={props.postDate} className="mb-1 text-sm text-gray-600">
+    {props.postDate}
+</time>
+
+Over the past three years my show has gone from manually crafted patterns in Python on 500 lights to a pixel controller running ~2500 lights.
+Often I started in December and pushed myself late into the night after work.
+
+## 2021 "Show"
+
+For the first year I was directly controlling ws2811 5V lights from Amazon via Raspberry Pi Zero W's.
+I started the program on boot with Systemd which was great for restarting on errors.
+This was difficult on several fronts: because the lights were 5V I had limits in how many I could power from a single Pi Zero, and thus had to run multiple Pi's.
+And on top of the power issue, making sure each Pi started the show at the same time was a challenge. Using sleep to check for every minute or longer could have severe timing mismatches.
+Not to mention I had to figure out systemd.
+
+Each "show" was thus more like cool patterns I handcrafted in Python and then ran on the Pi's.
+I used a Github repo to sync the code between the Pi's, but I still had to tweak each one's code to account for different numbers of lights
+(using environment variables solved this somewhat). And finally I had to SSH into each Pi to start iterate on the code.
+So overall it was kinda painful.
+
+### 2021 Hardware
+
+- 3 Raspberry Pi Zero W's
+- ~500 ws2811 5V lights from Amazon
+
+## 2022 Show
+
+Honestly I failed to make this happen. I bought a pixel controller but spent far too much time rabbit holing on
+lights and props, and what software to use.
+
+
+## 2023 Show
+
+Since I had bought a real pixel controller last year, and I was my Mom's secret Santa this Christmas, it was time to dive in for realz.
+I was dead set on not repeating the mistake of 2022. So I did what I do for software projects: iterate as fast as possible and make decisions quickly accepting that there will be errors.
+I started a few days into December and preceded to spend virtually every night until Christmas Eve working on the show,
+sometimes out in my lawn until 1 or 2am like Griswold but clutching a laptop and praying for a Wi-Fi signal.
+
+
+
+### 2023 Hardware
+
+#### Raspberry Pi running Falcon Pi Player (FPP)
+- Raspberry Pi 4B 8GB [Amazon](https://www.amazon.com/dp/B0899VXM8F?psc=1&ref=ppx_yo2ov_dt_b_product_details)
+- 128GB Micro SD (definitely overkill)
+
+
+#### Pixel Controller
+- Falcon F16v4 Pixel Controller 12V - ready to run (https://pixelcontroller.com/). I'm not brave enough to build my own yet.
+- 100ft outdoor Ethernet cable
+
+#### Lights and Props
+
+All lights are **ws2811 12V**. I mainly sourced from [Gilbert Engineering USA](https://gilbertengineeringusa.com) with some additional extensions from [WiredWatts](https://www.wiredwatts.com/).
+
+- 50 peace stakes using 5-light strands
+- 1,000 lights for a 4ft x 8ft with 1 inch spacing Matrix (I didn't do the bottom 4 rows, because it just seemed to close to the ground.)
+- 2 "mini trees" 43 inches tall each with 300 lights. Also added two stars for each, with 70 lights apiece.
+- 3 snowflakes (type P) with 100 lights each
+
+## Major Takeaways
+
+1. The fastest way to get started is to buy a pre-built pixel controller (12V) and use Raspberry Pi Falcon Pi Player (FPP) to run it. Don't overthink light protocols, go with ws2811 12V and make sure to stick with xConnect or Ray Wu connectors. DO NOT BUY LIGHTS FROM AMAZON.
+1. Start months in advance - last minute shipping is expensive.
+1. Trust more weird looking Christmas light websites like <a href="https://gilbertengineeringusa.com" target="_blank">Gilbert Engineering</a> - these people were CLUTCH.
+
+[comment]: <> (Need to include video of light show)
