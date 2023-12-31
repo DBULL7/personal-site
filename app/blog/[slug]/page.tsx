@@ -9,7 +9,8 @@ import '@/css/prism.css'
 // Define your custom MDX components.
 const mdxComponents: MDXComponents = {
   // Override the default <a> element to use the next/link component.
-  a: ({ href, children }) => <Link href={href as string}>{children}</Link>
+  a: ({ href, children }) => <Link href={href as string}>{children}</Link>,
+
   // Add a custom component.
 }
 export const generateStaticParams = async () =>
@@ -31,12 +32,7 @@ const PostLayout = ({ params }: { params: { slug: string } }) => {
 
   return (
     <article className="prose mx-auto max-w-xl py-8 dark:prose-invert">
-      <div className="mb-8 text-center">
-        <time dateTime={post.date} className="mb-1 text-xs text-gray-600">
-          {format(parseISO(post.date), 'LLLL d, yyyy')}
-        </time>
-      </div>
-      <MDXContent components={mdxComponents} />
+      <MDXContent components={mdxComponents} postDate={format(parseISO(post.date), 'LLLL d, yyyy')} />
     </article>
   )
 }

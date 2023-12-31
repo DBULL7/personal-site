@@ -57,16 +57,14 @@ export const Post = defineDocumentType(() => ({
  * Count the occurrences of all tags across blog posts and write to json file
  */
 function createTagCount(allPosts: any) {
-  const bananaSlug = new BananaSlug()
   const tagCount: Record<string, number> = {}
   allPosts.forEach((file: any) => {
-    if (file.tags && (!isProduction || file.draft !== true)) {
+    if (file.tags && file.draft !== true) {
       file.tags.forEach((tag: any) => {
-        const formattedTag = bananaSlug.slug(tag)
-        if (formattedTag in tagCount) {
-          tagCount[formattedTag] += 1
+        if (tag in tagCount) {
+          tagCount[tag] += 1
         } else {
-          tagCount[formattedTag] = 1
+          tagCount[tag] = 1
         }
       })
     }
