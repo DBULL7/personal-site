@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import profilePic from '../public/profile_pic.jpg'
 import MatrixRain from '@/components/matrix-rain'
 import {
   faGithub,
@@ -88,7 +87,7 @@ export default function Home() {
         <div className="pt-24">
           <div className="flex justify-center">
             <Image
-              src={profilePic}
+              src="/profile_pic.jpg"
               alt={'Picture of Devon'}
               className="rounded-full"
               height={125}
