@@ -1,5 +1,5 @@
 import { compareDesc } from 'date-fns'
-import { allPosts } from 'contentlayer/generated'
+import { allPosts } from 'contentlayer2/generated'
 import PostCard from '@/components/post-card'
 import TagsSidebar from '@/components/tags-sidebar'
 

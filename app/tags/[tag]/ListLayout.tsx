@@ -3,7 +3,7 @@
 
 import { usePathname } from 'next/navigation'
 import { slug } from 'github-slugger'
-import type { Post } from 'contentlayer/generated'
+import type { Post } from 'contentlayer2/generated'
 import Link from 'next/link'
 import Tag from '@/components/tag'
 // import { siteMetadata } from '@/data/siteMetaData'

@@ -1,8 +1,8 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { Metadata } from 'next'
-import type { Document, MDX } from 'contentlayer/core'
-import { Post } from 'contentlayer/generated'
+import type { Document, MDX } from 'contentlayer2/core'
+import { Post } from 'contentlayer2/generated'
 
 const isProduction = process.env.NODE_ENV === 'production'
 

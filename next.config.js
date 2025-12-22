@@ -1,12 +1,10 @@
-const { withContentlayer } = require('next-contentlayer')
+const { withContentlayer } = require('next-contentlayer2')
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: { optimizeCss: true }
+  experimental: { optimizeCss: true },
+  // Turbopack config to silence webpack warning from contentlayer2
+  turbopack: {}
 }
 
-// export default withContentlayer(nextConfig)
-
-// const withMDX = require('@next/mdx')()
-// module.exports = withMDX(nextConfig)
 module.exports = withContentlayer(nextConfig)

@@ -1,5 +1,5 @@
 // contentlayer.config.ts
-import { defineDocumentType, makeSource } from 'contentlayer/source-files'
+import { defineDocumentType, makeSource } from 'contentlayer2/source-files'
 import { writeFileSync } from 'fs'
 import BananaSlug from 'github-slugger'
 
@@ -80,7 +80,7 @@ export default makeSource({
     rehypePlugins: [
       rehypeSlug,
       rehypeAutolinkHeadings,
-      [rehypePrismPlus, { defaultLanguage: 'js', ignoreMissing: true }]
+      [rehypePrismPlus, { defaultLanguage: 'js', ignoreMissing: true }] as any
     ]
   },
   onSuccess: async (importData) => {
