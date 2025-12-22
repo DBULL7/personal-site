@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npx contentlayer2 build && next build",
     "start": "next start",
     "lint": "next lint",
     "prepare": "husky install",
+    "postinstall": "npx contentlayer2 build",
     "lint:fix": "prettier . --write && eslint --ext .ts,.tsx --fix"
   },
   "dependencies": {
