@@ -4,6 +4,9 @@ const path = require('path')
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: { optimizeCss: true },
+  images: {
+    qualities: [20, 75],
+  },
   // Turbopack config for module resolution
   turbopack: {
     resolveAlias: {

@@ -1,3 +1,4 @@
+import React from 'react'
 import Image from 'next/image'
 import MatrixRain from '@/components/matrix-rain'
 import {
