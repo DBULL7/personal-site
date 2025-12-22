@@ -1,38 +1,28 @@
 import { format, parseISO } from 'date-fns'
-import { allPosts } from 'contentlayer/generated'
-import { useMDXComponent } from 'next-contentlayer/hooks'
+import { allPosts } from 'contentlayer2/generated'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
-import type { MDXComponents } from 'mdx/types'
+import { MDXContent } from '@/components/mdx-content'
 import '@/css/prism.css'
 
-// Define your custom MDX components.
-const mdxComponents: MDXComponents = {
-  // Override the default <a> element to use the next/link component.
-  a: ({ href, children }) => <Link href={href as string}>{children}</Link>,
-
-  // Add a custom component.
-}
 export const generateStaticParams = async () =>
   allPosts.map((post) => ({ slug: post._raw.flattenedPath }))
 
-export const generateMetadata = ({ params }: { params: { slug: string } }) => {
-  const post = allPosts.find((post) => post._raw.flattenedPath === params.slug)
-  if (!post) throw new Error(`Post not found for slug: ${params.slug}`)
+export const generateMetadata = async ({ params }: { params: Promise<{ slug: string }> }) => {
+  const { slug } = await params
+  const post = allPosts.find((post) => post._raw.flattenedPath === slug)
+  if (!post) throw new Error(`Post not found for slug: ${slug}`)
   return { title: post.title }
 }
 
-const PostLayout = ({ params }: { params: { slug: string } }) => {
-  const post = allPosts.find((post) => post._raw.flattenedPath === params.slug)
+const PostLayout = async ({ params }: { params: Promise<{ slug: string }> }) => {
+  const { slug } = await params
+  const post = allPosts.find((post) => post._raw.flattenedPath === slug)
   // 404 if the post does not exist.
   if (!post) notFound()
 
-  // Parse the MDX file via the useMDXComponent hook.
-  const MDXContent = useMDXComponent(post.body.code)
-
   return (
     <article className="prose mx-auto max-w-xl py-8 dark:prose-invert">
-      <MDXContent components={mdxComponents} postDate={format(parseISO(post.date), 'LLLL d, yyyy')} />
+      <MDXContent code={post.body.code} postDate={format(parseISO(post.date), 'LLLL d, yyyy')} />
     </article>
   )
 }

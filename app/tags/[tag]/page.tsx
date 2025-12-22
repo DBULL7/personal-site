@@ -1,6 +1,6 @@
 import { slug } from 'github-slugger'
 import ListLayout from './ListLayout'
-import { allPosts } from 'contentlayer/generated'
+import { allPosts } from 'contentlayer2/generated'
 import tagData from 'app/tag-data.json'
 import {allCoreContent, sortPosts} from '@/lib/utils'
 import { Metadata } from 'next'
@@ -28,8 +28,9 @@ export const generateStaticParams = async () => {
     return paths
 }
 
-export default function TagPage({ params }: { params: { tag: string } }) {
-    const tag = decodeURI(params.tag)
+export default async function TagPage({ params }: { params: Promise<{ tag: string }> }) {
+    const { tag: tagParam } = await params
+    const tag = decodeURI(tagParam)
     // Capitalize first letter and convert space to dash
     const title = tag[0].toUpperCase() + tag.split(' ').join('-').slice(1)
     const filteredPosts = allCoreContent(
