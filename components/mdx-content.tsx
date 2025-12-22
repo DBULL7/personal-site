@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { useMDXComponent } from 'next-contentlayer2/hooks'
 import Link from 'next/link'
 import type { MDXComponents } from 'mdx/types'
