@@ -8,11 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "prepare": "husky install",
-    "postinstall": "npx contentlayer2 build",
+    "postinstall": "npx contentlayer2 build || true",
     "lint:fix": "prettier . --write && eslint --ext .ts,.tsx --fix"
   },
   "dependencies": {
-    "@babel/eslint-parser": "^7.23.3",
     "@mdx-js/loader": "^3.0.0",
     "@mdx-js/react": "^3.0.0",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
