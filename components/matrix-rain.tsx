@@ -4,7 +4,6 @@ import React, { useEffect, useRef } from 'react'
 import styles from './matrix-rain.module.css'
 import { useTheme } from 'next-themes'
 import { useWindowSize } from 'react-use'
-import { he } from 'date-fns/locale'
 
 const MatrixRain: React.FC = () => {
   const containerRef = useRef<HTMLDivElement | null>(null)
