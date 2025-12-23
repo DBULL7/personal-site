@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 pre {
   overflow-x: auto;
 }
@@ -21,15 +23,15 @@ pre {
 }
 
 .code-line.inserted {
-  @apply bg-green-500 bg-opacity-20;
+  @apply bg-green-500/20;
 }
 
 .code-line.deleted {
-  @apply bg-red-500 bg-opacity-20;
+  @apply bg-red-500/20;
 }
 
 .highlight-line {
-  @apply -mx-4 border-l-4 border-primary bg-gray-700 bg-opacity-50;
+  @apply -mx-4 border-l-4 border-[hsl(var(--primary))] bg-gray-700/50;
 }
 
 .line-number::before {

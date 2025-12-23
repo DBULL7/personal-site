@@ -111,11 +111,11 @@ export default function Home() {
       <h2 className="mt-8 text-center text-2xl">
         Programming Languages & Frameworks
       </h2>
-      <div className="container mx-auto grid max-w-screen-lg grid-cols-2 gap-4 px-16 py-6 md:grid-cols-4 md:px-32 lg:px-64">
+      <div className="container mx-auto grid max-w-screen-lg grid-cols-2 gap-4 px-4 py-6 md:grid-cols-4 md:px-8 lg:px-16">
         {programmingLanguagesTiles}
       </div>
       <h2 className="mt-8 text-center text-2xl">Tooling</h2>
-      <div className="container mx-auto grid max-w-screen-lg grid-cols-2 gap-4 px-16 pb-16 pt-6 md:grid-cols-4 md:px-32 lg:px-64">
+      <div className="container mx-auto grid max-w-screen-lg grid-cols-2 gap-4 px-4 pb-16 pt-6 md:grid-cols-4 md:px-8 lg:px-16">
         {toolingTiles}
       </div>
     </main>
