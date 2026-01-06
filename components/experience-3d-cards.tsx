@@ -93,7 +93,7 @@ function ExperienceCard({
             color={textColor}
             anchorX="left"
             anchorY="middle"
-            font="/fonts/inter-bold.woff"
+            fontWeight="bold"
           >
             {experience.company}
           </Text>
