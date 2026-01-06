@@ -1,6 +1,7 @@
 import React from 'react'
 import Image from 'next/image'
 import MatrixRain from '@/components/matrix-rain'
+import { Experience3DCards } from '@/components/experience-3d-cards'
 import {
   faGithub,
   faReact,
@@ -108,6 +109,7 @@ export default function Home() {
         <p className="text-center text-2xl">Hi there I&apos;m Dev 👋</p>
         <p className="pt-2 text-center">I&apos;m a Software Engineer</p>
       </div>
+      <Experience3DCards />
       <h2 className="mt-8 text-center text-2xl">
         Programming Languages & Frameworks
       </h2>
