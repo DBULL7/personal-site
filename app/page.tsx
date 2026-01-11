@@ -22,6 +22,7 @@ import {
   faShieldDog
 } from '@fortawesome/free-solid-svg-icons'
 import { Tile, tileProps } from '@/components/tile'
+import { AboutSection } from '@/components/about-section'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -108,6 +109,7 @@ export default function Home() {
         <p className="text-center text-2xl">Hi there I&apos;m Dev 👋</p>
         <p className="pt-2 text-center">I&apos;m a Software Engineer</p>
       </div>
+      <AboutSection />
       <h2 className="mt-8 text-center text-2xl">
         Programming Languages & Frameworks
       </h2>
