@@ -3,12 +3,10 @@
 import React, { useEffect, useRef } from 'react'
 import styles from './matrix-rain.module.css'
 import { useTheme } from 'next-themes'
-import { useWindowSize } from 'react-use'
 
 const MatrixRain: React.FC = () => {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const { theme, resolvedTheme } = useTheme()
-  const { width, height } = useWindowSize()
 
   const isDarkMode =
     theme === 'system' ? resolvedTheme === 'dark' : theme === 'dark'
@@ -73,7 +71,7 @@ const MatrixRain: React.FC = () => {
       // Optionally clear canvas on cleanup
       if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height)
     }
-  }, [isDarkMode, width, height])
+  }, [isDarkMode])
 
   return <div className={styles.matrixContainer} ref={containerRef}></div>
 }
