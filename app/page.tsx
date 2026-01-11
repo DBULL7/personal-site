@@ -22,6 +22,7 @@ import {
   faShieldDog
 } from '@fortawesome/free-solid-svg-icons'
 import { Tile, tileProps } from '@/components/tile'
+import { WorkExperienceSection } from '@/components/work-experience-section'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -118,6 +119,7 @@ export default function Home() {
       <div className="container mx-auto grid max-w-screen-lg grid-cols-2 gap-4 px-4 pb-16 pt-6 md:grid-cols-4 md:px-8 lg:px-16">
         {toolingTiles}
       </div>
+      <WorkExperienceSection />
     </main>
   )
 }
