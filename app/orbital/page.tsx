@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { SpaceScene } from '@/components/space/space-scene'
+import { OrbitalHero } from './orbital-hero'
 import styles from '../space-experiences.module.css'
 
 export const metadata: Metadata = {
@@ -11,43 +11,7 @@ export const metadata: Metadata = {
 export default function OrbitalPage() {
   return (
     <main className={styles.page}>
-      <section className={styles.hero}>
-        <SpaceScene mode="orbital" />
-        <div className={styles.heroContent}>
-          <div className={styles.heroCopy}>
-            <p className={styles.eyebrow}>Orbital approach · 001</p>
-            <h1 className={styles.title}>
-              Systems at <span className={styles.titleAccent}>impossible</span> scale.
-            </h1>
-            <p className={styles.lede}>
-              I&apos;m Devon Bull, a senior software engineer drawn to ambitious systems, clear thinking,
-              and the kind of technology that first feels like science fiction.
-            </p>
-            <div className={styles.actions}>
-              <Link className={styles.primaryAction} href="/career">
-                Enter career map <span className={styles.actionArrow}>↗</span>
-              </Link>
-              <Link className={styles.secondaryAction} href="/systems">
-                Inspect systems
-              </Link>
-            </div>
-          </div>
-        </div>
-        <div className={styles.telemetry} aria-label="Orbital telemetry">
-          <div className={styles.telemetryItem}>
-            <span className={styles.telemetryValue}>3.0M km</span>
-            <span className={styles.telemetryLabel}>Diameter</span>
-          </div>
-          <div className={styles.telemetryItem}>
-            <span className={styles.telemetryValue}>~1 gravity</span>
-            <span className={styles.telemetryLabel}>Spin habitat</span>
-          </div>
-          <div className={styles.telemetryItem}>
-            <span className={styles.telemetryValue}>Open</span>
-            <span className={styles.telemetryLabel}>To new signals</span>
-          </div>
-        </div>
-      </section>
+      <OrbitalHero />
 
       <section className={styles.section}>
         <div className={styles.sectionInner}>

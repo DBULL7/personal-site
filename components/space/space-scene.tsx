@@ -2,18 +2,29 @@
 
 import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
+import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
 import styles from './space-scene.module.css'
 
 export type SpaceSceneMode = 'orbital' | 'career' | 'systems'
+export type OrbitalView = 'overview' | 'rim'
 
 type SpaceSceneProps = {
   mode: SpaceSceneMode
   className?: string
   onNodeSelect?: (id: string) => void
+  orbitalView?: OrbitalView
+  skipIntro?: boolean
+}
+type SceneControls = {
+  orbitalView: OrbitalView
+  skipIntro: boolean
 }
 
 type SceneRig = {
-  update: (elapsed: number, delta: number, pointer: THREE.Vector2) => void
+  update: (elapsed: number, delta: number, pointer: THREE.Vector2, controls: SceneControls) => void
   clickable: THREE.Object3D[]
 }
 
@@ -584,10 +595,19 @@ function createCultureShip(kind: CultureShipKind, variant: number) {
 function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): SceneRig {
   scene.add(createStarField(4200, 78, 11))
 
-  const ambient = new THREE.HemisphereLight(0x8fced4, 0x091012, 1.35)
+  const ambient = new THREE.HemisphereLight(0x8fced4, 0x030608, 0.48)
   scene.add(ambient)
-  const sunLight = new THREE.DirectionalLight(0xffd5a3, 4.8)
-  sunLight.position.set(12, 8, 9)
+  const sunLight = new THREE.DirectionalLight(0xffd5a3, 5.6)
+  sunLight.position.set(12.5, 6.8, -10)
+  sunLight.castShadow = true
+  sunLight.shadow.mapSize.set(1024, 1024)
+  sunLight.shadow.camera.near = 0.1
+  sunLight.shadow.camera.far = 40
+  sunLight.shadow.camera.left = -12
+  sunLight.shadow.camera.right = 12
+  sunLight.shadow.camera.top = 12
+  sunLight.shadow.camera.bottom = -12
+  sunLight.shadow.bias = -0.0004
   scene.add(sunLight)
 
   const sun = new THREE.Group()
@@ -652,6 +672,10 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
     metalness: 0.65
   })
   const edges = new THREE.InstancedMesh(edgeGeometry, edgeMaterial, plateCount * 2)
+  plates.castShadow = true
+  plates.receiveShadow = true
+  edges.castShadow = true
+  edges.receiveShadow = true
 
   const matrix = new THREE.Matrix4()
   const position = new THREE.Vector3()
@@ -693,12 +717,14 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
     displacementBias: 0.012,
     emissive: 0xffc783,
     emissiveMap: biosphereTextures?.lights ?? null,
-    emissiveIntensity: 1.15,
+    emissiveIntensity: 1.42,
     metalness: 0.02,
-    roughness: 0.76,
+    roughness: 0.94,
+    roughnessMap: biosphereTextures?.elevation ?? null,
     side: THREE.DoubleSide
   })
   const biosphere = new THREE.Mesh(biosphereGeometry, biosphereMaterial)
+  biosphere.receiveShadow = true
   biosphere.renderOrder = 1
   orbital.add(biosphere)
 
@@ -707,16 +733,19 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
     cloudGeometry.rotateX(Math.PI / 2)
     const cloudLayer = new THREE.Mesh(
       cloudGeometry,
-      new THREE.MeshBasicMaterial({
+      new THREE.MeshStandardMaterial({
         map: biosphereTextures.clouds,
         color: 0xe3eee9,
         transparent: true,
-        opacity: 0.55,
+        opacity: 0.48,
+        alphaTest: 0.025,
         side: THREE.DoubleSide,
         depthWrite: false,
-        blending: THREE.AdditiveBlending
+        metalness: 0,
+        roughness: 1
       })
     )
+    cloudLayer.castShadow = true
     cloudLayer.renderOrder = 3
     weather.add(cloudLayer)
 
@@ -862,12 +891,28 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
     })
   }
 
-  camera.position.set(0, 1.25, 15.5)
-  camera.lookAt(0, -0.2, -1)
+  const heroShip = createCultureShip('systems', 87)
+  heroShip.scale.setScalar(2.2)
+  scene.add(heroShip)
+
+  const introCamera = new THREE.Vector3(5.8, 1.65, 8.1)
+  const overviewCamera = new THREE.Vector3(0, 1.25, 15.5)
+  const introTarget = new THREE.Vector3(2.7, 0.3, -0.7)
+  const overviewTarget = new THREE.Vector3(0.35, -0.25, -1.2)
+  const heroShipStart = new THREE.Vector3(-4.4, -0.15, 6.1)
+  const heroShipEnd = new THREE.Vector3(6.4, 1.05, 3.2)
+  const currentLook = introTarget.clone()
+  const targetPosition = new THREE.Vector3()
+  const targetLook = new THREE.Vector3()
+  const rimCameraLocal = new THREE.Vector3()
+  const rimTargetLocal = new THREE.Vector3()
+
+  camera.position.copy(introCamera)
+  camera.lookAt(introTarget)
 
   return {
     clickable: [],
-    update: (elapsed, delta, pointer) => {
+    update: (elapsed, delta, pointer, controls) => {
       orbital.rotation.z += delta * 0.018
       hub.rotation.y += delta * 0.17
       hub.rotation.x -= delta * 0.05
@@ -890,9 +935,43 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
             (item.object.children.length > 5 ? 0.07 : 0.09) * fieldPulse
         })
       })
-      camera.position.x += (pointer.x * 0.7 - camera.position.x) * 0.018
-      camera.position.y += (1.25 + pointer.y * 0.45 - camera.position.y) * 0.018
-      camera.lookAt(0.35, -0.25, -1.2)
+
+      const introProgress = controls.skipIntro ? 1 : THREE.MathUtils.smootherstep(elapsed, 0.2, 7.6)
+      heroShip.position.lerpVectors(heroShipStart, heroShipEnd, introProgress)
+      heroShip.lookAt(8.5, 1.3, 1.4)
+      heroShip.visible = introProgress < 0.995
+
+      const cameraResponsiveness = delta === 0 ? 1 : 1 - Math.exp(-delta * 1.7)
+      if (introProgress < 1) {
+        const revealEase = THREE.MathUtils.smootherstep(introProgress, 0, 1)
+        targetPosition.lerpVectors(introCamera, overviewCamera, revealEase)
+        targetLook.lerpVectors(introTarget, overviewTarget, revealEase)
+        camera.position.copy(targetPosition)
+        currentLook.copy(targetLook)
+        camera.fov = THREE.MathUtils.lerp(59, 52, revealEase)
+      } else if (controls.orbitalView === 'rim') {
+        const rimAngle = elapsed * 0.046 + 0.42
+        rimCameraLocal.set(Math.cos(rimAngle) * 4.16, Math.sin(rimAngle) * 4.16, 0.16 + Math.sin(elapsed * 0.11) * 0.12)
+        rimTargetLocal.set(
+          Math.cos(rimAngle + 0.2) * 5.02,
+          Math.sin(rimAngle + 0.2) * 5.02,
+          Math.sin(elapsed * 0.08) * 0.08
+        )
+        targetPosition.copy(rimCameraLocal)
+        targetLook.copy(rimTargetLocal)
+        orbital.localToWorld(targetPosition)
+        orbital.localToWorld(targetLook)
+        camera.position.lerp(targetPosition, cameraResponsiveness)
+        currentLook.lerp(targetLook, cameraResponsiveness)
+        camera.fov = THREE.MathUtils.lerp(camera.fov, 63, cameraResponsiveness)
+      } else {
+        targetPosition.set(pointer.x * 0.7, 1.25 + pointer.y * 0.45, 15.5)
+        camera.position.lerp(targetPosition, cameraResponsiveness)
+        currentLook.lerp(overviewTarget, cameraResponsiveness)
+        camera.fov = THREE.MathUtils.lerp(camera.fov, 52, cameraResponsiveness)
+      }
+      camera.updateProjectionMatrix()
+      camera.lookAt(currentLook)
     }
   }
 }
@@ -1098,15 +1177,26 @@ function buildSystems(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
   }
 }
 
-export function SpaceScene({ mode, className = '', onNodeSelect }: SpaceSceneProps) {
+export function SpaceScene({
+  mode,
+  className = '',
+  onNodeSelect,
+  orbitalView = 'overview',
+  skipIntro = false
+}: SpaceSceneProps) {
   const hostRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const selectRef = useRef(onNodeSelect)
+  const controlsRef = useRef<SceneControls>({ orbitalView, skipIntro })
   const [failed, setFailed] = useState(false)
 
   useEffect(() => {
     selectRef.current = onNodeSelect
   }, [onNodeSelect])
+
+  useEffect(() => {
+    controlsRef.current = { orbitalView, skipIntro }
+  }, [orbitalView, skipIntro])
 
   useEffect(() => {
     const host = hostRef.current
@@ -1115,7 +1205,11 @@ export function SpaceScene({ mode, className = '', onNodeSelect }: SpaceScenePro
 
     let renderer: THREE.WebGLRenderer
     try {
-      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' })
+      renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        powerPreference: 'high-performance'
+      })
     } catch {
       setFailed(true)
       return
@@ -1126,6 +1220,8 @@ export function SpaceScene({ mode, className = '', onNodeSelect }: SpaceScenePro
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.08
+    renderer.shadowMap.enabled = mode === 'orbital'
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
     const scene = new THREE.Scene()
     scene.background = new THREE.Color(palette.ink)
@@ -1133,11 +1229,22 @@ export function SpaceScene({ mode, className = '', onNodeSelect }: SpaceScenePro
     const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 180)
     let rig: SceneRig
     try {
-      rig = mode === 'orbital' ? buildOrbital(scene, camera) : mode === 'career' ? buildCareer(scene, camera) : buildSystems(scene, camera)
+      rig =
+        mode === 'orbital'
+          ? buildOrbital(scene, camera)
+          : mode === 'career'
+            ? buildCareer(scene, camera)
+            : buildSystems(scene, camera)
     } catch {
       renderer.dispose()
       setFailed(true)
       return
+    }
+    const composer = mode === 'orbital' ? new EffectComposer(renderer) : null
+    if (composer) {
+      composer.addPass(new RenderPass(scene, camera))
+      composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.42, 0.66, 0.86))
+      composer.addPass(new OutputPass())
     }
     const pointer = new THREE.Vector2()
     const raycaster = new THREE.Raycaster()
@@ -1150,6 +1257,7 @@ export function SpaceScene({ mode, className = '', onNodeSelect }: SpaceScenePro
       const height = host.clientHeight
       if (!width || !height) return
       renderer.setSize(width, height, false)
+      composer?.setSize(width, height)
       camera.aspect = width / height
       camera.updateProjectionMatrix()
     }
@@ -1176,8 +1284,12 @@ export function SpaceScene({ mode, className = '', onNodeSelect }: SpaceScenePro
     const animate = () => {
       const delta = Math.min(clock.getDelta(), 0.05)
       const elapsed = clock.elapsedTime
-      rig.update(reduceMotion ? 2.4 : elapsed, reduceMotion ? 0 : delta, pointer)
-      renderer.render(scene, camera)
+      rig.update(reduceMotion ? 8 : elapsed, reduceMotion ? 0 : delta, pointer, {
+        ...controlsRef.current,
+        skipIntro: controlsRef.current.skipIntro || reduceMotion
+      })
+      if (composer) composer.render()
+      else renderer.render(scene, camera)
       if (!reduceMotion) frame = window.requestAnimationFrame(animate)
     }
 
@@ -1209,6 +1321,7 @@ export function SpaceScene({ mode, className = '', onNodeSelect }: SpaceScenePro
           object.material.dispose()
         }
       })
+      composer?.dispose()
       renderer.dispose()
     }
   }, [mode])
