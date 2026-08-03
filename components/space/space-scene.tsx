@@ -138,6 +138,301 @@ function createOrbitLine(radius: number, color = palette.cyan, opacity = 0.16) {
   )
 }
 
+type MapPoint = readonly [number, number]
+
+type Continent = {
+  points: readonly MapPoint[]
+  color: string
+  elevation: number
+}
+
+function smoothMapPath(points: readonly MapPoint[], width: number, height: number) {
+  const path = new Path2D()
+  const first = points[0]
+  const last = points[points.length - 1]
+  path.moveTo(((last[0] + first[0]) / 2) * width, ((last[1] + first[1]) / 2) * height)
+  points.forEach((point, index) => {
+    const next = points[(index + 1) % points.length]
+    path.quadraticCurveTo(
+      point[0] * width,
+      point[1] * height,
+      ((point[0] + next[0]) / 2) * width,
+      ((point[1] + next[1]) / 2) * height
+    )
+  })
+  path.closePath()
+  return path
+}
+
+function makeLinePath(points: readonly MapPoint[], width: number, height: number) {
+  const path = new Path2D()
+  points.forEach((point, index) => {
+    if (index === 0) path.moveTo(point[0] * width, point[1] * height)
+    else path.lineTo(point[0] * width, point[1] * height)
+  })
+  return path
+}
+
+function createOrbitalBiosphereTextures() {
+  const width = 4096
+  const height = 768
+  const colorCanvas = document.createElement('canvas')
+  const heightCanvas = document.createElement('canvas')
+  const lightCanvas = document.createElement('canvas')
+  const cloudCanvas = document.createElement('canvas')
+  ;[colorCanvas, heightCanvas, lightCanvas, cloudCanvas].forEach((canvas) => {
+    canvas.width = width
+    canvas.height = height
+  })
+
+  const color = colorCanvas.getContext('2d')
+  const elevation = heightCanvas.getContext('2d')
+  const lights = lightCanvas.getContext('2d')
+  const clouds = cloudCanvas.getContext('2d')
+  if (!color || !elevation || !lights || !clouds) return null
+
+  const ocean = color.createLinearGradient(0, 0, 0, height)
+  ocean.addColorStop(0, '#163f55')
+  ocean.addColorStop(0.22, '#1f6073')
+  ocean.addColorStop(0.5, '#287c87')
+  ocean.addColorStop(0.78, '#1d5c70')
+  ocean.addColorStop(1, '#123c53')
+  color.fillStyle = ocean
+  color.fillRect(0, 0, width, height)
+  elevation.fillStyle = 'rgb(18, 18, 18)'
+  elevation.fillRect(0, 0, width, height)
+
+  let seed = 74219
+  const random = () => {
+    seed = (seed * 16807) % 2147483647
+    return (seed - 1) / 2147483646
+  }
+
+  color.save()
+  color.globalAlpha = 0.18
+  color.strokeStyle = '#a1d8d7'
+  for (let index = 0; index < 190; index += 1) {
+    const x = random() * width
+    const y = random() * height
+    const length = 18 + random() * 80
+    color.lineWidth = 0.5 + random() * 1.3
+    color.beginPath()
+    color.moveTo(x, y)
+    color.quadraticCurveTo(x + length * 0.5, y + random() * 5 - 2.5, x + length, y)
+    color.stroke()
+  }
+  color.restore()
+
+  const continents: readonly Continent[] = [
+    {
+      color: '#527b4e',
+      elevation: 104,
+      points: [
+        [0.015, 0.18], [0.052, 0.08], [0.105, 0.12], [0.133, 0.24], [0.18, 0.18],
+        [0.238, 0.28], [0.254, 0.45], [0.225, 0.61], [0.181, 0.68], [0.151, 0.86],
+        [0.101, 0.9], [0.078, 0.73], [0.032, 0.68], [0.006, 0.49]
+      ]
+    },
+    {
+      color: '#71834f',
+      elevation: 98,
+      points: [
+        [0.29, 0.08], [0.345, 0.12], [0.382, 0.24], [0.431, 0.2], [0.482, 0.32],
+        [0.508, 0.52], [0.472, 0.7], [0.421, 0.67], [0.382, 0.88], [0.335, 0.79],
+        [0.302, 0.62], [0.271, 0.42]
+      ]
+    },
+    {
+      color: '#416f4d',
+      elevation: 112,
+      points: [
+        [0.54, 0.22], [0.578, 0.1], [0.633, 0.16], [0.66, 0.3], [0.704, 0.21],
+        [0.748, 0.3], [0.779, 0.5], [0.752, 0.64], [0.715, 0.69], [0.681, 0.87],
+        [0.626, 0.9], [0.597, 0.75], [0.558, 0.67], [0.529, 0.48]
+      ]
+    },
+    {
+      color: '#5f844e',
+      elevation: 100,
+      points: [
+        [0.808, 0.13], [0.851, 0.08], [0.887, 0.24], [0.927, 0.18], [0.976, 0.28],
+        [0.995, 0.48], [0.968, 0.71], [0.928, 0.76], [0.9, 0.91], [0.851, 0.82],
+        [0.821, 0.64], [0.793, 0.44]
+      ]
+    }
+  ]
+
+  const continentPaths = continents.map((continent) => smoothMapPath(continent.points, width, height))
+  continents.forEach((continent, index) => {
+    const path = continentPaths[index]
+    color.fillStyle = continent.color
+    color.fill(path)
+    color.lineWidth = 18
+    color.strokeStyle = 'rgba(177, 191, 123, .42)'
+    color.stroke(path)
+    color.lineWidth = 5
+    color.strokeStyle = '#b4c28a'
+    color.stroke(path)
+    elevation.fillStyle = `rgb(${continent.elevation}, ${continent.elevation}, ${continent.elevation})`
+    elevation.fill(path)
+    elevation.lineWidth = 14
+    elevation.strokeStyle = 'rgb(64, 64, 64)'
+    elevation.stroke(path)
+
+    color.save()
+    color.clip(path)
+    for (let patch = 0; patch < 90; patch += 1) {
+      const x = random() * width
+      const y = random() * height
+      const patchWidth = 28 + random() * 150
+      const patchHeight = 12 + random() * 68
+      color.fillStyle = random() > 0.48 ? 'rgba(19, 69, 49, .18)' : 'rgba(167, 164, 91, .15)'
+      color.beginPath()
+      color.ellipse(x, y, patchWidth, patchHeight, random() * Math.PI, 0, Math.PI * 2)
+      color.fill()
+    }
+    color.restore()
+  })
+
+  const deserts = [
+    [[0.337, 0.3], [0.397, 0.25], [0.463, 0.38], [0.461, 0.58], [0.397, 0.66], [0.333, 0.53]],
+    [[0.849, 0.24], [0.912, 0.27], [0.955, 0.43], [0.927, 0.62], [0.856, 0.58], [0.824, 0.42]],
+    [[0.115, 0.62], [0.16, 0.54], [0.208, 0.61], [0.187, 0.78], [0.137, 0.82]]
+  ] as const
+  deserts.forEach((points) => {
+    const path = smoothMapPath(points, width, height)
+    const desertFill = color.createLinearGradient(0, height * 0.2, 0, height * 0.8)
+    desertFill.addColorStop(0, '#c0a35f')
+    desertFill.addColorStop(0.55, '#a97b43')
+    desertFill.addColorStop(1, '#7d673c')
+    color.fillStyle = desertFill
+    color.fill(path)
+    color.lineWidth = 9
+    color.strokeStyle = 'rgba(219, 190, 113, .46)'
+    color.stroke(path)
+    elevation.fillStyle = 'rgb(91, 91, 91)'
+    elevation.fill(path)
+  })
+
+  const mountainRanges = [
+    [[0.035, 0.36], [0.075, 0.28], [0.118, 0.34], [0.15, 0.43], [0.194, 0.39], [0.225, 0.48]],
+    [[0.302, 0.25], [0.34, 0.34], [0.372, 0.43], [0.409, 0.48], [0.45, 0.44], [0.484, 0.52]],
+    [[0.558, 0.5], [0.602, 0.42], [0.642, 0.48], [0.682, 0.41], [0.723, 0.48], [0.756, 0.44]],
+    [[0.815, 0.67], [0.855, 0.61], [0.894, 0.66], [0.93, 0.57], [0.968, 0.61]]
+  ] as const
+  mountainRanges.forEach((points) => {
+    const path = makeLinePath(points, width, height)
+    color.lineCap = 'round'
+    color.lineJoin = 'round'
+    color.strokeStyle = 'rgba(36, 43, 35, .8)'
+    color.lineWidth = 34
+    color.stroke(path)
+    color.strokeStyle = '#817c60'
+    color.lineWidth = 18
+    color.stroke(path)
+    color.strokeStyle = '#d2cfb0'
+    color.lineWidth = 4
+    color.stroke(path)
+    elevation.lineCap = 'round'
+    elevation.lineJoin = 'round'
+    elevation.strokeStyle = 'rgb(185, 185, 185)'
+    elevation.lineWidth = 40
+    elevation.stroke(path)
+    elevation.strokeStyle = 'rgb(245, 245, 245)'
+    elevation.lineWidth = 12
+    elevation.stroke(path)
+  })
+
+  const rivers = [
+    [[0.08, 0.31], [0.095, 0.42], [0.13, 0.49], [0.143, 0.6], [0.17, 0.69]],
+    [[0.36, 0.39], [0.378, 0.47], [0.413, 0.53], [0.43, 0.64]],
+    [[0.625, 0.45], [0.646, 0.54], [0.683, 0.59], [0.704, 0.7]],
+    [[0.886, 0.39], [0.903, 0.49], [0.89, 0.58], [0.86, 0.67]],
+    [[0.203, 0.41], [0.188, 0.5], [0.191, 0.6], [0.215, 0.65]]
+  ] as const
+  rivers.forEach((points) => {
+    const path = makeLinePath(points, width, height)
+    color.strokeStyle = '#205f79'
+    color.lineWidth = 10
+    color.stroke(path)
+    color.strokeStyle = '#79c1c7'
+    color.lineWidth = 2.2
+    color.stroke(path)
+    elevation.strokeStyle = 'rgb(20, 20, 20)'
+    elevation.lineWidth = 8
+    elevation.stroke(path)
+  })
+
+  const lakes = [
+    [0.181, 0.48, 0.018, 0.04],
+    [0.446, 0.37, 0.015, 0.032],
+    [0.586, 0.61, 0.022, 0.035],
+    [0.738, 0.4, 0.014, 0.028],
+    [0.938, 0.49, 0.021, 0.034]
+  ] as const
+  lakes.forEach(([x, y, radiusX, radiusY]) => {
+    color.beginPath()
+    color.ellipse(x * width, y * height, radiusX * width, radiusY * height, 0.3, 0, Math.PI * 2)
+    color.fillStyle = '#276f83'
+    color.fill()
+    color.lineWidth = 3
+    color.strokeStyle = '#8fc8bf'
+    color.stroke()
+    elevation.beginPath()
+    elevation.ellipse(x * width, y * height, radiusX * width, radiusY * height, 0.3, 0, Math.PI * 2)
+    elevation.fillStyle = 'rgb(19, 19, 19)'
+    elevation.fill()
+  })
+
+  continentPaths.forEach((continentPath) => {
+    lights.save()
+    lights.clip(continentPath)
+    for (let index = 0; index < 170; index += 1) {
+      const x = random() * width
+      const y = random() * height
+      const size = random() > 0.93 ? 4.5 : 1.2 + random() * 1.8
+      lights.fillStyle = random() > 0.2 ? 'rgba(255, 210, 130, .78)' : 'rgba(155, 225, 217, .64)'
+      lights.beginPath()
+      lights.arc(x, y, size, 0, Math.PI * 2)
+      lights.fill()
+    }
+    lights.restore()
+  })
+
+  clouds.filter = 'blur(9px)'
+  for (let band = 0; band < 58; band += 1) {
+    const x = random() * width
+    const y = height * (0.08 + random() * 0.84)
+    const cloudWidth = 34 + random() * 150
+    const cloudHeight = 7 + random() * 25
+    clouds.fillStyle = `rgba(224, 239, 231, ${0.06 + random() * 0.16})`
+    clouds.beginPath()
+    clouds.ellipse(x, y, cloudWidth, cloudHeight, random() * 0.45 - 0.22, 0, Math.PI * 2)
+    clouds.fill()
+    clouds.beginPath()
+    clouds.ellipse(x + cloudWidth * 0.46, y + random() * 13 - 6.5, cloudWidth * 0.58, cloudHeight * 0.72, 0, 0, Math.PI * 2)
+    clouds.fill()
+  }
+  clouds.filter = 'none'
+
+  const makeTexture = (canvas: HTMLCanvasElement, colorSpace = false) => {
+    const texture = new THREE.CanvasTexture(canvas)
+    texture.wrapS = THREE.RepeatWrapping
+    texture.wrapT = THREE.ClampToEdgeWrapping
+    texture.anisotropy = 8
+    if (colorSpace) texture.colorSpace = THREE.SRGBColorSpace
+    texture.needsUpdate = true
+    return texture
+  }
+
+  return {
+    color: makeTexture(colorCanvas, true),
+    elevation: makeTexture(heightCanvas),
+    lights: makeTexture(lightCanvas, true),
+    clouds: makeTexture(cloudCanvas, true)
+  }
+}
+
 function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): SceneRig {
   scene.add(createStarField(4200, 78, 11))
 
@@ -200,21 +495,6 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
     metalness: 0.78
   })
   const plates = new THREE.InstancedMesh(plateGeometry, plateMaterial, plateCount)
-  const landGeometry = new THREE.BoxGeometry(arc * 0.86, 0.035, 1.24)
-  const landMaterial = new THREE.MeshStandardMaterial({
-    color: 0x315c4d,
-    emissive: 0x163b33,
-    emissiveIntensity: 0.48,
-    roughness: 0.9
-  })
-  const waterMaterial = new THREE.MeshStandardMaterial({
-    color: 0x285c71,
-    emissive: 0x183f52,
-    emissiveIntensity: 0.42,
-    roughness: 0.58
-  })
-  const land = new THREE.InstancedMesh(landGeometry, landMaterial, plateCount)
-  const water = new THREE.InstancedMesh(landGeometry, waterMaterial, plateCount)
   const edgeGeometry = new THREE.BoxGeometry(arc * 0.9, 0.2, 0.055)
   const edgeMaterial = new THREE.MeshStandardMaterial({
     color: 0x72918d,
@@ -239,11 +519,6 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
     matrix.compose(position, quaternion, scale)
     plates.setMatrixAt(index, matrix)
 
-    position.set(Math.cos(angle) * (radius - 0.11), Math.sin(angle) * (radius - 0.11), 0)
-    matrix.compose(position, quaternion, index % 7 === 0 ? new THREE.Vector3(1, 0.6, 1) : scale)
-    land.setMatrixAt(index, matrix)
-    water.setMatrixAt(index, matrix)
-
     for (let edge = 0; edge < 2; edge += 1) {
       position.set(
         Math.cos(angle) * (radius - 0.13),
@@ -254,28 +529,66 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
       edges.setMatrixAt(index * 2 + edge, matrix)
     }
   }
+  orbital.add(plates, edges)
 
-  land.count = Math.ceil(plateCount / 2)
-  water.count = Math.floor(plateCount / 2)
-  let landIndex = 0
-  let waterIndex = 0
-  for (let index = 0; index < plateCount; index += 1) {
-    const angle = (index / plateCount) * Math.PI * 2
-    rotation.set(0, 0, angle + Math.PI / 2)
-    quaternion.setFromEuler(rotation)
-    position.set(Math.cos(angle) * (radius - 0.11), Math.sin(angle) * (radius - 0.11), 0)
-    matrix.compose(position, quaternion, scale)
-    if ((index + Math.floor(index / 9)) % 3 === 0) {
-      water.setMatrixAt(waterIndex, matrix)
-      waterIndex += 1
-    } else {
-      land.setMatrixAt(landIndex, matrix)
-      landIndex += 1
-    }
+  const weather = new THREE.Group()
+  const biosphereTextures = createOrbitalBiosphereTextures()
+  const biosphereGeometry = new THREE.CylinderGeometry(radius - 0.14, radius - 0.14, 1.26, 384, 72, true)
+  biosphereGeometry.rotateX(Math.PI / 2)
+  const biosphereMaterial = new THREE.MeshStandardMaterial({
+    color: biosphereTextures ? 0xffffff : 0x487460,
+    map: biosphereTextures?.color ?? null,
+    bumpMap: biosphereTextures?.elevation ?? null,
+    bumpScale: 0.085,
+    displacementMap: biosphereTextures?.elevation ?? null,
+    displacementScale: -0.17,
+    displacementBias: 0.018,
+    emissive: 0xffc783,
+    emissiveMap: biosphereTextures?.lights ?? null,
+    emissiveIntensity: 1.15,
+    metalness: 0.02,
+    roughness: 0.76,
+    side: THREE.DoubleSide
+  })
+  const biosphere = new THREE.Mesh(biosphereGeometry, biosphereMaterial)
+  biosphere.renderOrder = 1
+  orbital.add(biosphere)
+
+  if (biosphereTextures) {
+    const cloudGeometry = new THREE.CylinderGeometry(radius - 0.32, radius - 0.32, 1.2, 320, 1, true)
+    cloudGeometry.rotateX(Math.PI / 2)
+    const cloudLayer = new THREE.Mesh(
+      cloudGeometry,
+      new THREE.MeshBasicMaterial({
+        map: biosphereTextures.clouds,
+        color: 0xe3eee9,
+        transparent: true,
+        opacity: 0.55,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+      })
+    )
+    cloudLayer.renderOrder = 3
+    weather.add(cloudLayer)
+
+    const atmosphereGeometry = new THREE.CylinderGeometry(radius - 0.37, radius - 0.37, 1.21, 256, 1, true)
+    atmosphereGeometry.rotateX(Math.PI / 2)
+    const atmosphereLayer = new THREE.Mesh(
+      atmosphereGeometry,
+      new THREE.MeshBasicMaterial({
+        color: 0x8fd2cc,
+        transparent: true,
+        opacity: 0.035,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+      })
+    )
+    atmosphereLayer.renderOrder = 2
+    weather.add(atmosphereLayer)
   }
-  land.count = landIndex
-  water.count = waterIndex
-  orbital.add(plates, land, water, edges)
+  orbital.add(weather)
 
   const runningLights = new THREE.Group()
   const beaconGeometry = new THREE.SphereGeometry(0.035, 8, 8)
@@ -373,6 +686,7 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
       hub.rotation.x -= delta * 0.05
       planet.rotation.y += delta * 0.018
       runningLights.rotation.z -= delta * 0.02
+      weather.rotation.z += delta * 0.0018
       ships.forEach((item) => {
         let progress = (elapsed * item.speed + item.offset) % 1
         if (item.reverse) progress = 1 - progress
