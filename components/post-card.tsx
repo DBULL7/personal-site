@@ -1,38 +1,36 @@
-import { Post } from 'contentlayer2/generated'
+import type { Post } from 'contentlayer2/generated'
 import { format, parseISO } from 'date-fns'
 import Link from 'next/link'
 import Tag from '@/components/tag'
+import styles from '@/app/editorial.module.css'
 
 function PostCard(post: Post) {
-  const { path, date, title, description, tags } = post
+  const { path, date, title, description, tags, readingTime } = post
+
   return (
-    <li key={path} className="py-5">
-      <article className="flex flex-col space-y-2 xl:space-y-0">
-        <dl>
-          <dt className="sr-only">Published on</dt>
-          <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
-            <time dateTime={date}>
-              {format(parseISO(post.date), 'LLLL d, yyyy')}
-            </time>
-          </dd>
-        </dl>
-        <div className="space-y-3">
-          <div>
-            <h2 className="text-2xl font-bold leading-8 tracking-tight">
-              <Link
-                href={path}
-                className="text-gray-900 hover:text-indigo-500 dark:text-gray-100 dark:hover:text-sky-500"
-              >
-                {title}
-              </Link>
-            </h2>
-            <div className="flex flex-wrap">
-              {tags?.map((tag) => <Tag key={tag} text={tag} />)}
-            </div>
+    <li className={styles.postCard}>
+      <article>
+        <div className={styles.postMeta}>
+          <time dateTime={date}>{format(parseISO(date), 'LLLL d, yyyy')}</time>
+          <span>{readingTime} min read</span>
+        </div>
+        <h2>
+          <Link href={path}>{title}</Link>
+        </h2>
+        <p className={styles.postDescription}>{description}</p>
+        <div className={styles.postFooter}>
+          <div className={styles.tagChips} aria-label="Tags">
+            {tags?.map((tag) => (
+              <Tag key={tag} text={tag} />
+            ))}
           </div>
-          <div className="prose max-w-none text-gray-500 dark:text-gray-400">
-            {description}
-          </div>
+          <Link
+            className={styles.readMore}
+            href={path}
+            aria-label={`Read ${title}`}
+          >
+            Read note <span aria-hidden="true">→</span>
+          </Link>
         </div>
       </article>
     </li>

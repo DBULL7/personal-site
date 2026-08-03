@@ -1,5 +1,8 @@
+'use client'
+
 import * as React from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 import { NavItem } from '@/types/nav'
 import { siteConfig } from '@/config/site'
@@ -11,6 +14,12 @@ interface MainNavProps {
 }
 
 export function MainNav({ items }: MainNavProps) {
+  const pathname = usePathname() ?? ''
+  const isActive = (href: string) =>
+    pathname === href ||
+    (href !== '/' && pathname.startsWith(`${href}/`)) ||
+    (href === '/blog' && pathname.startsWith('/tags'))
+
   return (
     <div className={styles.mainNav}>
       <Link href="/" className={styles.brand}>
@@ -20,13 +29,15 @@ export function MainNav({ items }: MainNavProps) {
       {items?.length ? (
         <nav className={styles.links} aria-label="Primary navigation">
           {items?.map(
-            (item, index) =>
+            (item) =>
               item.href && (
                 <Link
-                  key={index}
+                  key={item.href}
                   href={item.href}
+                  aria-current={isActive(item.href) ? 'page' : undefined}
                   className={cn(
                     styles.link,
+                    isActive(item.href) && styles.linkActive,
                     item.disabled && 'cursor-not-allowed opacity-80'
                   )}
                 >
