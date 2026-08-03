@@ -8,8 +8,12 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
 import styles from './space-scene.module.css'
 
+// Preserve the agreed lore, camera, traffic, and atmosphere rules documented in
+// docs/orbital-scene-notes.md when changing the Orbital experience.
 export type SpaceSceneMode = 'orbital' | 'career' | 'systems'
-export type OrbitalView = 'overview' | 'rim'
+export type OrbitalView = 'arrival' | 'overview' | 'rim'
+export type OrbitalArrivalPhase = 'grid' | 'translation' | 'approach' | 'complete'
+export const ORBITAL_ARRIVAL_DURATION = 24
 
 type SpaceSceneProps = {
   mode: SpaceSceneMode
@@ -17,14 +21,22 @@ type SpaceSceneProps = {
   onNodeSelect?: (id: string) => void
   orbitalView?: OrbitalView
   skipIntro?: boolean
+  arrivalRun?: number
+  onArrivalPhaseChange?: (phase: OrbitalArrivalPhase) => void
 }
 type SceneControls = {
   orbitalView: OrbitalView
   skipIntro: boolean
+  arrivalRun: number
 }
 
 type SceneRig = {
-  update: (elapsed: number, delta: number, pointer: THREE.Vector2, controls: SceneControls) => void
+  update: (
+    elapsed: number,
+    delta: number,
+    pointer: THREE.Vector2,
+    controls: SceneControls
+  ) => OrbitalArrivalPhase | void
   clickable: THREE.Object3D[]
 }
 
@@ -106,6 +118,36 @@ function makeRadialTexture(color: number) {
   gradient.addColorStop(1, `${fill}00`)
   context.fillStyle = gradient
   context.fillRect(0, 0, 128, 128)
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.colorSpace = THREE.SRGBColorSpace
+  return texture
+}
+
+function makeCloudTexture() {
+  const canvas = document.createElement('canvas')
+  canvas.width = 256
+  canvas.height = 128
+  const context = canvas.getContext('2d')
+  if (!context) return null
+
+  context.filter = 'blur(8px)'
+  const lobes = [
+    [72, 72, 48],
+    [111, 52, 58],
+    [157, 66, 50],
+    [196, 77, 34],
+    [132, 82, 66]
+  ] as const
+  lobes.forEach(([x, y, radius], index) => {
+    const gradient = context.createRadialGradient(x, y, 0, x, y, radius)
+    gradient.addColorStop(0, index === 1 ? 'rgba(255, 255, 250, .94)' : 'rgba(236, 246, 241, .84)')
+    gradient.addColorStop(0.48, 'rgba(220, 235, 230, .58)')
+    gradient.addColorStop(1, 'rgba(198, 220, 217, 0)')
+    context.fillStyle = gradient
+    context.fillRect(x - radius, y - radius, radius * 2, radius * 2)
+  })
+  context.filter = 'none'
+
   const texture = new THREE.CanvasTexture(canvas)
   texture.colorSpace = THREE.SRGBColorSpace
   return texture
@@ -450,13 +492,13 @@ function createOrbitalBiosphereTextures() {
     lights.restore()
   })
 
-  clouds.filter = 'blur(9px)'
-  for (let band = 0; band < 58; band += 1) {
+  clouds.filter = 'blur(11px)'
+  for (let band = 0; band < 86; band += 1) {
     const x = random() * width
     const y = height * (0.08 + random() * 0.84)
-    const cloudWidth = 34 + random() * 150
-    const cloudHeight = 7 + random() * 25
-    clouds.fillStyle = `rgba(224, 239, 231, ${0.06 + random() * 0.16})`
+    const cloudWidth = 52 + random() * 230
+    const cloudHeight = 9 + random() * 34
+    clouds.fillStyle = `rgba(224, 239, 231, ${0.12 + random() * 0.22})`
     clouds.beginPath()
     clouds.ellipse(x, y, cloudWidth, cloudHeight, random() * 0.45 - 0.22, 0, Math.PI * 2)
     clouds.fill()
@@ -464,6 +506,21 @@ function createOrbitalBiosphereTextures() {
     clouds.ellipse(x + cloudWidth * 0.46, y + random() * 13 - 6.5, cloudWidth * 0.58, cloudHeight * 0.72, 0, 0, Math.PI * 2)
     clouds.fill()
   }
+  ;[
+    [0.265, 0.34, 1],
+    [0.69, 0.63, -1]
+  ].forEach(([centerX, centerY, direction]) => {
+    for (let arm = 0; arm < 38; arm += 1) {
+      const angle = direction * arm * 0.44
+      const distance = 2.5 + arm * 2.25
+      const x = centerX * width + Math.cos(angle) * distance
+      const y = centerY * height + Math.sin(angle) * distance * 0.45
+      clouds.fillStyle = `rgba(231, 242, 238, ${0.13 + (1 - arm / 38) * 0.22})`
+      clouds.beginPath()
+      clouds.ellipse(x, y, 42 + arm * 1.8, 10 + arm * 0.34, angle, 0, Math.PI * 2)
+      clouds.fill()
+    }
+  })
   clouds.filter = 'none'
 
   const makeTexture = (canvas: HTMLCanvasElement, colorSpace = false) => {
@@ -593,7 +650,8 @@ function createCultureShip(kind: CultureShipKind, variant: number) {
 }
 
 function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): SceneRig {
-  scene.add(createStarField(4200, 78, 11))
+  const starField = createStarField(4200, 78, 11)
+  scene.add(starField)
 
   const ambient = new THREE.HemisphereLight(0x8fced4, 0x030608, 0.48)
   scene.add(ambient)
@@ -704,6 +762,9 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
   orbital.add(plates, edges)
 
   const weather = new THREE.Group()
+  const closeWeather = new THREE.Group()
+  const cloudBanks: THREE.Sprite[] = []
+  const stormLight = new THREE.PointLight(0xbfefff, 0, 2.6, 2)
   const biosphereTextures = createOrbitalBiosphereTextures()
   const biosphereGeometry = new THREE.CylinderGeometry(radius - 0.14, radius - 0.14, 1.26, 384, 72, true)
   biosphereGeometry.rotateX(Math.PI / 2)
@@ -749,6 +810,31 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
     cloudLayer.renderOrder = 3
     weather.add(cloudLayer)
 
+    const lowerCloudMap = biosphereTextures.clouds.clone()
+    lowerCloudMap.offset.set(0.19, 0.03)
+    lowerCloudMap.repeat.set(1.08, 1)
+    lowerCloudMap.needsUpdate = true
+    const lowerCloudGeometry = new THREE.CylinderGeometry(radius - 0.24, radius - 0.24, 1.18, 320, 1, true)
+    lowerCloudGeometry.rotateX(Math.PI / 2)
+    const lowerCloudLayer = new THREE.Mesh(
+      lowerCloudGeometry,
+      new THREE.MeshStandardMaterial({
+        map: lowerCloudMap,
+        color: 0xd9e7e2,
+        transparent: true,
+        opacity: 0.26,
+        alphaTest: 0.035,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        metalness: 0,
+        roughness: 1
+      })
+    )
+    lowerCloudLayer.castShadow = true
+    lowerCloudLayer.renderOrder = 3
+    lowerCloudLayer.rotation.z = 0.17
+    weather.add(lowerCloudLayer)
+
     const atmosphereGeometry = new THREE.CylinderGeometry(radius - 0.37, radius - 0.37, 1.21, 256, 1, true)
     atmosphereGeometry.rotateX(Math.PI / 2)
     const atmosphereLayer = new THREE.Mesh(
@@ -764,7 +850,81 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
     )
     atmosphereLayer.renderOrder = 2
     weather.add(atmosphereLayer)
+
+    const cloudTexture = makeCloudTexture()
+    if (cloudTexture) {
+      let cloudSeed = 4417
+      const cloudRandom = () => {
+        cloudSeed = (cloudSeed * 16807) % 2147483647
+        return (cloudSeed - 1) / 2147483646
+      }
+      for (let index = 0; index < 46; index += 1) {
+        const nearArrival = index < 22
+        const angle = nearArrival
+          ? 0.15 + (cloudRandom() - 0.5) * 0.72
+          : cloudRandom() * Math.PI * 2
+        const cloudRadius = 4.63 + cloudRandom() * 0.23
+        const sprite = new THREE.Sprite(
+          new THREE.SpriteMaterial({
+            map: cloudTexture,
+            color: cloudRandom() > 0.2 ? 0xe7f0eb : 0x8ca4a5,
+            transparent: true,
+            opacity: 0.22 + cloudRandom() * 0.34,
+            depthWrite: false
+          })
+        )
+        sprite.position.set(
+          Math.cos(angle) * cloudRadius,
+          Math.sin(angle) * cloudRadius,
+          (cloudRandom() - 0.5) * 1.02
+        )
+        const width = 0.34 + cloudRandom() * (nearArrival ? 0.92 : 0.62)
+        sprite.scale.set(width, width * (0.28 + cloudRandom() * 0.2), 1)
+        sprite.renderOrder = 4
+        sprite.userData.weatherPhase = cloudRandom() * Math.PI * 2
+        sprite.userData.baseOpacity = (sprite.material as THREE.SpriteMaterial).opacity
+        closeWeather.add(sprite)
+        cloudBanks.push(sprite)
+      }
+    }
+
+    const rainCount = 190
+    const rainPositions = new Float32Array(rainCount * 6)
+    let rainSeed = 7331
+    const rainRandom = () => {
+      rainSeed = (rainSeed * 16807) % 2147483647
+      return (rainSeed - 1) / 2147483646
+    }
+    for (let index = 0; index < rainCount; index += 1) {
+      const angle = 0.31 + (rainRandom() - 0.5) * 0.24
+      const startRadius = 4.7 + rainRandom() * 0.12
+      const dropLength = 0.08 + rainRandom() * 0.18
+      const offset = index * 6
+      rainPositions[offset] = Math.cos(angle) * startRadius
+      rainPositions[offset + 1] = Math.sin(angle) * startRadius
+      rainPositions[offset + 2] = (rainRandom() - 0.5) * 0.54
+      rainPositions[offset + 3] = Math.cos(angle) * (startRadius + dropLength)
+      rainPositions[offset + 4] = Math.sin(angle) * (startRadius + dropLength)
+      rainPositions[offset + 5] = rainPositions[offset + 2] - 0.018
+    }
+    const rainGeometry = new THREE.BufferGeometry()
+    rainGeometry.setAttribute('position', new THREE.BufferAttribute(rainPositions, 3))
+    const rain = new THREE.LineSegments(
+      rainGeometry,
+      new THREE.LineBasicMaterial({
+        color: 0x9cc8cc,
+        transparent: true,
+        opacity: 0.13,
+        depthWrite: false
+      })
+    )
+    rain.renderOrder = 4
+    closeWeather.add(rain)
+
+    stormLight.position.set(Math.cos(0.31) * 4.62, Math.sin(0.31) * 4.62, 0.06)
+    closeWeather.add(stormLight)
   }
+  weather.add(closeWeather)
   orbital.add(weather)
 
   const runningLights = new THREE.Group()
@@ -777,6 +937,38 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
     runningLights.add(beacon)
   }
   orbital.add(runningLights)
+
+  const dockingPortCount = 32
+  const dockingPorts = new THREE.InstancedMesh(
+    new THREE.BoxGeometry(0.24, 0.15, 0.26),
+    new THREE.MeshStandardMaterial({
+      color: 0x6f8d89,
+      emissive: 0x2a6b64,
+      emissiveIntensity: 0.72,
+      metalness: 0.82,
+      roughness: 0.3
+    }),
+    dockingPortCount
+  )
+  const dockingBeacons = new THREE.InstancedMesh(
+    new THREE.SphereGeometry(0.026, 6, 6),
+    new THREE.MeshBasicMaterial({ color: palette.cyan }),
+    dockingPortCount
+  )
+  for (let index = 0; index < dockingPortCount; index += 1) {
+    const angle = (index / dockingPortCount) * Math.PI * 2
+    const side = index % 2 === 0 ? 1 : -1
+    rotation.set(0, 0, angle + Math.PI / 2)
+    quaternion.setFromEuler(rotation)
+    position.set(Math.cos(angle) * (radius + 0.16), Math.sin(angle) * (radius + 0.16), side * 0.78)
+    matrix.compose(position, quaternion, scale)
+    dockingPorts.setMatrixAt(index, matrix)
+    position.set(Math.cos(angle) * (radius + 0.34), Math.sin(angle) * (radius + 0.34), side * 0.94)
+    matrix.compose(position, quaternion, scale)
+    dockingBeacons.setMatrixAt(index, matrix)
+  }
+  dockingPorts.castShadow = true
+  orbital.add(dockingPorts, dockingBeacons)
 
   const hub = new THREE.Group()
   const hubCore = new THREE.Mesh(
@@ -812,10 +1004,11 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
   const ships: Array<{
     object: THREE.Group
     curve: THREE.CatmullRomCurve3
-    inbound: boolean
     offset: number
     speed: number
+    baseScale: number
     fields: THREE.Mesh[]
+    jumpFlash: THREE.Sprite
   }> = []
 
   let trafficSeed = 91873
@@ -847,36 +1040,47 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
               : 0.38 + trafficRandom() * 0.16
     object.scale.setScalar(baseScale)
 
-    const dockAtHub = index < 9 || index % 4 === 0
-    const dockingAngle = trafficRandom() * Math.PI * 2
-    const side = index % 2 === 0 ? 1 : -1
-    const target = dockAtHub
-      ? new THREE.Vector3(
-          Math.cos(dockingAngle) * (0.78 + trafficRandom() * 0.55),
-          Math.sin(dockingAngle) * (0.78 + trafficRandom() * 0.55),
-          side * (0.24 + trafficRandom() * 0.52)
-        )
-      : new THREE.Vector3(
-          Math.cos(dockingAngle) * (radius + 0.12 + trafficRandom() * 0.22),
-          Math.sin(dockingAngle) * (radius + 0.12 + trafficRandom() * 0.22),
-          side * (0.86 + trafficRandom() * 0.34)
-        )
-    const farAngle = dockingAngle + (trafficRandom() - 0.5) * 1.1
-    const farRadius = 10 + trafficRandom() * 9
-    const far = new THREE.Vector3(
-      Math.cos(farAngle) * farRadius,
-      Math.sin(farAngle) * farRadius,
-      side * (3.8 + trafficRandom() * 8.5)
+    const portIndex = index % dockingPortCount
+    const dockingAngle = (portIndex / dockingPortCount) * Math.PI * 2
+    const side = portIndex % 2 === 0 ? 1 : -1
+    const radialClearance = kind === 'systems' ? 1.9 : kind === 'liner' ? 0.78 : 0.34
+    const verticalClearance = kind === 'systems' ? 1.9 : kind === 'liner' ? 1.28 : 0.94
+    const target = new THREE.Vector3(
+      Math.cos(dockingAngle) * (radius + radialClearance),
+      Math.sin(dockingAngle) * (radius + radialClearance),
+      side * verticalClearance
     )
-    const firstTurn = target.clone().lerp(far, 0.28)
-    firstTurn.x += (trafficRandom() - 0.5) * 2.3
-    firstTurn.y += (trafficRandom() - 0.5) * 2.3
-    firstTurn.z += side * (0.8 + trafficRandom() * 1.2)
-    const secondTurn = target.clone().lerp(far, 0.66)
-    secondTurn.x += (trafficRandom() - 0.5) * 3.2
-    secondTurn.y += (trafficRandom() - 0.5) * 3.2
-    const curve = new THREE.CatmullRomCurve3([target, firstTurn, secondTurn, far])
-    traffic.add(object)
+    const arrivalAngle = dockingAngle + (trafficRandom() - 0.5) * 1.2
+    const departureAngle = dockingAngle + side * (0.9 + trafficRandom() * 1.3)
+    const arrivalRadius = 18 + trafficRandom() * 12
+    const departureRadius = 18 + trafficRandom() * 12
+    const arrivalPoint = new THREE.Vector3(
+      Math.cos(arrivalAngle) * arrivalRadius,
+      Math.sin(arrivalAngle) * arrivalRadius,
+      side * (10 + trafficRandom() * 14)
+    )
+    const departurePoint = new THREE.Vector3(
+      Math.cos(departureAngle) * departureRadius,
+      Math.sin(departureAngle) * departureRadius,
+      (index % 3 === 0 ? -side : side) * (10 + trafficRandom() * 14)
+    )
+    const inboundTurn = target.clone().lerp(arrivalPoint, 0.42)
+    inboundTurn.x += (trafficRandom() - 0.5) * 2.6
+    inboundTurn.y += (trafficRandom() - 0.5) * 2.6
+    inboundTurn.z += side * (0.7 + trafficRandom() * 1.6)
+    const outboundTurn = target.clone().lerp(departurePoint, 0.42)
+    outboundTurn.x += (trafficRandom() - 0.5) * 2.8
+    outboundTurn.y += (trafficRandom() - 0.5) * 2.8
+    outboundTurn.z -= side * (0.4 + trafficRandom() * 1.4)
+    const curve = new THREE.CatmullRomCurve3(
+      [arrivalPoint, inboundTurn, target, outboundTurn, departurePoint],
+      false,
+      'catmullrom',
+      0.42
+    )
+    const jumpFlash = createGlow(index % 3 === 0 ? palette.amber : palette.cyan, 0)
+    jumpFlash.visible = false
+    traffic.add(object, jumpFlash)
     const fields: THREE.Mesh[] = []
     object.traverse((child) => {
       if (child instanceof THREE.Mesh && child.userData.fieldShell) fields.push(child)
@@ -884,50 +1088,169 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
     ships.push({
       object,
       curve,
-      inbound: index % 2 === 0,
       offset: trafficRandom(),
-      speed: 0.009 + trafficRandom() * 0.014,
-      fields
+      speed: 0.005 + trafficRandom() * 0.008,
+      baseScale,
+      fields,
+      jumpFlash
     })
   }
 
-  const heroShip = createCultureShip('systems', 87)
-  heroShip.scale.setScalar(2.2)
-  scene.add(heroShip)
+  const trafficPoint = new THREE.Vector3()
+  const trafficTangent = new THREE.Vector3()
+  const trafficForward = new THREE.Vector3(0, 0, 1)
 
-  const introCamera = new THREE.Vector3(5.8, 1.65, 8.1)
+  const gridField = new THREE.Group()
+  const gridMaterial = new THREE.MeshBasicMaterial({
+    color: 0x73d8d1,
+    transparent: true,
+    opacity: 0.34,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  })
+  const gridRingGeometry = new THREE.TorusGeometry(3.5, 0.012, 4, 72)
+  const gridRings: THREE.Mesh[] = []
+  for (let index = 0; index < 34; index += 1) {
+    const ring = new THREE.Mesh(gridRingGeometry, gridMaterial)
+    ring.position.z = 4 + index * 2.25
+    ring.scale.setScalar(0.72 + Math.sin(index * 1.31) * 0.09)
+    ring.rotation.z = index * 0.23
+    gridField.add(ring)
+    gridRings.push(ring)
+  }
+  const gridDustPositions = new Float32Array(1300 * 3)
+  let gridSeed = 8191
+  const gridRandom = () => {
+    gridSeed = (gridSeed * 16807) % 2147483647
+    return (gridSeed - 1) / 2147483646
+  }
+  for (let index = 0; index < 1300; index += 1) {
+    const angle = gridRandom() * Math.PI * 2
+    const radius = 1.5 + gridRandom() * 4.8
+    gridDustPositions[index * 3] = Math.cos(angle) * radius
+    gridDustPositions[index * 3 + 1] = Math.sin(angle) * radius
+    gridDustPositions[index * 3 + 2] = 2 + gridRandom() * 76
+  }
+  const gridDustGeometry = new THREE.BufferGeometry()
+  gridDustGeometry.setAttribute('position', new THREE.BufferAttribute(gridDustPositions, 3))
+  const gridDustMaterial = new THREE.PointsMaterial({
+    color: 0xa2eee6,
+    size: 0.045,
+    transparent: true,
+    opacity: 0.7,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  })
+  const gridDust = new THREE.Points(gridDustGeometry, gridDustMaterial)
+  gridField.add(gridDust)
+  const gridGlow = createGlow(0x70d8d1, 0.78)
+  gridGlow.position.set(0, 0, 36)
+  gridGlow.scale.set(24, 24, 1)
+  gridField.add(gridGlow)
+  scene.add(gridField)
+
+  const arrivalShip = createCultureShip('contact', 87)
+  arrivalShip.scale.setScalar(1.35)
+  const cameraFin = new THREE.Mesh(
+    new THREE.BoxGeometry(0.035, 0.018, 0.38),
+    new THREE.MeshStandardMaterial({
+      color: 0x9fb6b3,
+      metalness: 0.74,
+      roughness: 0.25,
+      emissive: 0x3a6a67,
+      emissiveIntensity: 0.25
+    })
+  )
+  cameraFin.position.set(0.13, 0.035, -0.2)
+  arrivalShip.add(cameraFin)
+  const cameraMount = new THREE.Object3D()
+  cameraMount.position.set(0.19, 0.075, -0.22)
+  arrivalShip.add(cameraMount)
+  const cameraLookMount = new THREE.Object3D()
+  cameraLookMount.position.set(-0.04, -0.035, 3.8)
+  arrivalShip.add(cameraLookMount)
+  scene.add(arrivalShip)
+
   const overviewCamera = new THREE.Vector3(0, 1.25, 15.5)
-  const introTarget = new THREE.Vector3(2.7, 0.3, -0.7)
   const overviewTarget = new THREE.Vector3(0.35, -0.25, -1.2)
-  const heroShipStart = new THREE.Vector3(-4.4, -0.15, 6.1)
-  const heroShipEnd = new THREE.Vector3(6.4, 1.05, 3.2)
-  const currentLook = introTarget.clone()
+  const overviewSightline = overviewCamera.clone().sub(overviewTarget).normalize()
+  const arrivalStart = overviewCamera.clone().addScaledVector(overviewSightline, 34)
+  const arrivalCurve = new THREE.LineCurve3(arrivalStart, overviewCamera)
+  const currentLook = overviewTarget.clone()
   const targetPosition = new THREE.Vector3()
   const targetLook = new THREE.Vector3()
   const rimCameraLocal = new THREE.Vector3()
   const rimTargetLocal = new THREE.Vector3()
+  const arrivalPositionWorld = new THREE.Vector3()
+  const shipQuaternion = new THREE.Quaternion()
+  const desiredCameraUp = new THREE.Vector3(0, 1, 0)
+  let arrivalEpoch = 0
+  let lastArrivalRun = -1
 
-  camera.position.copy(introCamera)
-  camera.lookAt(introTarget)
+  camera.position.set(0.4, 0.2, 9.1)
+  camera.lookAt(0, 0, -12)
+
+  const arrivalProgress = (value: number, start: number, end: number) =>
+    THREE.MathUtils.smootherstep(value, start, end)
+  const arrivalTimeline = {
+    gridEnd: 3.2,
+    translationEnd: 4,
+    approachEnd: ORBITAL_ARRIVAL_DURATION
+  } as const
+  const getArrivalPhase = (arrivalTime: number): OrbitalArrivalPhase => {
+    if (arrivalTime < arrivalTimeline.gridEnd) return 'grid'
+    if (arrivalTime < arrivalTimeline.translationEnd) return 'translation'
+    if (arrivalTime < arrivalTimeline.approachEnd) return 'approach'
+    return 'complete'
+  }
 
   return {
     clickable: [],
     update: (elapsed, delta, pointer, controls) => {
-      orbital.rotation.z += delta * 0.018
+      orbital.rotation.z += delta * 0.0011
       hub.rotation.y += delta * 0.17
       hub.rotation.x -= delta * 0.05
       planet.rotation.y += delta * 0.018
-      runningLights.rotation.z -= delta * 0.02
-      weather.rotation.z += delta * 0.0018
+      runningLights.rotation.z -= delta * 0.002
+      weather.rotation.z += delta * 0.00024
+      closeWeather.rotation.z -= delta * 0.00012
+      cloudBanks.forEach((cloud) => {
+        const material = cloud.material as THREE.SpriteMaterial
+        const baseOpacity = cloud.userData.baseOpacity as number
+        const phase = cloud.userData.weatherPhase as number
+        material.opacity = baseOpacity * (0.88 + Math.sin(elapsed * 0.19 + phase) * 0.12)
+      })
+      const stormCycle = (elapsed + 1.7) % 37
+      stormLight.intensity = stormCycle < 0.055 ? 4.2 : stormCycle < 0.13 ? 0.7 : 0
       ships.forEach((item, index) => {
-        const phase = (elapsed * item.speed + item.offset) % 1
-        const travel = THREE.MathUtils.smoothstep(phase, 0.08, 0.92)
-        const progress = item.inbound ? 1 - travel : travel
-        const point = item.curve.getPointAt(progress)
-        const aheadProgress = THREE.MathUtils.clamp(progress + (item.inbound ? -0.003 : 0.003), 0, 1)
-        const ahead = item.curve.getPointAt(aheadProgress)
-        item.object.position.copy(point)
-        if (ahead) item.object.lookAt(ahead)
+        const cycle = (elapsed * item.speed + item.offset) % 1
+        const activeEnd = 0.9
+        const isInRealspace = cycle < activeEnd
+        item.object.visible = isInRealspace
+        item.jumpFlash.visible = isInRealspace
+        if (!isInRealspace) return
+
+        const transit = cycle / activeEnd
+        const progress =
+          transit < 0.46
+            ? THREE.MathUtils.lerp(0, 0.5, THREE.MathUtils.smootherstep(transit, 0, 0.46))
+            : transit < 0.56
+              ? 0.5
+              : THREE.MathUtils.lerp(0.5, 1, THREE.MathUtils.smootherstep(transit, 0.56, 1))
+        item.curve.getPoint(progress, trafficPoint)
+        item.curve.getTangent(progress, trafficTangent).normalize()
+        item.object.position.copy(trafficPoint)
+        item.object.quaternion.setFromUnitVectors(trafficForward, trafficTangent)
+
+        const arrivalMaterialization = THREE.MathUtils.smoothstep(transit, 0, 0.045)
+        const departureMaterialization = 1 - THREE.MathUtils.smoothstep(transit, 0.955, 1)
+        const materialization = Math.min(arrivalMaterialization, departureMaterialization)
+        item.object.scale.setScalar(item.baseScale * materialization)
+
+        const jumpStrength = Math.max(1 - arrivalMaterialization, 1 - departureMaterialization)
+        item.jumpFlash.position.copy(trafficPoint)
+        item.jumpFlash.scale.setScalar((2.8 + item.baseScale * 3.4) * (0.7 + jumpStrength * 0.8))
+        ;(item.jumpFlash.material as THREE.SpriteMaterial).opacity = jumpStrength * 0.76
         const fieldPulse = 0.72 + Math.sin(elapsed * 1.4 + index * 0.71) * 0.18
         item.fields.forEach((field) => {
           field.rotation.z += delta * (0.08 + (index % 4) * 0.025)
@@ -936,20 +1259,88 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
         })
       })
 
-      const introProgress = controls.skipIntro ? 1 : THREE.MathUtils.smootherstep(elapsed, 0.2, 7.6)
-      heroShip.position.lerpVectors(heroShipStart, heroShipEnd, introProgress)
-      heroShip.lookAt(8.5, 1.3, 1.4)
-      heroShip.visible = introProgress < 0.995
-
       const cameraResponsiveness = delta === 0 ? 1 : 1 - Math.exp(-delta * 1.7)
-      if (introProgress < 1) {
-        const revealEase = THREE.MathUtils.smootherstep(introProgress, 0, 1)
-        targetPosition.lerpVectors(introCamera, overviewCamera, revealEase)
-        targetLook.lerpVectors(introTarget, overviewTarget, revealEase)
+      const isArrival = controls.orbitalView === 'arrival'
+      if (isArrival && controls.arrivalRun !== lastArrivalRun) {
+        lastArrivalRun = controls.arrivalRun
+        arrivalEpoch = elapsed
+      }
+      const arrivalTime = controls.skipIntro
+        ? arrivalTimeline.approachEnd + 0.1
+        : Math.max(0, elapsed - arrivalEpoch)
+      const phase = getArrivalPhase(arrivalTime)
+
+      gridField.visible = isArrival && arrivalTime < arrivalTimeline.translationEnd
+      arrivalShip.visible = isArrival
+      const realspaceVisible = !isArrival || arrivalTime >= 3.32
+      starField.visible = realspaceVisible
+      sun.visible = realspaceVisible
+      planet.visible = realspaceVisible
+      orbital.visible = realspaceVisible
+
+      if (isArrival) {
+        const gridFade =
+          1 - arrivalProgress(arrivalTime, arrivalTimeline.gridEnd - 0.1, arrivalTimeline.translationEnd)
+        gridMaterial.opacity = 0.34 * gridFade
+        gridDustMaterial.opacity = 0.7 * gridFade
+        ;(gridGlow.material as THREE.SpriteMaterial).opacity = 0.78 * gridFade
+        gridRings.forEach((ring, index) => {
+          ring.position.z = 4 + ((index * 2.25 - arrivalTime * 28 + 7600) % 76)
+          const pulse = 0.76 + Math.sin(arrivalTime * 2.2 + index * 0.83) * 0.11
+          ring.scale.setScalar(pulse)
+          ring.rotation.z += delta * (0.12 + (index % 5) * 0.016)
+        })
+        gridDust.rotation.z += delta * 0.16
+        gridDust.position.z = -((arrivalTime * 7.5) % 12)
+
+        let travelProgress = 0
+        if (arrivalTime >= arrivalTimeline.translationEnd) {
+          const approachProgress = THREE.MathUtils.clamp(
+            (arrivalTime - arrivalTimeline.translationEnd) /
+              (arrivalTimeline.approachEnd - arrivalTimeline.translationEnd),
+            0,
+            1
+          )
+          travelProgress = 1 - (1 - approachProgress) ** 2
+        }
+        travelProgress = Math.min(0.998, travelProgress)
+
+        arrivalPositionWorld.copy(arrivalCurve.getPointAt(travelProgress))
+        arrivalShip.position.copy(arrivalPositionWorld)
+        arrivalShip.lookAt(overviewTarget)
+        arrivalShip.updateMatrixWorld(true)
+        cameraMount.getWorldPosition(targetPosition)
+        cameraLookMount.getWorldPosition(targetLook)
+        arrivalShip.getWorldQuaternion(shipQuaternion)
+        gridField.position.copy(targetPosition)
+        gridField.quaternion.copy(shipQuaternion)
         camera.position.copy(targetPosition)
         currentLook.copy(targetLook)
-        camera.fov = THREE.MathUtils.lerp(59, 52, revealEase)
-      } else if (controls.orbitalView === 'rim') {
+        camera.up.lerp(desiredCameraUp.set(0, 1, 0), delta === 0 ? 1 : 0.22)
+
+        if (phase === 'grid') camera.fov = 74 + Math.sin(arrivalTime * 1.2) * 0.65
+        else if (phase === 'translation') {
+          camera.fov = THREE.MathUtils.lerp(
+            74,
+            60,
+            arrivalProgress(arrivalTime, arrivalTimeline.gridEnd, arrivalTimeline.translationEnd)
+          )
+        } else {
+          camera.fov = THREE.MathUtils.lerp(
+            60,
+            52,
+            arrivalProgress(arrivalTime, arrivalTimeline.translationEnd, arrivalTimeline.approachEnd)
+          )
+        }
+
+        camera.updateProjectionMatrix()
+        camera.lookAt(currentLook)
+        return phase
+      }
+
+      gridField.visible = false
+      arrivalShip.visible = false
+      if (controls.orbitalView === 'rim') {
         const rimAngle = elapsed * 0.046 + 0.42
         rimCameraLocal.set(Math.cos(rimAngle) * 4.16, Math.sin(rimAngle) * 4.16, 0.16 + Math.sin(elapsed * 0.11) * 0.12)
         rimTargetLocal.set(
@@ -961,13 +1352,19 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
         targetLook.copy(rimTargetLocal)
         orbital.localToWorld(targetPosition)
         orbital.localToWorld(targetLook)
+        desiredCameraUp.set(-Math.cos(rimAngle), -Math.sin(rimAngle), 0)
+        desiredCameraUp.transformDirection(orbital.matrixWorld)
         camera.position.lerp(targetPosition, cameraResponsiveness)
         currentLook.lerp(targetLook, cameraResponsiveness)
+        camera.up.lerp(desiredCameraUp, cameraResponsiveness)
         camera.fov = THREE.MathUtils.lerp(camera.fov, 63, cameraResponsiveness)
       } else {
-        targetPosition.set(pointer.x * 0.7, 1.25 + pointer.y * 0.45, 15.5)
+        targetPosition.copy(overviewCamera)
+        targetPosition.x += pointer.x * 0.7
+        targetPosition.y += pointer.y * 0.45
         camera.position.lerp(targetPosition, cameraResponsiveness)
         currentLook.lerp(overviewTarget, cameraResponsiveness)
+        camera.up.lerp(desiredCameraUp.set(0, 1, 0), cameraResponsiveness)
         camera.fov = THREE.MathUtils.lerp(camera.fov, 52, cameraResponsiveness)
       }
       camera.updateProjectionMatrix()
@@ -1182,12 +1579,15 @@ export function SpaceScene({
   className = '',
   onNodeSelect,
   orbitalView = 'overview',
-  skipIntro = false
+  skipIntro = false,
+  arrivalRun = 0,
+  onArrivalPhaseChange
 }: SpaceSceneProps) {
   const hostRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const selectRef = useRef(onNodeSelect)
-  const controlsRef = useRef<SceneControls>({ orbitalView, skipIntro })
+  const arrivalPhaseRef = useRef(onArrivalPhaseChange)
+  const controlsRef = useRef<SceneControls>({ orbitalView, skipIntro, arrivalRun })
   const [failed, setFailed] = useState(false)
 
   useEffect(() => {
@@ -1195,8 +1595,12 @@ export function SpaceScene({
   }, [onNodeSelect])
 
   useEffect(() => {
-    controlsRef.current = { orbitalView, skipIntro }
-  }, [orbitalView, skipIntro])
+    controlsRef.current = { orbitalView, skipIntro, arrivalRun }
+  }, [orbitalView, skipIntro, arrivalRun])
+
+  useEffect(() => {
+    arrivalPhaseRef.current = onArrivalPhaseChange
+  }, [onArrivalPhaseChange])
 
   useEffect(() => {
     const host = hostRef.current
@@ -1250,6 +1654,7 @@ export function SpaceScene({
     const raycaster = new THREE.Raycaster()
     const clock = new THREE.Clock()
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    let lastArrivalPhase: OrbitalArrivalPhase | undefined
     let frame = 0
 
     const resize = () => {
@@ -1284,10 +1689,14 @@ export function SpaceScene({
     const animate = () => {
       const delta = Math.min(clock.getDelta(), 0.05)
       const elapsed = clock.elapsedTime
-      rig.update(reduceMotion ? 8 : elapsed, reduceMotion ? 0 : delta, pointer, {
+      const arrivalPhase = rig.update(reduceMotion ? 8 : elapsed, reduceMotion ? 0 : delta, pointer, {
         ...controlsRef.current,
         skipIntro: controlsRef.current.skipIntro || reduceMotion
       })
+      if (arrivalPhase && arrivalPhase !== lastArrivalPhase) {
+        lastArrivalPhase = arrivalPhase
+        arrivalPhaseRef.current?.(arrivalPhase)
+      }
       if (composer) composer.render()
       else renderer.render(scene, camera)
       if (!reduceMotion) frame = window.requestAnimationFrame(animate)
