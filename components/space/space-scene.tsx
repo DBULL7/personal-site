@@ -322,25 +322,65 @@ function createOrbitalBiosphereTextures() {
   ] as const
   mountainRanges.forEach((points) => {
     const path = makeLinePath(points, width, height)
+    const northRidge = makeLinePath(
+      points.map(([x, y], index) => [x + (random() - 0.5) * 0.006, y - 0.016 - Math.sin(index * 1.7) * 0.007] as MapPoint),
+      width,
+      height
+    )
+    const southRidge = makeLinePath(
+      points.map(([x, y], index) => [x + (random() - 0.5) * 0.008, y + 0.019 + Math.cos(index * 1.4) * 0.009] as MapPoint),
+      width,
+      height
+    )
     color.lineCap = 'round'
     color.lineJoin = 'round'
-    color.strokeStyle = 'rgba(36, 43, 35, .8)'
-    color.lineWidth = 34
+    color.strokeStyle = 'rgba(35, 49, 33, .42)'
+    color.lineWidth = 24
     color.stroke(path)
-    color.strokeStyle = '#817c60'
-    color.lineWidth = 18
+    color.strokeStyle = 'rgba(84, 82, 58, .78)'
+    color.lineWidth = 9
     color.stroke(path)
-    color.strokeStyle = '#d2cfb0'
-    color.lineWidth = 4
+    color.strokeStyle = 'rgba(178, 167, 119, .6)'
+    color.lineWidth = 2.5
     color.stroke(path)
+    color.strokeStyle = 'rgba(58, 68, 44, .64)'
+    color.lineWidth = 8
+    color.stroke(northRidge)
+    color.stroke(southRidge)
+    color.strokeStyle = 'rgba(147, 138, 96, .48)'
+    color.lineWidth = 2
+    color.stroke(northRidge)
+    color.stroke(southRidge)
+
     elevation.lineCap = 'round'
     elevation.lineJoin = 'round'
-    elevation.strokeStyle = 'rgb(185, 185, 185)'
-    elevation.lineWidth = 40
+    elevation.strokeStyle = 'rgb(140, 140, 140)'
+    elevation.lineWidth = 22
     elevation.stroke(path)
-    elevation.strokeStyle = 'rgb(245, 245, 245)'
-    elevation.lineWidth = 12
+    elevation.strokeStyle = 'rgb(202, 202, 202)'
+    elevation.lineWidth = 8
     elevation.stroke(path)
+    elevation.strokeStyle = 'rgb(230, 230, 230)'
+    elevation.lineWidth = 2.5
+    elevation.stroke(path)
+    elevation.strokeStyle = 'rgb(154, 154, 154)'
+    elevation.lineWidth = 8
+    elevation.stroke(northRidge)
+    elevation.stroke(southRidge)
+
+    points.forEach(([x, y], index) => {
+      if (index === 0 || index === points.length - 1 || index % 2 === 0) return
+      const peakX = x * width
+      const peakY = y * height
+      const peakSize = 5 + random() * 5
+      color.beginPath()
+      color.moveTo(peakX, peakY - peakSize)
+      color.lineTo(peakX - peakSize * 0.62, peakY + peakSize * 0.45)
+      color.lineTo(peakX + peakSize * 0.72, peakY + peakSize * 0.45)
+      color.closePath()
+      color.fillStyle = 'rgba(213, 211, 185, .62)'
+      color.fill()
+    })
   })
 
   const rivers = [
@@ -431,6 +471,114 @@ function createOrbitalBiosphereTextures() {
     lights: makeTexture(lightCanvas, true),
     clouds: makeTexture(cloudCanvas, true)
   }
+}
+
+type CultureShipKind = 'systems' | 'liner' | 'contact' | 'picket' | 'module'
+
+function createCultureShip(kind: CultureShipKind, variant: number) {
+  const ship = new THREE.Group()
+  const hullColor = [0xd6e0db, 0x91aaa8, 0xc8b98f, 0x7e98a5][variant % 4]
+  const hullMaterial = new THREE.MeshStandardMaterial({
+    color: hullColor,
+    emissive: hullColor,
+    emissiveIntensity: 0.18,
+    metalness: 0.62,
+    roughness: 0.32
+  })
+  const darkMaterial = new THREE.MeshStandardMaterial({
+    color: 0x162126,
+    metalness: 0.85,
+    roughness: 0.22
+  })
+  const fieldMaterial = new THREE.MeshBasicMaterial({
+    color: variant % 3 === 0 ? palette.amber : palette.cyan,
+    transparent: true,
+    opacity: kind === 'systems' ? 0.075 : 0.095,
+    wireframe: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  })
+
+  if (kind === 'systems') {
+    const core = new THREE.Mesh(new THREE.SphereGeometry(0.14, 18, 12), darkMaterial)
+    core.scale.set(1.05, 0.42, 4.6)
+    ship.add(core)
+    const deckGeometry = new THREE.BoxGeometry(0.48, 0.075, 0.34)
+    for (let deck = -2; deck <= 2; deck += 1) {
+      const slab = new THREE.Mesh(deckGeometry, deck === 0 ? hullMaterial : darkMaterial)
+      slab.position.z = deck * 0.22
+      const taper = 1 - Math.abs(deck) * 0.09
+      slab.scale.set(taper, 1, taper)
+      ship.add(slab)
+    }
+    const field = new THREE.Mesh(new THREE.SphereGeometry(0.2, 18, 12), fieldMaterial)
+    field.scale.set(2.2, 0.9, 4.8)
+    field.userData.fieldShell = true
+    ship.add(field)
+  } else if (kind === 'liner') {
+    const body = new THREE.Mesh(new THREE.SphereGeometry(0.14, 20, 12), hullMaterial)
+    body.scale.set(1.25, 0.52, 3.4)
+    ship.add(body)
+    const observationBand = new THREE.Mesh(
+      new THREE.TorusGeometry(0.18, 0.012, 6, 28),
+      new THREE.MeshBasicMaterial({ color: palette.ice, transparent: true, opacity: 0.7 })
+    )
+    observationBand.scale.y = 0.48
+    ship.add(observationBand)
+    const field = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 10), fieldMaterial)
+    field.scale.set(1.35, 0.7, 3.15)
+    field.userData.fieldShell = true
+    ship.add(field)
+  } else if (kind === 'contact') {
+    const body = new THREE.Mesh(new THREE.SphereGeometry(0.12, 18, 10), hullMaterial)
+    body.scale.set(0.82, 0.52, 2.8)
+    ship.add(body)
+    ;[-0.19, 0.19].forEach((z) => {
+      const collar = new THREE.Mesh(
+        new THREE.TorusGeometry(0.11, 0.009, 5, 20),
+        new THREE.MeshBasicMaterial({ color: 0xaadad3, transparent: true, opacity: 0.62 })
+      )
+      collar.scale.y = 0.64
+      collar.position.z = z
+      ship.add(collar)
+    })
+    const field = new THREE.Mesh(new THREE.SphereGeometry(0.15, 14, 9), fieldMaterial)
+    field.scale.set(1.05, 0.72, 2.65)
+    field.userData.fieldShell = true
+    ship.add(field)
+  } else if (kind === 'picket') {
+    const forward = new THREE.Mesh(new THREE.OctahedronGeometry(0.12, 0), hullMaterial)
+    forward.scale.set(0.68, 0.34, 2.2)
+    ship.add(forward)
+    const spine = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.045, 0.42, 6), darkMaterial)
+    spine.rotateX(Math.PI / 2)
+    spine.position.z = -0.12
+    ship.add(spine)
+    const field = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 8), fieldMaterial)
+    field.scale.set(0.82, 0.52, 2.35)
+    field.userData.fieldShell = true
+    ship.add(field)
+  } else {
+    const body = new THREE.Mesh(new THREE.SphereGeometry(0.07, 12, 8), hullMaterial)
+    body.scale.set(0.68, 0.5, 1.7)
+    ship.add(body)
+    const field = new THREE.Mesh(new THREE.SphereGeometry(0.085, 10, 7), fieldMaterial)
+    field.scale.set(0.82, 0.65, 1.85)
+    field.userData.fieldShell = true
+    ship.add(field)
+  }
+
+  const markerMaterial = new THREE.MeshBasicMaterial({
+    color: variant % 2 ? 0xa6e3db : 0xf0c67c,
+    transparent: true,
+    opacity: 0.85
+  })
+  ;[-1, 1].forEach((side) => {
+    const marker = new THREE.Mesh(new THREE.SphereGeometry(0.014, 6, 6), markerMaterial)
+    marker.position.set(side * (kind === 'systems' ? 0.22 : 0.1), 0, kind === 'systems' ? 0.1 : -0.03)
+    ship.add(marker)
+  })
+  return ship
 }
 
 function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): SceneRig {
@@ -539,10 +687,10 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
     color: biosphereTextures ? 0xffffff : 0x487460,
     map: biosphereTextures?.color ?? null,
     bumpMap: biosphereTextures?.elevation ?? null,
-    bumpScale: 0.085,
+    bumpScale: 0.045,
     displacementMap: biosphereTextures?.elevation ?? null,
-    displacementScale: -0.17,
-    displacementBias: 0.018,
+    displacementScale: -0.105,
+    displacementBias: 0.012,
     emissive: 0xffc783,
     emissiveMap: biosphereTextures?.lights ?? null,
     emissiveIntensity: 1.15,
@@ -630,50 +778,89 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
   hub.add(hubGlow)
   orbital.add(hub)
 
-  const shipGeometry = new THREE.ConeGeometry(0.055, 0.24, 5)
-  shipGeometry.rotateX(Math.PI / 2)
+  const traffic = new THREE.Group()
+  orbital.add(traffic)
   const ships: Array<{
     object: THREE.Group
     curve: THREE.CatmullRomCurve3
-    reverse: boolean
+    inbound: boolean
     offset: number
     speed: number
+    fields: THREE.Mesh[]
   }> = []
 
-  const pathData = [
-    { port: new THREE.Vector3(3.7, 2.8, 0.5), far: new THREE.Vector3(15, 7, 7), reverse: false },
-    { port: new THREE.Vector3(-4.3, 2.1, -0.4), far: new THREE.Vector3(-15, 5, 4), reverse: true },
-    { port: new THREE.Vector3(1.2, -4.8, 0.6), far: new THREE.Vector3(8, -11, 9), reverse: false },
-    { port: new THREE.Vector3(-2.7, -4.0, -0.5), far: new THREE.Vector3(-13, -8, 7), reverse: true },
-    { port: new THREE.Vector3(4.8, -1.3, 0.1), far: new THREE.Vector3(17, -1, 3), reverse: true },
-    { port: new THREE.Vector3(-0.8, 4.9, -0.2), far: new THREE.Vector3(-2, 14, 8), reverse: false }
-  ]
+  let trafficSeed = 91873
+  const trafficRandom = () => {
+    trafficSeed = (trafficSeed * 16807) % 2147483647
+    return (trafficSeed - 1) / 2147483646
+  }
+  for (let index = 0; index < 52; index += 1) {
+    const kind: CultureShipKind =
+      index < 2
+        ? 'systems'
+        : index % 13 === 0
+          ? 'liner'
+          : index % 5 === 0
+            ? 'picket'
+            : index % 3 === 0
+              ? 'contact'
+              : 'module'
+    const object = createCultureShip(kind, index)
+    const baseScale =
+      kind === 'systems'
+        ? 0.88 + trafficRandom() * 0.24
+        : kind === 'liner'
+          ? 0.7 + trafficRandom() * 0.22
+          : kind === 'contact'
+            ? 0.62 + trafficRandom() * 0.2
+            : kind === 'picket'
+              ? 0.48 + trafficRandom() * 0.17
+              : 0.38 + trafficRandom() * 0.16
+    object.scale.setScalar(baseScale)
 
-  pathData.forEach((path, index) => {
-    const object = new THREE.Group()
-    const ship = new THREE.Mesh(
-      shipGeometry,
-      new THREE.MeshBasicMaterial({ color: index % 2 ? 0xe4f4ef : 0xf1bd76 })
+    const dockAtHub = index < 9 || index % 4 === 0
+    const dockingAngle = trafficRandom() * Math.PI * 2
+    const side = index % 2 === 0 ? 1 : -1
+    const target = dockAtHub
+      ? new THREE.Vector3(
+          Math.cos(dockingAngle) * (0.78 + trafficRandom() * 0.55),
+          Math.sin(dockingAngle) * (0.78 + trafficRandom() * 0.55),
+          side * (0.24 + trafficRandom() * 0.52)
+        )
+      : new THREE.Vector3(
+          Math.cos(dockingAngle) * (radius + 0.12 + trafficRandom() * 0.22),
+          Math.sin(dockingAngle) * (radius + 0.12 + trafficRandom() * 0.22),
+          side * (0.86 + trafficRandom() * 0.34)
+        )
+    const farAngle = dockingAngle + (trafficRandom() - 0.5) * 1.1
+    const farRadius = 10 + trafficRandom() * 9
+    const far = new THREE.Vector3(
+      Math.cos(farAngle) * farRadius,
+      Math.sin(farAngle) * farRadius,
+      side * (3.8 + trafficRandom() * 8.5)
     )
-    object.add(ship)
-    const engine = createGlow(index % 2 ? palette.cyan : palette.amber, 0.6)
-    engine.scale.setScalar(0.28)
-    engine.position.z = 0.13
-    object.add(engine)
-    object.scale.setScalar(index % 3 === 0 ? 1.35 : 0.9)
-    scene.add(object)
-    const middle = path.port.clone().lerp(path.far, 0.54)
-    middle.y += index % 2 ? 2.6 : -2.2
-    middle.z += 2.5
-    const curve = new THREE.CatmullRomCurve3([path.port, middle, path.far])
+    const firstTurn = target.clone().lerp(far, 0.28)
+    firstTurn.x += (trafficRandom() - 0.5) * 2.3
+    firstTurn.y += (trafficRandom() - 0.5) * 2.3
+    firstTurn.z += side * (0.8 + trafficRandom() * 1.2)
+    const secondTurn = target.clone().lerp(far, 0.66)
+    secondTurn.x += (trafficRandom() - 0.5) * 3.2
+    secondTurn.y += (trafficRandom() - 0.5) * 3.2
+    const curve = new THREE.CatmullRomCurve3([target, firstTurn, secondTurn, far])
+    traffic.add(object)
+    const fields: THREE.Mesh[] = []
+    object.traverse((child) => {
+      if (child instanceof THREE.Mesh && child.userData.fieldShell) fields.push(child)
+    })
     ships.push({
       object,
       curve,
-      reverse: path.reverse,
-      offset: index / pathData.length,
-      speed: 0.018 + index * 0.0018
+      inbound: index % 2 === 0,
+      offset: trafficRandom(),
+      speed: 0.009 + trafficRandom() * 0.014,
+      fields
     })
-  })
+  }
 
   camera.position.set(0, 1.25, 15.5)
   camera.lookAt(0, -0.2, -1)
@@ -687,14 +874,21 @@ function buildOrbital(scene: THREE.Scene, camera: THREE.PerspectiveCamera): Scen
       planet.rotation.y += delta * 0.018
       runningLights.rotation.z -= delta * 0.02
       weather.rotation.z += delta * 0.0018
-      ships.forEach((item) => {
-        let progress = (elapsed * item.speed + item.offset) % 1
-        if (item.reverse) progress = 1 - progress
+      ships.forEach((item, index) => {
+        const phase = (elapsed * item.speed + item.offset) % 1
+        const travel = THREE.MathUtils.smoothstep(phase, 0.08, 0.92)
+        const progress = item.inbound ? 1 - travel : travel
         const point = item.curve.getPointAt(progress)
-        const aheadProgress = THREE.MathUtils.clamp(progress + (item.reverse ? -0.004 : 0.004), 0, 1)
+        const aheadProgress = THREE.MathUtils.clamp(progress + (item.inbound ? -0.003 : 0.003), 0, 1)
         const ahead = item.curve.getPointAt(aheadProgress)
         item.object.position.copy(point)
         if (ahead) item.object.lookAt(ahead)
+        const fieldPulse = 0.72 + Math.sin(elapsed * 1.4 + index * 0.71) * 0.18
+        item.fields.forEach((field) => {
+          field.rotation.z += delta * (0.08 + (index % 4) * 0.025)
+          ;(field.material as THREE.MeshBasicMaterial).opacity =
+            (item.object.children.length > 5 ? 0.07 : 0.09) * fieldPulse
+        })
       })
       camera.position.x += (pointer.x * 0.7 - camera.position.x) * 0.018
       camera.position.y += (1.25 + pointer.y * 0.45 - camera.position.y) * 0.018
