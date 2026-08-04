@@ -5,14 +5,15 @@ import { buttonVariants } from '@/components/ui/button'
 import { Icons } from '@/components/icons'
 import { MainNav } from '@/components/main-nav'
 import { ThemeToggle } from '@/components/theme-toggle'
+import styles from './site-header.module.css'
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background">
-      <div className="flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0 md:px-6 lg:px-8">
+    <header className={styles.header}>
+      <div className={styles.inner}>
         <MainNav items={siteConfig.mainNav} />
-        <div className="flex flex-1 items-center justify-end space-x-4">
-          <nav className="flex items-center space-x-1">
+        <div className={styles.actions}>
+          <nav className={styles.actions} aria-label="Social links and appearance">
             <Link
               href={siteConfig.links.linkedin}
               target="_blank"

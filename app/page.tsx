@@ -1,122 +1,72 @@
-import React from 'react'
-import Image from 'next/image'
-import MatrixRain from '@/components/matrix-rain'
-import {
-  faGithub,
-  faReact,
-  faNodeJs,
-  faJs,
-  faGolang,
-  faVuejs,
-  faHtml5,
-  faCss3,
-  faGitAlt,
-  faAws
-} from '@fortawesome/free-brands-svg-icons'
-import {
-  faCloud,
-  faCode,
-  faDatabase,
-  faGear,
-  faServer,
-  faShieldDog
-} from '@fortawesome/free-solid-svg-icons'
-import { Tile, tileProps } from '@/components/tile'
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import styles from './space-experiences.module.css'
 
 export const metadata: Metadata = {
-  title: 'Devon Bull - Senior Software Engineer',
-  description:
-    'Explore the portfolio and blog of Devon Bull, a Senior Software Engineer and futurist. Discover unique blog posts and technical resources.'
+  title: 'Devon Bull | Senior Software Engineer',
+  description: 'Interactive portfolio of Devon Bull, a senior software engineer working across embedded systems, platforms, and the web.'
 }
 
-const programmingLanguagesAndFrameworks: tileProps[] = [
-  // TODO - add Typescript and Express.js icons but Font Awesome doesn't have it
-  { icon: faJs, text: 'JavaScript', link: 'https://www.javascript.com' },
-  { icon: faCode, text: 'TypeScript', link: 'https://www.typescriptlang.org' },
-  { icon: faGolang, text: 'Golang', link: 'https://go.dev' },
-  { icon: faNodeJs, text: 'Node.js', link: 'https://nodejs.org/en/' },
-  { icon: faServer, text: 'Express.js', link: 'https://expressjs.com' },
-  { icon: faReact, text: 'React', link: 'https://reactjs.org' },
-  { icon: faVuejs, text: 'Vue.js', link: 'https://vuejs.org' },
+const views = [
   {
-    icon: faHtml5,
-    text: 'HTML',
-    link: 'https://developer.mozilla.org/en-US/docs/Glossary/HTML5'
+    index: 'EXPERIENCE / 001',
+    title: 'The Orbital',
+    text: 'A Culture-inspired arrival: one immense ring habitat, a procession of ships, and a portfolio designed to evoke scale.',
+    href: '/orbital',
+    featured: true
   },
   {
-    icon: faCss3,
-    text: 'CSS',
-    link: 'https://developer.mozilla.org/en-US/docs/Web/CSS'
+    index: 'EXPERIENCE / 002',
+    title: 'Career constellation',
+    text: 'Navigate the client work, engineering range, and leadership principles that form my career arc.',
+    href: '/career'
+  },
+  {
+    index: 'EXPERIENCE / 003',
+    title: 'Systems atlas',
+    text: 'Explore the tools and technical disciplines I use as a connected, orbiting system.',
+    href: '/systems'
   }
 ]
 
-const tooling: tileProps[] = [
-  {
-    icon: faDatabase,
-    text: 'DynamoDB',
-    link: 'https://aws.amazon.com/dynamodb/'
-  },
-  { icon: faDatabase, text: 'MongoDB', link: 'https://www.mongodb.com' },
-  { icon: faDatabase, text: 'Postgress', link: 'https://www.postgresql.org' },
-  { icon: faAws, text: 'AWS', link: 'https://aws.amazon.com' },
-  { icon: faCloud, text: 'Google Cloud', link: 'https://cloud.google.com' },
-  {
-    icon: faGithub,
-    text: 'Github Actions',
-    link: 'https://github.com/features/actions'
-  },
-  { icon: faGear, text: 'Kubernetes', link: 'https://kubernetes.io' },
-  { icon: faShieldDog, text: 'DataDog', link: 'https://www.datadoghq.com' },
-  { icon: faGitAlt, text: 'Git', link: 'https://git-scm.com' }
-]
-
 export default function Home() {
-  const programmingLanguagesTiles = programmingLanguagesAndFrameworks.map(
-    ({ text, icon, link }) => (
-      <Tile text={text} icon={icon} link={link} key={text} />
-    )
-  )
-  const toolingTiles = tooling.map(({ text, icon, link }) => (
-    <Tile text={text} icon={icon} link={link} key={text} />
-  ))
-
   return (
-    <main>
-      <MatrixRain />
-      <div className="container mx-auto flex justify-center">
-        <div className="pt-24">
-          <div className="flex justify-center">
-            <Image
-              src="/profile_pic.jpg"
-              alt={'Picture of Devon'}
-              className="rounded-full"
-              height={125}
-              width={125}
-              priority
-              quality={20}
-            />
+    <main className={styles.gateway}>
+      <div className={styles.gatewayInner}>
+        <div className={styles.gatewayIntro}>
+          <div>
+            <p className={styles.eyebrow}>Devon Bull · Engineer / Futurist</p>
+            <h1 className={styles.gatewayTitle}>Choose a point of view.</h1>
           </div>
-          <div className="flex justify-center py-4">
-            <h1 className="text-4xl font-bold dark:text-blue-500 ">
-              Devon Bull
-            </h1>
-          </div>
+          <p className={styles.gatewayIntroText}>
+            Senior software engineer working across embedded systems, cloud platforms, and the web.
+            This portfolio is a set of explorable worlds—each one reveals a different part of the work.
+          </p>
         </div>
-      </div>
-      <div className="container mx-auto mb-4 mt-16 py-4 md:px-64">
-        <p className="text-center text-2xl">Hi there I&apos;m Dev 👋</p>
-        <p className="pt-2 text-center">I&apos;m a Software Engineer</p>
-      </div>
-      <h2 className="mt-8 text-center text-2xl">
-        Programming Languages & Frameworks
-      </h2>
-      <div className="container mx-auto grid max-w-screen-lg grid-cols-2 gap-4 px-4 py-6 md:grid-cols-4 md:px-8 lg:px-16">
-        {programmingLanguagesTiles}
-      </div>
-      <h2 className="mt-8 text-center text-2xl">Tooling</h2>
-      <div className="container mx-auto grid max-w-screen-lg grid-cols-2 gap-4 px-4 pb-16 pt-6 md:grid-cols-4 md:px-8 lg:px-16">
-        {toolingTiles}
+
+        <div className={styles.gatewayGrid}>
+          {views.map((view) => (
+            <Link
+              key={view.href}
+              href={view.href}
+              className={`${styles.gatewayCard} ${view.featured ? styles.gatewayCardFeatured : ''}`}
+            >
+              <span className={styles.cardIndex}>{view.index}</span>
+              <div>
+                <h2 className={styles.cardTitle}>{view.title}</h2>
+                <p className={styles.cardText}>{view.text}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        <div className={styles.aboutStrip}>
+          <p className={styles.aboutText}>
+            Previously a tech entrepreneur; now a consultant and engineering leader. Client work includes
+            embedded projects for Apple and Chick-fil-A. Based in Raleigh, North Carolina.
+          </p>
+          <Link className={styles.secondaryAction} href="/blog">Read the field notes</Link>
+        </div>
       </div>
     </main>
   )
