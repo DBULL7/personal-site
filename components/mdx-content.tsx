@@ -8,7 +8,19 @@ import type { MDXComponents } from 'mdx/types'
 // Define your custom MDX components.
 const mdxComponents: MDXComponents = {
   // Override the default <a> element to use the next/link component.
-  a: ({ href, children }) => <Link href={href as string}>{children}</Link>,
+  a: ({ href, children }) => {
+    const isExternal = typeof href === 'string' && /^(https?:)?\/\//.test(href)
+    return (
+      <Link
+        href={href as string}
+        target={isExternal ? '_blank' : undefined}
+        rel={isExternal ? 'noreferrer' : undefined}
+      >
+        {children}
+        {isExternal && <span className="sr-only"> (opens in a new tab)</span>}
+      </Link>
+    )
+  }
 
   // Add a custom component.
 }
@@ -22,4 +34,3 @@ export function MDXContent({ code, ...props }: MDXContentProps) {
   const Component = useMDXComponent(code)
   return <Component components={mdxComponents} {...props} />
 }
-

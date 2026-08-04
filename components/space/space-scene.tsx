@@ -1216,7 +1216,7 @@ export function SpaceScene({
     }
 
     renderer.setClearColor(palette.ink, 1)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.65))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, mode === 'orbital' ? 1.65 : 1.4))
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.08
@@ -1248,9 +1248,12 @@ export function SpaceScene({
     }
     const pointer = new THREE.Vector2()
     const raycaster = new THREE.Raycaster()
-    const clock = new THREE.Clock()
+    const timer = new THREE.Timer()
+    timer.connect(document)
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let frame = 0
+    let inView = true
+    let pageVisible = !document.hidden
 
     const resize = () => {
       const width = host.clientWidth
@@ -1273,36 +1276,68 @@ export function SpaceScene({
       }
     }
 
-    const selectNode = () => {
+    const selectNode = (event: MouseEvent) => {
       if (!rig.clickable.length) return
+      const bounds = canvas.getBoundingClientRect()
+      pointer.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1
+      pointer.y = -((event.clientY - bounds.top) / bounds.height) * 2 + 1
       raycaster.setFromCamera(pointer, camera)
       const hit = raycaster.intersectObjects(rig.clickable, false)[0]
       const nodeId = hit?.object.userData.nodeId as string | undefined
       if (nodeId) selectRef.current?.(nodeId)
     }
 
-    const animate = () => {
-      const delta = Math.min(clock.getDelta(), 0.05)
-      const elapsed = clock.elapsedTime
+    const renderFrame = () => {
+      timer.update()
+      const delta = Math.min(timer.getDelta(), 0.05)
+      const elapsed = timer.getElapsed()
       rig.update(reduceMotion ? 8 : elapsed, reduceMotion ? 0 : delta, pointer, {
         ...controlsRef.current,
         skipIntro: controlsRef.current.skipIntro || reduceMotion
       })
       if (composer) composer.render()
       else renderer.render(scene, camera)
-      if (!reduceMotion) frame = window.requestAnimationFrame(animate)
+    }
+
+    const animate = () => {
+      renderFrame()
+      frame = window.requestAnimationFrame(animate)
+    }
+
+    const syncAnimation = () => {
+      window.cancelAnimationFrame(frame)
+      timer.reset()
+      if (reduceMotion) renderFrame()
+      else if (inView && pageVisible) frame = window.requestAnimationFrame(animate)
+    }
+
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.isIntersecting
+        syncAnimation()
+      },
+      { threshold: 0.01 }
+    )
+
+    const handleVisibilityChange = () => {
+      pageVisible = !document.hidden
+      syncAnimation()
     }
 
     const observer = new ResizeObserver(resize)
     observer.observe(host)
+    visibilityObserver.observe(host)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
     canvas.addEventListener('pointermove', updatePointer)
     canvas.addEventListener('click', selectNode)
     resize()
-    animate()
+    syncAnimation()
 
     return () => {
       window.cancelAnimationFrame(frame)
       observer.disconnect()
+      visibilityObserver.disconnect()
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
       canvas.removeEventListener('pointermove', updatePointer)
       canvas.removeEventListener('click', selectNode)
       scene.traverse((object) => {
@@ -1322,6 +1357,7 @@ export function SpaceScene({
         }
       })
       composer?.dispose()
+      timer.dispose()
       renderer.dispose()
     }
   }, [mode])

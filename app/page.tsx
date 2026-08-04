@@ -1,73 +1,146 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import styles from './space-experiences.module.css'
+import styles from './home.module.css'
 
 export const metadata: Metadata = {
   title: 'Devon Bull | Senior Software Engineer',
-  description: 'Interactive portfolio of Devon Bull, a senior software engineer working across embedded systems, platforms, and the web.'
+  description:
+    'Devon Bull is a senior software engineer in Raleigh working across embedded systems, cloud platforms, and the web.',
+  alternates: { canonical: '/' }
 }
 
-const views = [
+const routes = [
   {
-    index: 'EXPERIENCE / 001',
-    title: 'The Orbital',
-    text: 'A Culture-inspired arrival: one immense ring habitat, a procession of ships, and a portfolio designed to evoke scale.',
-    href: '/orbital',
-    featured: true
-  },
-  {
-    index: 'EXPERIENCE / 002',
-    title: 'Career constellation',
-    text: 'Navigate the client work, engineering range, and leadership principles that form my career arc.',
+    index: '01',
+    label: 'Start here',
+    title: 'Career',
+    text: 'A concise account of the client work, engineering range, and calm leadership behind the résumé.',
+    detail: 'Experience & approach',
     href: '/career'
   },
   {
-    index: 'EXPERIENCE / 003',
-    title: 'Systems atlas',
-    text: 'Explore the tools and technical disciplines I use as a connected, orbiting system.',
+    index: '02',
+    label: 'Technical range',
+    title: 'Systems',
+    text: 'Trace how interfaces, services, data, infrastructure, and delivery practices connect into dependable products.',
+    detail: 'Capabilities & workflows',
     href: '/systems'
+  },
+  {
+    index: '03',
+    label: 'Flagship experience',
+    title: 'The Orbital',
+    text: 'Enter a Culture-inspired spatial experiment about ambitious systems and technology at impossible scale.',
+    detail: 'Interactive WebGL world',
+    href: '/orbital'
   }
-]
+] as const
+
+const signals = [
+  ['Work', 'Embedded systems · platforms · web'],
+  ['Client context', 'Apple · Chick-fil-A'],
+  ['Perspective', 'Former founder · consultant · engineering leader'],
+  ['Location', 'Raleigh, North Carolina']
+] as const
 
 export default function Home() {
   return (
-    <main className={styles.gateway}>
-      <div className={styles.gatewayInner}>
-        <div className={styles.gatewayIntro}>
-          <div>
-            <p className={styles.eyebrow}>Devon Bull · Engineer / Futurist</p>
-            <h1 className={styles.gatewayTitle}>Choose a point of view.</h1>
+    <main className={styles.page}>
+      <section className={styles.hero} aria-labelledby="gateway-title">
+        <div className={styles.heroGrid} aria-hidden="true" />
+        <div className={styles.heroInner}>
+          <div className={styles.identity}>
+            <p className={styles.eyebrow}>
+              Devon Bull · Senior software engineer
+            </p>
+            <h1 id="gateway-title" className={styles.title}>
+              I build dependable software where{' '}
+              <em>products meet the real world.</em>
+            </h1>
+            <p className={styles.lede}>
+              I work across embedded systems, cloud platforms, and the
+              web—bringing structure to ambiguous problems and helping
+              thoughtful teams turn ambitious ideas into reliable products.
+            </p>
+            <div className={styles.actions}>
+              <Link className={styles.primaryAction} href="/career">
+                See my experience <span aria-hidden="true">↗</span>
+              </Link>
+              <Link className={styles.secondaryAction} href="/systems">
+                Explore technical range
+              </Link>
+            </div>
           </div>
-          <p className={styles.gatewayIntroText}>
-            Senior software engineer working across embedded systems, cloud platforms, and the web.
-            This portfolio is a set of explorable worlds—each one reveals a different part of the work.
+
+          <aside
+            className={styles.signalPanel}
+            aria-label="Profile at a glance"
+          >
+            <div className={styles.signalHeader}>
+              <span>Profile signal</span>
+              <span className={styles.liveStatus}>Available to explore</span>
+            </div>
+            <dl className={styles.signalList}>
+              {signals.map(([term, description]) => (
+                <div className={styles.signalRow} key={term}>
+                  <dt>{term}</dt>
+                  <dd>{description}</dd>
+                </div>
+              ))}
+            </dl>
+          </aside>
+        </div>
+      </section>
+
+      <section className={styles.routes} aria-labelledby="routes-title">
+        <div className={styles.sectionHeading}>
+          <div>
+            <p className={styles.eyebrow}>Three views · one practice</p>
+            <h2 id="routes-title">Choose what you need to know.</h2>
+          </div>
+          <p>
+            Career is the fastest introduction. Systems shows the technical
+            breadth. The Orbital is the full-screen experiment.
           </p>
         </div>
 
-        <div className={styles.gatewayGrid}>
-          {views.map((view) => (
+        <div className={styles.routeGrid}>
+          {routes.map((route) => (
             <Link
-              key={view.href}
-              href={view.href}
-              className={`${styles.gatewayCard} ${view.featured ? styles.gatewayCardFeatured : ''}`}
+              key={route.href}
+              href={route.href}
+              className={styles.routeCard}
             >
-              <span className={styles.cardIndex}>{view.index}</span>
-              <div>
-                <h2 className={styles.cardTitle}>{view.title}</h2>
-                <p className={styles.cardText}>{view.text}</p>
+              <div className={styles.routeTopline}>
+                <span>{route.index}</span>
+                <span>{route.label}</span>
+              </div>
+              <div className={styles.routeCopy}>
+                <h3>{route.title}</h3>
+                <p>{route.text}</p>
+              </div>
+              <div className={styles.routeFooter}>
+                <span>{route.detail}</span>
+                <span className={styles.routeArrow} aria-hidden="true">
+                  ↗
+                </span>
               </div>
             </Link>
           ))}
         </div>
+      </section>
 
-        <div className={styles.aboutStrip}>
-          <p className={styles.aboutText}>
-            Previously a tech entrepreneur; now a consultant and engineering leader. Client work includes
-            embedded projects for Apple and Chick-fil-A. Based in Raleigh, North Carolina.
-          </p>
-          <Link className={styles.secondaryAction} href="/blog">Read the field notes</Link>
+      <section className={styles.fieldNotes} aria-labelledby="notes-title">
+        <div>
+          <p className={styles.eyebrow}>Field notes</p>
+          <h2 id="notes-title">
+            Experiments, hardware, and things learned by making.
+          </h2>
         </div>
-      </div>
+        <Link className={styles.textLink} href="/blog">
+          Read the notes <span aria-hidden="true">→</span>
+        </Link>
+      </section>
     </main>
   )
 }

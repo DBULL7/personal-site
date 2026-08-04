@@ -1,0 +1,615 @@
+.page {
+  color: #dcebe6;
+  background: #03070a;
+}
+
+.hero {
+  position: relative;
+  min-height: max(48rem, calc(100svh - 4rem));
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.heroShade {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(3, 7, 10, 0.96) 0%,
+      rgba(3, 7, 10, 0.52) 39%,
+      transparent 70%
+    ),
+    linear-gradient(0deg, rgba(3, 7, 10, 0.98) 0%, transparent 42%);
+}
+
+.sceneFallback {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 68% 45%,
+      rgba(144, 205, 194, 0.2),
+      transparent 2%
+    ),
+    radial-gradient(
+      circle at 78% 27%,
+      rgba(77, 134, 173, 0.16),
+      transparent 15%
+    ),
+    radial-gradient(
+      circle at 56% 66%,
+      rgba(226, 174, 102, 0.12),
+      transparent 18%
+    ),
+    #03070a;
+}
+
+.heroHeading {
+  position: absolute;
+  top: clamp(3.5rem, 9vh, 7rem);
+  left: clamp(1.25rem, 5vw, 5rem);
+  z-index: 2;
+  width: min(40rem, calc(100% - 2.5rem));
+}
+
+.eyebrow,
+.panelEyebrow {
+  margin: 0 0 1.1rem;
+  color: #8fc5bd;
+  font:
+    650 0.65rem/1.3 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.eyebrow::before,
+.panelEyebrow::before {
+  display: inline-block;
+  width: 2.2rem;
+  height: 1px;
+  margin: 0 0.75rem 0.2rem 0;
+  content: '';
+  background: currentColor;
+}
+
+.heroHeading h1 {
+  max-width: 9ch;
+  margin: 0;
+  color: #f3f0e8;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(3.6rem, 7vw, 7rem);
+  font-weight: 400;
+  line-height: 0.88;
+  letter-spacing: -0.06em;
+  text-wrap: balance;
+  text-shadow: 0 0 3rem #03070a;
+}
+
+.heroHeading > p:not(.eyebrow) {
+  max-width: 38rem;
+  margin: 1.6rem 0 0;
+  color: rgba(220, 235, 230, 0.68);
+  font-size: clamp(0.95rem, 1.25vw, 1.08rem);
+  line-height: 1.7;
+}
+
+.readLink {
+  display: inline-flex;
+  margin-top: 1.6rem;
+  padding-bottom: 0.35rem;
+  gap: 0.65rem;
+  border-bottom: 1px solid rgba(191, 228, 220, 0.4);
+  color: #bfe4dc;
+  font:
+    650 0.63rem/1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.explorer {
+  position: absolute;
+  right: clamp(1.25rem, 4vw, 4rem);
+  bottom: clamp(2rem, 5vh, 4rem);
+  left: clamp(1.25rem, 5vw, 5rem);
+  z-index: 3;
+  display: grid;
+  grid-template-columns: minmax(29rem, 1fr) minmax(23rem, 30rem);
+  gap: clamp(2rem, 7vw, 7rem);
+  align-items: end;
+}
+
+.chapterNav {
+  display: grid;
+  padding-top: 0.6rem;
+  grid-template-columns: repeat(7, minmax(4.5rem, 1fr));
+  border-top: 1px solid rgba(191, 228, 220, 0.18);
+  gap: 0.3rem;
+}
+
+.chapterButton,
+.chapterButtonActive {
+  min-height: 3.5rem;
+  padding: 0.55rem 0.45rem;
+  border: 0;
+  border-radius: 0.15rem;
+  color: rgba(220, 235, 230, 0.48);
+  background: rgba(3, 8, 10, 0.58);
+  font:
+    600 0.56rem/1.25 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: 0.07em;
+  text-align: left;
+  text-transform: uppercase;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition:
+    color 160ms ease,
+    background 160ms ease;
+}
+
+.chapterButton span,
+.chapterButtonActive span {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: rgba(191, 228, 220, 0.3);
+}
+
+.chapterButton:hover,
+.chapterButtonActive {
+  color: #edf3ee;
+  background: rgba(42, 104, 98, 0.46);
+}
+
+.activeChapter {
+  min-height: 18rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(191, 228, 220, 0.18);
+  background: rgba(4, 12, 15, 0.8);
+  box-shadow: 0 1.5rem 5rem rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(18px);
+}
+
+.panelEyebrow {
+  margin-bottom: 1.3rem;
+  font-size: 0.58rem;
+}
+
+.chapterTitleRow {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.chapterTitleRow > span {
+  padding-top: 0.42rem;
+  color: rgba(191, 228, 220, 0.38);
+  font:
+    600 0.6rem/1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+}
+
+.chapterTitleRow h2 {
+  margin: 0;
+  color: #eef2ed;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.9rem, 3vw, 2.7rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.chapterMeta {
+  margin: 0.65rem 0 0 2.35rem;
+  color: #8fc5bd;
+  font:
+    600 0.6rem/1.4 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.chapterText {
+  margin: 1.15rem 0 0 2.35rem;
+  color: rgba(220, 235, 230, 0.66);
+  font-size: 0.9rem;
+  line-height: 1.68;
+}
+
+.visualNote {
+  position: absolute;
+  right: 1rem;
+  bottom: 0.65rem;
+  z-index: 4;
+  margin: 0;
+  color: rgba(220, 235, 230, 0.34);
+  font:
+    500 0.52rem/1.3 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.narrative,
+.range,
+.principles,
+.nextSignal {
+  padding: clamp(5rem, 9vw, 9rem) clamp(1.25rem, 6vw, 6rem);
+}
+
+.narrative {
+  color: #132523;
+  background: #e8eee8;
+}
+
+.narrative .eyebrow,
+.range .eyebrow {
+  color: #39756f;
+}
+
+.sectionIntro,
+.rangeHeading,
+.nextSignal {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(20rem, 0.65fr);
+  gap: clamp(3rem, 8vw, 8rem);
+  align-items: end;
+}
+
+.sectionIntro,
+.evidenceGrid,
+.rangeHeading,
+.rangeBands,
+.principlesHeading,
+.principleGrid {
+  width: min(100%, 82rem);
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.sectionIntro h2,
+.rangeHeading h2,
+.principlesHeading h2,
+.nextSignal h2 {
+  max-width: 12ch;
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2.8rem, 5.4vw, 5.5rem);
+  font-weight: 400;
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
+}
+
+.sectionIntro > p,
+.rangeHeading > p,
+.nextCopy > p {
+  margin: 0;
+  color: rgba(19, 37, 35, 0.68);
+  font-size: clamp(1rem, 1.45vw, 1.15rem);
+  line-height: 1.75;
+}
+
+.evidenceGrid {
+  display: grid;
+  margin-top: clamp(3.5rem, 7vw, 6.5rem);
+  grid-template-columns: 1.15fr 1fr 1fr;
+  gap: 1px;
+  background: rgba(25, 58, 54, 0.18);
+}
+
+.evidenceCard {
+  display: flex;
+  min-height: 26rem;
+  padding: 1.5rem;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #edf1eb;
+}
+
+.evidenceCardPrimary {
+  color: #e8f0eb;
+  background:
+    radial-gradient(
+      circle at 76% 24%,
+      rgba(107, 185, 174, 0.16),
+      transparent 24%
+    ),
+    #071215;
+}
+
+.cardTopline {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: rgba(19, 37, 35, 0.48);
+  font:
+    600 0.57rem/1.3 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.evidenceCardPrimary .cardTopline {
+  color: rgba(220, 235, 230, 0.45);
+}
+
+.evidenceCard h3 {
+  margin: 0;
+  color: inherit;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2rem, 3.2vw, 3.2rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.evidenceCard p {
+  margin: 1.1rem 0 0;
+  color: rgba(19, 37, 35, 0.66);
+  font-size: 0.9rem;
+  line-height: 1.68;
+}
+
+.evidenceCardPrimary p {
+  color: rgba(220, 235, 230, 0.62);
+}
+
+.range {
+  color: #17302e;
+  background: #dce6df;
+}
+
+.rangeBands {
+  display: grid;
+  margin-top: clamp(3rem, 6vw, 5rem);
+  border-top: 1px solid rgba(25, 58, 54, 0.2);
+}
+
+.rangeBands > div {
+  display: grid;
+  min-height: 5.5rem;
+  padding: 1.2rem 0;
+  grid-template-columns: 4rem 1fr minmax(12rem, 0.6fr);
+  gap: 1rem;
+  border-bottom: 1px solid rgba(25, 58, 54, 0.16);
+  align-items: center;
+}
+
+.rangeBands span,
+.rangeBands small {
+  color: rgba(23, 48, 46, 0.5);
+  font:
+    600 0.62rem/1.4 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rangeBands strong {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.4rem, 2.4vw, 2.1rem);
+  font-weight: 400;
+}
+
+.principles {
+  border-top: 1px solid rgba(191, 228, 220, 0.08);
+  background:
+    radial-gradient(circle at 78% 22%, rgba(42, 99, 94, 0.18), transparent 25%),
+    #050b0e;
+}
+
+.principlesHeading h2 {
+  max-width: 15ch;
+  color: #f0f1eb;
+}
+
+.principleGrid {
+  display: grid;
+  margin-top: clamp(3.5rem, 7vw, 6rem);
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: rgba(191, 228, 220, 0.12);
+}
+
+.principleGrid article {
+  min-height: 19rem;
+  padding: 1.5rem;
+  background: rgba(6, 16, 19, 0.96);
+}
+
+.principleGrid span {
+  color: rgba(191, 228, 220, 0.38);
+  font:
+    600 0.62rem/1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+}
+
+.principleGrid h3 {
+  margin: 5rem 0 0;
+  color: #edf1eb;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.8rem, 3vw, 2.7rem);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.principleGrid p {
+  margin: 1rem 0 0;
+  color: rgba(220, 235, 230, 0.58);
+  font-size: 0.89rem;
+  line-height: 1.68;
+}
+
+.nextSignal {
+  width: min(100%, 94rem);
+  margin: 0 auto;
+  background: #03070a;
+}
+
+.nextSignal h2 {
+  max-width: 14ch;
+  color: #f1f0e9;
+}
+
+.nextCopy > p {
+  color: rgba(220, 235, 230, 0.6);
+}
+
+.nextLinks {
+  display: flex;
+  margin-top: 1.8rem;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.nextLinks a {
+  display: inline-flex;
+  padding-bottom: 0.35rem;
+  gap: 0.6rem;
+  border-bottom: 1px solid rgba(191, 228, 220, 0.32);
+  color: #bfe4dc;
+  font:
+    650 0.64rem/1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1000px) {
+  .hero {
+    min-height: 60rem;
+  }
+
+  .heroShade {
+    background: linear-gradient(
+      0deg,
+      rgba(3, 7, 10, 0.99) 0%,
+      rgba(3, 7, 10, 0.42) 67%,
+      rgba(3, 7, 10, 0.64) 100%
+    );
+  }
+
+  .heroHeading {
+    top: 3.5rem;
+  }
+
+  .explorer {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .chapterNav {
+    order: 2;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .chapterButton,
+  .chapterButtonActive {
+    min-width: 6.5rem;
+  }
+
+  .activeChapter {
+    width: min(100%, 34rem);
+    min-height: 16rem;
+  }
+
+  .evidenceGrid,
+  .principleGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .evidenceCard {
+    min-height: 21rem;
+  }
+
+  .principleGrid article {
+    min-height: 16rem;
+  }
+
+  .principleGrid h3 {
+    margin-top: 3rem;
+  }
+}
+
+@media (max-width: 720px) {
+  .hero {
+    min-height: 64rem;
+  }
+
+  .heroHeading {
+    top: 2.7rem;
+  }
+
+  .heroHeading h1 {
+    font-size: clamp(3.35rem, 16vw, 5rem);
+  }
+
+  .explorer {
+    right: 1rem;
+    bottom: 2.2rem;
+    left: 1rem;
+  }
+
+  .activeChapter {
+    min-height: 19rem;
+    padding: 1.2rem;
+  }
+
+  .chapterText,
+  .chapterMeta {
+    margin-left: 0;
+  }
+
+  .visualNote {
+    display: none;
+  }
+
+  .sectionIntro,
+  .rangeHeading,
+  .nextSignal {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .rangeBands > div {
+    grid-template-columns: 2.5rem 1fr;
+  }
+
+  .rangeBands small {
+    grid-column: 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapterButton,
+  .chapterButtonActive {
+    transition: none;
+  }
+}

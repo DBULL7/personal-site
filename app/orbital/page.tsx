@@ -5,7 +5,8 @@ import styles from '../space-experiences.module.css'
 
 export const metadata: Metadata = {
   title: 'The Orbital | Devon Bull',
-  description: 'A Culture-inspired Three.js portfolio experience by senior software engineer Devon Bull.'
+  description: 'A Culture-inspired Three.js portfolio experience by senior software engineer Devon Bull.',
+  alternates: { canonical: '/orbital' }
 }
 
 export default function OrbitalPage() {

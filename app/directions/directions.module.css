@@ -1,0 +1,186 @@
+.page {
+  min-height: 100svh;
+  padding: 1.25rem;
+  color: #eceee8;
+  background: #090a0b;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.header {
+  display: flex;
+  height: 3rem;
+  padding: 0 0.25rem;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  font:
+    700 0.64rem/1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.header a {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  color: #090a0b;
+  background: #e6ff57;
+  place-items: center;
+}
+
+.intro {
+  display: grid;
+  width: min(100%, 88rem);
+  margin: 0 auto;
+  padding: clamp(4rem, 9vw, 8rem) 0 clamp(3rem, 6vw, 5rem);
+  grid-template-columns: 0.45fr 1fr 0.5fr;
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: end;
+}
+
+.intro p,
+.intro span {
+  margin: 0;
+  color: rgba(236, 238, 232, 0.54);
+  font:
+    650 0.66rem/1.55 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.intro p {
+  align-self: start;
+  color: #e6ff57;
+}
+
+.intro h1 {
+  margin: 0;
+  font-size: clamp(3rem, 7vw, 7rem);
+  font-weight: 600;
+  line-height: 0.88;
+  letter-spacing: -0.07em;
+  text-wrap: balance;
+}
+
+.grid {
+  display: grid;
+  width: min(100%, 88rem);
+  margin: 0 auto;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.card {
+  display: flex;
+  min-height: min(35rem, 55svh);
+  padding: 1.3rem;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  transition: transform 220ms ease;
+}
+
+.card:hover {
+  transform: translateY(-0.35rem);
+}
+
+.editorialCard {
+  color: #0a0b0c;
+  background:
+    linear-gradient(145deg, transparent 55%, rgba(31, 78, 255, 0.13)), #f0efe7;
+}
+
+.matrixCard {
+  border: 1px solid rgba(67, 255, 123, 0.3);
+  color: #b7ffc8;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(67, 255, 123, 0.04) 0 1px,
+      transparent 1px 3rem
+    ),
+    radial-gradient(
+      circle at 50% 66%,
+      rgba(31, 255, 101, 0.14),
+      transparent 30%
+    ),
+    #000602;
+}
+
+.cardTopline {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font:
+    700 0.6rem/1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.card h2 {
+  max-width: 9ch;
+  margin: 0;
+  font-size: clamp(2.8rem, 5vw, 5rem);
+  font-weight: 650;
+  line-height: 0.9;
+  letter-spacing: -0.06em;
+}
+
+.matrixCard h2 {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 500;
+  letter-spacing: -0.08em;
+}
+
+.card p {
+  max-width: 30rem;
+  margin: 1rem 0 0;
+  color: currentColor;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  opacity: 0.64;
+}
+
+.open {
+  font:
+    700 0.62rem/1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 760px) {
+  .intro {
+    grid-template-columns: 1fr;
+  }
+
+  .intro p {
+    align-self: auto;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    min-height: 27rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+}
