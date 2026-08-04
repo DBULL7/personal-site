@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 import { siteConfig } from '@/config/site'
 import { buttonVariants } from '@/components/ui/button'
@@ -7,6 +10,10 @@ import { MainNav } from '@/components/main-nav'
 import styles from './site-header.module.css'
 
 export function SiteHeader() {
+  const pathname = usePathname()
+
+  if (pathname?.startsWith('/directions')) return null
+
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
