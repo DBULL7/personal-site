@@ -85,7 +85,7 @@ export function MatrixDirectionExperience({
           <span>FAR</span>
         </div>
         <small>
-          {isToolkit ? 'REACT / NODE / TS / AI' : 'ASCII / KANA / NUMERIC'}
+          {isToolkit ? '90+ LANG / CLOUD / TOOLS' : 'ASCII / KANA / NUMERIC'}
         </small>
       </aside>
 

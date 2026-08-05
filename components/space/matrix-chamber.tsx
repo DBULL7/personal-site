@@ -2,22 +2,100 @@
 
 import { useEffect, useRef, useState } from 'react'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
-import {
-  faApple,
-  faChrome,
-  faDocker,
-  faGitAlt,
-  faGithub,
-  faNodeJs,
-  faOpenai,
-  faReact,
-  faSafari
-} from '@fortawesome/free-brands-svg-icons'
+import { faAws, faOpenai } from '@fortawesome/free-brands-svg-icons'
 import {
   faCode,
   faDatabase,
   faTerminal
 } from '@fortawesome/free-solid-svg-icons'
+import type { SimpleIcon } from 'simple-icons'
+import {
+  siApache,
+  siAnthropic,
+  siApple,
+  siBun,
+  siC,
+  siCircleci,
+  siClaude,
+  siCloudflare,
+  siCplusplus,
+  siCss,
+  siCursor,
+  siDatadog,
+  siDeno,
+  siDjango,
+  siDocker,
+  siElectron,
+  siElixir,
+  siExpress,
+  siFastapi,
+  siFirefoxbrowser,
+  siFlask,
+  siGit,
+  siGithub,
+  siGithubactions,
+  siGithubcopilot,
+  siGitlab,
+  siGnubash,
+  siGo,
+  siGooglechrome,
+  siGooglecloud,
+  siGrafana,
+  siGraphql,
+  siHackthebox,
+  siHtml5,
+  siHuggingface,
+  siIntellijidea,
+  siJavascript,
+  siJenkins,
+  siJetbrains,
+  siKalilinux,
+  siKubernetes,
+  siLaravel,
+  siLinux,
+  siMongodb,
+  siMysql,
+  siNeovim,
+  siNestjs,
+  siNextdotjs,
+  siNginx,
+  siNodedotjs,
+  siNpm,
+  siOpenjdk,
+  siOwasp,
+  siPagerduty,
+  siPhp,
+  siPhoenixframework,
+  siPnpm,
+  siPostgresql,
+  siPostman,
+  siPrisma,
+  siPrometheus,
+  siPython,
+  siRaspberrypi,
+  siReact,
+  siRedis,
+  siRuby,
+  siRubyonrails,
+  siRust,
+  siSafari,
+  siSentry,
+  siSpringboot,
+  siSqlite,
+  siSupabase,
+  siSwift,
+  siTailwindcss,
+  siTerraform,
+  siTorbrowser,
+  siTypescript,
+  siUbuntu,
+  siVercel,
+  siVim,
+  siVite,
+  siVscodium,
+  siWireshark,
+  siYarn
+} from 'simple-icons'
 import * as THREE from 'three'
 import styles from './matrix-chamber.module.css'
 
@@ -29,6 +107,7 @@ type MatrixChamberProps = {
 type RainGlyph =
   | { type: 'text'; value: string; label?: string }
   | { type: 'icon'; icon: IconDefinition; label: string }
+  | { type: 'simple-icon'; icon: SimpleIcon }
 
 type GlyphParticle = {
   canvas: HTMLCanvasElement
@@ -52,23 +131,116 @@ const matrixGlyphs: RainGlyph[] = [
   ...'零壱弐参肆伍陸漆捌玖'
 ].map((value) => ({ type: 'text' as const, value }))
 
+const logo = (icon: SimpleIcon): RainGlyph => ({ type: 'simple-icon', icon })
+
 const toolkitGlyphs: RainGlyph[] = [
-  { type: 'icon', icon: faReact, label: 'React' },
-  { type: 'icon', icon: faNodeJs, label: 'Node.js' },
-  { type: 'text', value: 'TS', label: 'TypeScript' },
-  { type: 'icon', icon: faTerminal, label: 'Terminal' },
-  { type: 'icon', icon: faChrome, label: 'Chrome' },
-  { type: 'icon', icon: faSafari, label: 'Safari' },
+  // Languages and core web technologies.
+  logo(siTypescript),
+  logo(siJavascript),
+  logo(siPython),
+  logo(siRuby),
+  logo(siElixir),
+  logo(siGo),
+  logo(siRust),
+  logo(siC),
+  logo(siCplusplus),
+  logo(siOpenjdk),
+  logo(siSwift),
+  logo(siPhp),
+  logo(siGnubash),
+  logo(siHtml5),
+  logo(siCss),
+
+  // Frameworks and runtimes.
+  logo(siReact),
+  logo(siNextdotjs),
+  logo(siNodedotjs),
+  logo(siDeno),
+  logo(siBun),
+  logo(siPhoenixframework),
+  logo(siRubyonrails),
+  logo(siDjango),
+  logo(siFlask),
+  logo(siFastapi),
+  logo(siExpress),
+  logo(siNestjs),
+  logo(siSpringboot),
+  logo(siLaravel),
+  logo(siTailwindcss),
+  logo(siVite),
+  logo(siElectron),
+
+  // Cloud, infrastructure, and delivery.
+  { type: 'icon', icon: faAws, label: 'AWS' },
+  logo(siGooglecloud),
+  logo(siDocker),
+  logo(siKubernetes),
+  logo(siTerraform),
+  logo(siCloudflare),
+  logo(siVercel),
+  logo(siNginx),
+  logo(siApache),
+  logo(siGithubactions),
+  logo(siJenkins),
+  logo(siCircleci),
+  logo(siRaspberrypi),
+
+  // Databases, APIs, and data tooling.
+  logo(siPostgresql),
+  logo(siRedis),
+  logo(siMongodb),
+  logo(siSqlite),
+  logo(siMysql),
+  logo(siSupabase),
+  logo(siGraphql),
+  logo(siPrisma),
+  logo(siPostman),
+
+  // Source control, editors, package managers, and environments.
+  logo(siGit),
+  logo(siGithub),
+  logo(siGitlab),
+  logo(siNpm),
+  logo(siPnpm),
+  logo(siYarn),
+  logo(siVscodium),
+  logo(siNeovim),
+  logo(siVim),
+  logo(siCursor),
+  logo(siJetbrains),
+  logo(siIntellijidea),
+  logo(siLinux),
+  logo(siUbuntu),
+  logo(siApple),
+  logo(siGooglechrome),
+  logo(siSafari),
+  logo(siFirefoxbrowser),
+
+  // AI, observability, and security.
   { type: 'icon', icon: faOpenai, label: 'OpenAI' },
-  { type: 'text', value: '✳', label: 'Claude / Anthropic' },
-  { type: 'icon', icon: faGithub, label: 'GitHub' },
-  { type: 'icon', icon: faGitAlt, label: 'Git' },
-  { type: 'icon', icon: faDocker, label: 'Docker' },
-  { type: 'icon', icon: faApple, label: 'Apple' },
-  { type: 'text', value: 'GO', label: 'Go' },
+  logo(siAnthropic),
+  logo(siClaude),
+  logo(siHuggingface),
+  logo(siGithubcopilot),
+  logo(siSentry),
+  logo(siDatadog),
+  logo(siGrafana),
+  logo(siPrometheus),
+  logo(siPagerduty),
+  logo(siKalilinux),
+  logo(siWireshark),
+  logo(siTorbrowser),
+  logo(siOwasp),
+  logo(siHackthebox),
+
+  // Compact universal software symbols.
+  { type: 'icon', icon: faTerminal, label: 'Terminal' },
   { type: 'icon', icon: faCode, label: 'Code' },
   { type: 'icon', icon: faDatabase, label: 'Data' },
-  { type: 'text', value: '{}', label: 'Source' }
+  { type: 'text', value: '{}', label: 'Source' },
+  { type: 'text', value: '</>', label: 'Markup' },
+  { type: 'text', value: '$', label: 'Shell' },
+  { type: 'text', value: '#', label: 'Root' }
 ]
 
 function drawGlyph(
@@ -84,7 +256,8 @@ function drawGlyph(
   context.fillStyle = `rgba(117, 255, 156, ${alpha})`
 
   if (glyph.type === 'text') {
-    const fontSize = glyph.value.length > 1 ? 39 : 52
+    const fontSize =
+      glyph.value.length > 2 ? 28 : glyph.value.length > 1 ? 39 : 52
     context.font = `700 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, monospace`
     context.textAlign = 'center'
     context.textBaseline = 'middle'
@@ -92,8 +265,11 @@ function drawGlyph(
     return
   }
 
-  const [iconWidth, iconHeight, , , pathData] = glyph.icon.icon
-  const targetSize = 54
+  const targetSize = 58
+  const isSimpleIcon = glyph.type === 'simple-icon'
+  const iconWidth = isSimpleIcon ? 24 : glyph.icon.icon[0]
+  const iconHeight = isSimpleIcon ? 24 : glyph.icon.icon[1]
+  const pathData = isSimpleIcon ? glyph.icon.path : glyph.icon.icon[4]
   const scale = targetSize / Math.max(iconWidth, iconHeight)
   const offsetX = (canvas.width - iconWidth * scale) / 2
   const offsetY = (canvas.height - iconHeight * scale) / 2
@@ -280,7 +456,14 @@ export function MatrixChamber({
     }
 
     const particles: GlyphParticle[] = []
-    const particleCount = window.innerWidth < 700 ? 78 : 148
+    const particleCount =
+      glyphSet === 'toolkit'
+        ? window.innerWidth < 700
+          ? 96
+          : 190
+        : window.innerWidth < 700
+          ? 78
+          : 148
     for (let index = 0; index < particleCount; index += 1) {
       const glyphCanvas = document.createElement('canvas')
       glyphCanvas.width = 96
@@ -292,7 +475,9 @@ export function MatrixChamber({
       drawGlyph(
         glyphCanvas,
         glyphContext,
-        glyphs[Math.floor(random() * glyphs.length)],
+        glyphSet === 'toolkit'
+          ? glyphs[index % glyphs.length]
+          : glyphs[Math.floor(random() * glyphs.length)],
         brightness
       )
       const texture = new THREE.CanvasTexture(glyphCanvas)
@@ -305,7 +490,12 @@ export function MatrixChamber({
         blending: THREE.AdditiveBlending
       })
       const sprite = new THREE.Sprite(material)
-      const scale = 0.48 + random() * 0.34
+      const scale =
+        glyphSet === 'toolkit'
+          ? index % 17 === 0
+            ? 0.95 + random() * 0.35
+            : 0.46 + random() * 0.44
+          : 0.48 + random() * 0.34
       sprite.scale.set(scale, scale, 1)
       const baseX = -10.5 + random() * 21
       const y = floorY + random() * (ceilingY - floorY)
@@ -381,7 +571,11 @@ export function MatrixChamber({
             particle.brightness
           )
           particle.texture.needsUpdate = true
-          particle.nextMutation = elapsed + 0.14 + random() * 0.62
+          particle.nextMutation =
+            elapsed +
+            (glyphSet === 'toolkit'
+              ? 0.6 + random() * 1.4
+              : 0.14 + random() * 0.62)
         }
 
         const progress = THREE.MathUtils.clamp(
