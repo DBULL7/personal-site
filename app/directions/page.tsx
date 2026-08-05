@@ -4,7 +4,7 @@ import styles from './directions.module.css'
 
 export const metadata: Metadata = {
   title: 'Design Directions | Devon Bull',
-  description: 'Two alternate design directions for Devon Bull’s portfolio.',
+  description: 'Three alternate design directions for Devon Bull’s portfolio.',
   robots: { index: false, follow: false }
 }
 
@@ -26,6 +26,15 @@ const directions = [
       'A thirty-foot digital room where identity floats at the center and changing glyphs rise through layered depth.',
     href: '/directions/matrix',
     className: styles.matrixCard
+  },
+  {
+    id: '03',
+    type: 'Three.js',
+    name: 'The Toolchain Chamber',
+    description:
+      'The same thirty-foot room, now filled with the compact marks of a working engineer’s everyday toolkit.',
+    href: '/directions/toolkit',
+    className: styles.toolkitCard
   }
 ] as const
 
@@ -37,9 +46,9 @@ export default function DirectionsPage() {
         <span>Design study · 2026</span>
       </header>
       <section className={styles.intro}>
-        <p>Two new directions</p>
+        <p>Three new directions</p>
         <h1>Same person. Completely different rooms.</h1>
-        <span>Open both. Pick the instinct, not the compromise.</span>
+        <span>Open all three. Pick the instinct, not the compromise.</span>
       </section>
       <div className={styles.grid}>
         {directions.map((direction) => (

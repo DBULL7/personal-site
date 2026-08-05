@@ -1,12 +1,34 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
+import {
+  faApple,
+  faChrome,
+  faDocker,
+  faGitAlt,
+  faGithub,
+  faNodeJs,
+  faOpenai,
+  faReact,
+  faSafari
+} from '@fortawesome/free-brands-svg-icons'
+import {
+  faCode,
+  faDatabase,
+  faTerminal
+} from '@fortawesome/free-solid-svg-icons'
 import * as THREE from 'three'
 import styles from './matrix-chamber.module.css'
 
 type MatrixChamberProps = {
   paused?: boolean
+  glyphSet?: 'matrix' | 'toolkit'
 }
+
+type RainGlyph =
+  | { type: 'text'; value: string; label?: string }
+  | { type: 'icon'; icon: IconDefinition; label: string }
 
 type GlyphParticle = {
   canvas: HTMLCanvasElement
@@ -24,27 +46,64 @@ type GlyphParticle = {
   brightness: number
 }
 
-const glyphs = [
+const matrixGlyphs: RainGlyph[] = [
   ...'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<>/\\[]{}+=-_#%&@',
   ...'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン',
   ...'零壱弐参肆伍陸漆捌玖'
+].map((value) => ({ type: 'text' as const, value }))
+
+const toolkitGlyphs: RainGlyph[] = [
+  { type: 'icon', icon: faReact, label: 'React' },
+  { type: 'icon', icon: faNodeJs, label: 'Node.js' },
+  { type: 'text', value: 'TS', label: 'TypeScript' },
+  { type: 'icon', icon: faTerminal, label: 'Terminal' },
+  { type: 'icon', icon: faChrome, label: 'Chrome' },
+  { type: 'icon', icon: faSafari, label: 'Safari' },
+  { type: 'icon', icon: faOpenai, label: 'OpenAI' },
+  { type: 'text', value: '✳', label: 'Claude / Anthropic' },
+  { type: 'icon', icon: faGithub, label: 'GitHub' },
+  { type: 'icon', icon: faGitAlt, label: 'Git' },
+  { type: 'icon', icon: faDocker, label: 'Docker' },
+  { type: 'icon', icon: faApple, label: 'Apple' },
+  { type: 'text', value: 'GO', label: 'Go' },
+  { type: 'icon', icon: faCode, label: 'Code' },
+  { type: 'icon', icon: faDatabase, label: 'Data' },
+  { type: 'text', value: '{}', label: 'Source' }
 ]
 
 function drawGlyph(
   canvas: HTMLCanvasElement,
   context: CanvasRenderingContext2D,
-  character: string,
+  glyph: RainGlyph,
   brightness: number
 ) {
   context.clearRect(0, 0, canvas.width, canvas.height)
   const alpha = Math.max(0.28, brightness)
-  context.font = '700 52px ui-monospace, SFMono-Regular, Menlo, monospace'
-  context.textAlign = 'center'
-  context.textBaseline = 'middle'
   context.shadowColor = `rgba(52, 255, 113, ${alpha})`
   context.shadowBlur = 14
   context.fillStyle = `rgba(117, 255, 156, ${alpha})`
-  context.fillText(character, canvas.width / 2, canvas.height / 2)
+
+  if (glyph.type === 'text') {
+    const fontSize = glyph.value.length > 1 ? 39 : 52
+    context.font = `700 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, monospace`
+    context.textAlign = 'center'
+    context.textBaseline = 'middle'
+    context.fillText(glyph.value, canvas.width / 2, canvas.height / 2)
+    return
+  }
+
+  const [iconWidth, iconHeight, , , pathData] = glyph.icon.icon
+  const targetSize = 54
+  const scale = targetSize / Math.max(iconWidth, iconHeight)
+  const offsetX = (canvas.width - iconWidth * scale) / 2
+  const offsetY = (canvas.height - iconHeight * scale) / 2
+  const paths = Array.isArray(pathData) ? pathData : [pathData]
+
+  context.save()
+  context.translate(offsetX, offsetY)
+  context.scale(scale, scale)
+  paths.forEach((path) => context.fill(new Path2D(path)))
+  context.restore()
 }
 
 function makeMarker(text: string) {
@@ -90,7 +149,10 @@ function makeGlowTexture() {
   return texture
 }
 
-export function MatrixChamber({ paused = false }: MatrixChamberProps) {
+export function MatrixChamber({
+  paused = false,
+  glyphSet = 'matrix'
+}: MatrixChamberProps) {
   const hostRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const pausedRef = useRef(paused)
@@ -104,6 +166,7 @@ export function MatrixChamber({ paused = false }: MatrixChamberProps) {
     const host = hostRef.current
     const canvas = canvasRef.current
     if (!host || !canvas) return
+    const glyphs = glyphSet === 'toolkit' ? toolkitGlyphs : matrixGlyphs
 
     let renderer: THREE.WebGLRenderer
     try {
@@ -398,7 +461,7 @@ export function MatrixChamber({ paused = false }: MatrixChamberProps) {
       })
       renderer.dispose()
     }
-  }, [])
+  }, [glyphSet])
 
   return (
     <div ref={hostRef} className={styles.scene} aria-hidden="true">
@@ -408,7 +471,11 @@ export function MatrixChamber({ paused = false }: MatrixChamberProps) {
         <canvas ref={canvasRef} className={styles.canvas} />
       )}
       <span className={styles.renderStatus}>
-        {failed ? 'Static chamber' : 'Spatial render · 30 ft'}
+        {failed
+          ? 'Static chamber'
+          : glyphSet === 'toolkit'
+            ? 'Spatial render · 30 ft · toolkit'
+            : 'Spatial render · 30 ft'}
       </span>
     </div>
   )

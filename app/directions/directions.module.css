@@ -73,7 +73,7 @@
   display: grid;
   width: min(100%, 88rem);
   margin: 0 auto;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.75rem;
 }
 
@@ -97,7 +97,8 @@
     linear-gradient(145deg, transparent 55%, rgba(31, 78, 255, 0.13)), #f0efe7;
 }
 
-.matrixCard {
+.matrixCard,
+.toolkitCard {
   border: 1px solid rgba(67, 255, 123, 0.3);
   color: #b7ffc8;
   background:
@@ -112,6 +113,21 @@
       transparent 30%
     ),
     #000602;
+}
+
+.toolkitCard {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(67, 255, 123, 0.04) 0 1px,
+      transparent 1px 3rem
+    ),
+    radial-gradient(
+      circle at 50% 66%,
+      rgba(31, 255, 196, 0.16),
+      transparent 30%
+    ),
+    #000604;
 }
 
 .cardTopline {
@@ -136,7 +152,8 @@
   letter-spacing: -0.06em;
 }
 
-.matrixCard h2 {
+.matrixCard h2,
+.toolkitCard h2 {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-weight: 500;
   letter-spacing: -0.08em;
@@ -176,6 +193,16 @@
 
   .card {
     min-height: 27rem;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1060px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .toolkitCard {
+    grid-column: 1 / -1;
   }
 }
 

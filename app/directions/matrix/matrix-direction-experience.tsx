@@ -12,12 +12,19 @@ const details = [
   ['CLIENTS', 'APPLE / CHICK-FIL-A']
 ] as const
 
-export function MatrixDirectionExperience() {
+type MatrixDirectionExperienceProps = {
+  variant?: 'matrix' | 'toolkit'
+}
+
+export function MatrixDirectionExperience({
+  variant = 'matrix'
+}: MatrixDirectionExperienceProps) {
   const [paused, setPaused] = useState(false)
+  const isToolkit = variant === 'toolkit'
 
   return (
     <main className={styles.page}>
-      <MatrixChamber paused={paused} />
+      <MatrixChamber paused={paused} glyphSet={variant} />
       <div className={styles.scanlines} aria-hidden="true" />
       <div className={styles.vignette} aria-hidden="true" />
 
@@ -25,9 +32,13 @@ export function MatrixDirectionExperience() {
         <Link href="/" className={styles.brand}>
           DB://
         </Link>
-        <span>DIRECTION_02 / THREE.JS</span>
+        <span>DIRECTION_{isToolkit ? '03' : '02'} / THREE.JS</span>
         <nav aria-label="Design direction navigation">
-          <Link href="/directions/editorial">01_NO_WEBGL</Link>
+          {isToolkit ? (
+            <Link href="/directions/matrix">02_MATRIX</Link>
+          ) : (
+            <Link href="/directions/editorial">01_NO_WEBGL</Link>
+          )}
           <Link href="/directions">EXIT_STUDY</Link>
         </nav>
       </header>
@@ -73,7 +84,9 @@ export function MatrixDirectionExperience() {
           <i />
           <span>FAR</span>
         </div>
-        <small>ASCII / KANA / NUMERIC</small>
+        <small>
+          {isToolkit ? 'REACT / NODE / TS / AI' : 'ASCII / KANA / NUMERIC'}
+        </small>
       </aside>
 
       <div className={styles.controls}>
@@ -82,7 +95,13 @@ export function MatrixDirectionExperience() {
           aria-pressed={paused}
           onClick={() => setPaused((current) => !current)}
         >
-          {paused ? 'RESUME_RAIN' : 'PAUSE_RAIN'}
+          {paused
+            ? isToolkit
+              ? 'RESUME_FLOW'
+              : 'RESUME_RAIN'
+            : isToolkit
+              ? 'PAUSE_FLOW'
+              : 'PAUSE_RAIN'}
         </button>
         <span>MOVE_CURSOR_TO_SHIFT_VIEW</span>
       </div>
