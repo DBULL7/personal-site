@@ -13,17 +13,39 @@ import {
 import styles from './systems.module.css'
 
 const CutawayScene = dynamic(
-  () => import('@/components/machine/cutaway-scene').then((mod) => mod.CutawayScene),
-  { ssr: false, loading: () => <div className={styles.sceneLoading} aria-hidden="true" /> }
+  () =>
+    import('@/components/machine/cutaway-scene').then(
+      (mod) => mod.CutawayScene
+    ),
+  {
+    ssr: false,
+    loading: () => <div className={styles.sceneLoading} aria-hidden="true" />
+  }
 )
 
-type LogLine = { id: number; kind: string; stage: string; text: string; at: number }
+type LogLine = {
+  id: number
+  kind: string
+  stage: string
+  text: string
+  at: number
+}
 
-const EVENT_COPY: Record<MachineEvent, { kind: string; text: (stage: string) => string }> = {
+const EVENT_COPY: Record<
+  MachineEvent,
+  { kind: string; text: (stage: string) => string }
+> = {
   enter: { kind: 'ok', text: (stage) => `${stage} accepted the request` },
   fault: { kind: 'err', text: (stage) => `${stage} fault injected` },
-  breaker: { kind: 'warn', text: () => 'retries exhausted · circuit breaker OPEN' },
-  bypass: { kind: 'info', text: () => 'degraded path engaged · order buffered, customer told the truth' },
+  breaker: {
+    kind: 'warn',
+    text: () => 'retries exhausted · circuit breaker OPEN'
+  },
+  bypass: {
+    kind: 'info',
+    text: () =>
+      'degraded path engaged · order buffered, customer told the truth'
+  },
   rejoin: { kind: 'ok', text: () => 'rejoined the primary path' },
   complete: { kind: 'done', text: () => 'order acknowledged end to end' }
 }
@@ -52,7 +74,13 @@ function CrossSection({
         role="img"
         aria-label="Cross-section of the request path: edge, service, data, runtime, feedback."
       >
-        <line x1="10" y1={PLAN_H / 2} x2={PLAN_W - 10} y2={PLAN_H / 2} className={styles.planBus} />
+        <line
+          x1="10"
+          y1={PLAN_H / 2}
+          x2={PLAN_W - 10}
+          y2={PLAN_H / 2}
+          className={styles.planBus}
+        />
         {stages.map((stage, index) => {
           const x = 40 + index * (boxW + gap)
           const faulted = faults[stage.id]
@@ -69,7 +97,13 @@ function CrossSection({
               }
               onClick={() => onSelect(stage.id)}
             >
-              <rect x={x} y={PLAN_H / 2 - 110} width={boxW} height="220" rx="6" />
+              <rect
+                x={x}
+                y={PLAN_H / 2 - 110}
+                width={boxW}
+                height="220"
+                rx="6"
+              />
               <text x={x + 18} y={PLAN_H / 2 - 66} className={styles.planCode}>
                 {stage.code}
               </text>
@@ -83,7 +117,11 @@ function CrossSection({
                 {(stage.tools[1] ?? '').toUpperCase()}
               </text>
               {faulted && (
-                <text x={x + 18} y={PLAN_H / 2 + 92} className={styles.planFaultTag}>
+                <text
+                  x={x + 18}
+                  y={PLAN_H / 2 + 92}
+                  className={styles.planFaultTag}
+                >
                   FAULT ARMED
                 </text>
               )}
@@ -158,13 +196,16 @@ export function SystemsExperience() {
               This is the shape of the system I spent two years inside: a
               third-party delivery order entering Chick-fil-A’s platform from
               DoorDash, UberEats or Grubhub and coming back out acknowledged.
-              Run it, slow it down, pull it apart, or kill a stage and watch what
-              the rest of the machine does about it.
+              Run it, slow it down, pull it apart, or kill a stage and watch
+              what the rest of the machine does about it.
             </p>
           </div>
           <ul className={styles.statusStack} aria-label="Machine status">
             <li>
-              <i className={running ? styles.ledOk : styles.ledAmber} aria-hidden="true" />
+              <i
+                className={running ? styles.ledOk : styles.ledAmber}
+                aria-hidden="true"
+              />
               {running ? 'RUNNING' : 'HELD'}
             </li>
             <li>
@@ -172,121 +213,148 @@ export function SystemsExperience() {
               {SPEEDS[speedIndex]}× RATE
             </li>
             <li>
-              <i className={faultCount ? styles.ledFault : styles.ledOk} aria-hidden="true" />
+              <i
+                className={faultCount ? styles.ledFault : styles.ledOk}
+                aria-hidden="true"
+              />
               {faultCount} FAULT{faultCount === 1 ? '' : 'S'} ARMED
             </li>
           </ul>
         </header>
 
         <div className={styles.instrument}>
-          <div className={styles.viewport}>
-            <div className={styles.viewportInner}>
-              {live ? (
-                <CutawayScene
-                  theme={theme}
-                  running={running}
-                  speed={SPEEDS[speedIndex]}
-                  explode={explode}
-                  faults={faults}
-                  activeId={activeId}
-                  stepToken={stepToken}
-                  onSelect={setActiveId}
-                  onHover={setHoverId}
-                  onEvent={pushEvent}
-                />
-              ) : (
-                <CrossSection activeId={activeId} faults={faults} onSelect={setActiveId} />
-              )}
-            </div>
-            <div className={styles.viewportRail}>
-              <span className={styles.railTag}>
-                {live ? 'DRAG TO TILT · CLICK A MODULE' : 'STATIC CROSS-SECTION'}
-              </span>
-              <span className={styles.railTag}>
-                {hoverId
-                  ? `HOVER ${stagesById[hoverId].code} · ${stagesById[hoverId].name}`
-                  : `SELECTED ${stage.code} · ${stage.name}`}
-              </span>
-            </div>
-          </div>
-
-          <div className={styles.transport}>
-            <div className={styles.transportRow}>
-              <button
-                type="button"
-                className={running ? styles.runButtonActive : styles.runButton}
-                onClick={() => setRunning((value) => !value)}
-                aria-pressed={running}
-                disabled={!live}
-              >
-                <i aria-hidden="true" />
-                {running ? 'Pause' : 'Run'}
-              </button>
-              <button
-                type="button"
-                className={styles.stepButton}
-                onClick={() => {
-                  setRunning(false)
-                  setStepToken((token) => token + 1)
-                }}
-                disabled={!live}
-              >
-                Step ▸
-              </button>
-
-              <div className={styles.speedGroup} role="group" aria-label="Playback rate">
-                {SPEEDS.map((value, index) => (
-                  <button
-                    key={value}
-                    type="button"
-                    className={index === speedIndex ? styles.speedActive : styles.speed}
-                    aria-pressed={index === speedIndex}
-                    onClick={() => setSpeedIndex(index)}
-                    disabled={!live}
-                  >
-                    {value}×
-                  </button>
-                ))}
+          <div className={styles.column}>
+            <div className={styles.viewport}>
+              <div className={styles.viewportInner}>
+                {live ? (
+                  <CutawayScene
+                    theme={theme}
+                    running={running}
+                    speed={SPEEDS[speedIndex]}
+                    explode={explode}
+                    faults={faults}
+                    activeId={activeId}
+                    stepToken={stepToken}
+                    onSelect={setActiveId}
+                    onHover={setHoverId}
+                    onEvent={pushEvent}
+                  />
+                ) : (
+                  <CrossSection
+                    activeId={activeId}
+                    faults={faults}
+                    onSelect={setActiveId}
+                  />
+                )}
               </div>
-
-              <label className={styles.slider}>
-                <span>Cutaway</span>
-                <input
-                  type="range"
-                  min={0}
-                  max={100}
-                  value={Math.round(explode * 100)}
-                  onChange={(event) => setExplode(Number(event.target.value) / 100)}
-                  disabled={!live}
-                />
-              </label>
+              <div className={styles.viewportRail}>
+                <span className={styles.railTag}>
+                  {live
+                    ? 'DRAG TO TILT · CLICK A MODULE'
+                    : 'STATIC CROSS-SECTION'}
+                </span>
+                <span className={styles.railTag}>
+                  {hoverId
+                    ? `HOVER ${stagesById[hoverId].code} · ${stagesById[hoverId].name}`
+                    : `SELECTED ${stage.code} · ${stage.name}`}
+                </span>
+              </div>
             </div>
 
-            <div className={styles.faultRow}>
-              <p className={styles.transportLabel}>Fault injection</p>
-              <div className={styles.faultGrid} role="group" aria-label="Inject a fault">
-                {stages.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className={faults[item.id] ? styles.faultOn : styles.fault}
-                    aria-pressed={Boolean(faults[item.id])}
-                    onClick={() => toggleFault(item.id)}
-                    onMouseEnter={() => setHoverId(item.id)}
-                    onMouseLeave={() => setHoverId(null)}
-                  >
-                    <i aria-hidden="true" />
-                    {item.code} {item.name}
-                  </button>
-                ))}
+            <div className={styles.transport}>
+              <div className={styles.transportRow}>
                 <button
                   type="button"
-                  className={styles.clearButton}
-                  onClick={() => setFaults({})}
-                  disabled={faultCount === 0}
+                  className={
+                    running ? styles.runButtonActive : styles.runButton
+                  }
+                  onClick={() => setRunning((value) => !value)}
+                  aria-pressed={running}
+                  disabled={!live}
                 >
-                  Clear
+                  <i aria-hidden="true" />
+                  {running ? 'Pause' : 'Run'}
                 </button>
+                <button
+                  type="button"
+                  className={styles.stepButton}
+                  onClick={() => {
+                    setRunning(false)
+                    setStepToken((token) => token + 1)
+                  }}
+                  disabled={!live}
+                >
+                  Step ▸
+                </button>
+
+                <div
+                  className={styles.speedGroup}
+                  role="group"
+                  aria-label="Playback rate"
+                >
+                  {SPEEDS.map((value, index) => (
+                    <button
+                      key={value}
+                      type="button"
+                      className={
+                        index === speedIndex ? styles.speedActive : styles.speed
+                      }
+                      aria-pressed={index === speedIndex}
+                      onClick={() => setSpeedIndex(index)}
+                      disabled={!live}
+                    >
+                      {value}×
+                    </button>
+                  ))}
+                </div>
+
+                <label className={styles.slider}>
+                  <span>Cutaway</span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={Math.round(explode * 100)}
+                    onChange={(event) =>
+                      setExplode(Number(event.target.value) / 100)
+                    }
+                    disabled={!live}
+                  />
+                </label>
+              </div>
+
+              <div className={styles.faultRow}>
+                <p className={styles.transportLabel}>Fault injection</p>
+                <div
+                  className={styles.faultGrid}
+                  role="group"
+                  aria-label="Inject a fault"
+                >
+                  {stages.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className={
+                        faults[item.id] ? styles.faultOn : styles.fault
+                      }
+                      aria-pressed={Boolean(faults[item.id])}
+                      onClick={() => toggleFault(item.id)}
+                      onMouseEnter={() => setHoverId(item.id)}
+                      onMouseLeave={() => setHoverId(null)}
+                    >
+                      <i aria-hidden="true" />
+                      {item.code} {item.name}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    className={styles.clearButton}
+                    onClick={() => setFaults({})}
+                    disabled={faultCount === 0}
+                  >
+                    Clear
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -313,7 +381,9 @@ export function SystemsExperience() {
                 {log.map((line) => (
                   <li key={line.id} className={styles[`log_${line.kind}`]}>
                     <span className={styles.logTime}>t+{line.at}ms</span>
-                    <span className={styles.logKind}>{line.kind.toUpperCase()}</span>
+                    <span className={styles.logKind}>
+                      {line.kind.toUpperCase()}
+                    </span>
                     <span>{line.text}</span>
                   </li>
                 ))}
@@ -366,7 +436,8 @@ export function SystemsExperience() {
           <h2 id="path-title">The same path, in plain text.</h2>
           <p>
             Every stage of the machine, the decision that shaped it, and what
-            happens when it breaks — readable without a canvas, a mouse or a GPU.
+            happens when it breaks — readable without a canvas, a mouse or a
+            GPU.
           </p>
         </div>
 
@@ -375,7 +446,9 @@ export function SystemsExperience() {
             <li key={item.id} id={`stage-${item.id}`}>
               <article className={styles.bomRow}>
                 <div className={styles.bomIdent}>
-                  <span className={styles.bomDesignator}>STAGE {item.code}</span>
+                  <span className={styles.bomDesignator}>
+                    STAGE {item.code}
+                  </span>
                   <h3>{item.name}</h3>
                   <p className={styles.bomRole}>{item.strap}</p>
                 </div>
@@ -423,7 +496,10 @@ export function SystemsExperience() {
             <Link className={styles.primaryAction} href="/career">
               See the rack <span aria-hidden="true">→</span>
             </Link>
-            <Link className={styles.secondaryAction} href="mailto:devjbull@gmail.com">
+            <Link
+              className={styles.secondaryAction}
+              href="mailto:devjbull@gmail.com"
+            >
               devjbull@gmail.com <span aria-hidden="true">↗</span>
             </Link>
             <Link

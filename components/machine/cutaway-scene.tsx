@@ -46,11 +46,13 @@ const moduleX = (index: number) => (index - (stages.length - 1) / 2) * PITCH
 function drawPlate(index: number, theme: MachineTheme) {
   const stage = stages[index]
   const palette = machinePalettes[theme]
-  const ink = theme === 'dark' ? 'rgba(226, 240, 235, 0.95)' : 'rgba(20, 30, 28, 0.95)'
+  const ink =
+    theme === 'dark' ? 'rgba(226, 240, 235, 0.95)' : 'rgba(20, 30, 28, 0.95)'
   return makeCanvasTexture(512, 128, (ctx) => {
     ctx.fillStyle = theme === 'dark' ? '#0d1618' : '#d8d4c9'
     ctx.fillRect(0, 0, 512, 128)
-    ctx.strokeStyle = theme === 'dark' ? 'rgba(226, 240, 235, 0.25)' : 'rgba(20, 30, 28, 0.3)'
+    ctx.strokeStyle =
+      theme === 'dark' ? 'rgba(226, 240, 235, 0.25)' : 'rgba(20, 30, 28, 0.3)'
     ctx.lineWidth = 4
     ctx.strokeRect(6, 6, 500, 116)
     ctx.fillStyle = palette.signalCss
@@ -100,10 +102,18 @@ export function CutawayScene(props: CutawaySceneProps) {
         theme === 'dark' ? 0.8 : 1.4
       )
     )
-    const key = new THREE.DirectionalLight(0xffffff, theme === 'dark' ? 1.8 : 2.4)
+    const key = new THREE.DirectionalLight(
+      0xffffff,
+      theme === 'dark' ? 1.8 : 2.4
+    )
     key.position.set(4, 9, 11)
     scene.add(key)
-    const rim = new THREE.PointLight(palette.signal, theme === 'dark' ? 30 : 12, 34, 2)
+    const rim = new THREE.PointLight(
+      palette.signal,
+      theme === 'dark' ? 30 : 12,
+      34,
+      2
+    )
     rim.position.set(-8, 3, 6)
     scene.add(rim)
 
@@ -115,7 +125,7 @@ export function CutawayScene(props: CutawaySceneProps) {
     // ---- cutaway shells (instanced slabs) ---------------------------------
     const SLABS = 5
     const shellMaterial = new THREE.MeshStandardMaterial({
-      color: theme === 'dark' ? 0x131c1e : 0x9c9890,
+      color: 0xffffff,
       roughness: 0.6,
       metalness: 0.5
     })
@@ -124,7 +134,13 @@ export function CutawayScene(props: CutawaySceneProps) {
       shellMaterial,
       stages.length * SLABS
     )
+    shells.instanceColor = new THREE.InstancedBufferAttribute(
+      new Float32Array(stages.length * SLABS * 3),
+      3
+    )
     root.add(shells)
+    const shellBase = new THREE.Color(theme === 'dark' ? 0x1b2628 : 0x8c8880)
+    const shellBack = new THREE.Color(theme === 'dark' ? 0x080e10 : 0x4a4f4c)
 
     // ---- internals (instanced) -------------------------------------------
     const INNER = 7
@@ -147,7 +163,10 @@ export function CutawayScene(props: CutawaySceneProps) {
     const plates = stages.map((_, index) => {
       const plate = new THREE.Mesh(
         new THREE.PlaneGeometry(MODULE_W * 0.92, MODULE_W * 0.92 * 0.25),
-        new THREE.MeshBasicMaterial({ map: drawPlate(index, theme), transparent: true })
+        new THREE.MeshBasicMaterial({
+          map: drawPlate(index, theme),
+          transparent: true
+        })
       )
       plate.position.set(moduleX(index), -MODULE_H / 2 - 0.55, MODULE_D / 2)
       plate.userData.stageId = stages[index].id
@@ -210,13 +229,22 @@ export function CutawayScene(props: CutawaySceneProps) {
     root.add(bypass)
 
     // ---- packet + trail ---------------------------------------------------
-    const packetMaterial = new THREE.MeshBasicMaterial({ color: palette.signal })
-    const packet = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.4), packetMaterial)
+    const packetMaterial = new THREE.MeshBasicMaterial({
+      color: palette.signal
+    })
+    const packet = new THREE.Mesh(
+      new THREE.BoxGeometry(0.4, 0.4, 0.4),
+      packetMaterial
+    )
     root.add(packet)
     const TRAIL = 26
     const trail = new THREE.InstancedMesh(
       new THREE.BoxGeometry(0.16, 0.16, 0.16),
-      new THREE.MeshBasicMaterial({ color: palette.signal, transparent: true, opacity: 0.55 }),
+      new THREE.MeshBasicMaterial({
+        color: palette.signal,
+        transparent: true,
+        opacity: 0.55
+      }),
       TRAIL
     )
     trail.frustumCulled = false
@@ -240,15 +268,22 @@ export function CutawayScene(props: CutawaySceneProps) {
     const target = new THREE.Vector3(0, -0.2, 0)
     let hovered: string | null = null
 
+    let focusMode = false
     const resize = () => {
       const width = host.clientWidth
       const height = host.clientHeight
       if (!width || !height) return
       renderer.setSize(width, height, false)
       camera.aspect = width / height
-      const halfSpan = (EXIT_X - ENTRY_X) / 2 + 0.6
+      // Narrow viewports track the packet through two modules instead of
+      // shrinking the whole machine into an unreadable strip.
+      focusMode = camera.aspect < 1.3
+      const halfSpan = focusMode ? PITCH * 1.05 : (EXIT_X - ENTRY_X) / 2 + 0.6
       const fitHeight = Math.max(3.6, halfSpan / camera.aspect)
-      state.radius = Math.min(70, fitHeight / Math.tan((camera.fov * Math.PI) / 360) + 2)
+      state.radius = Math.min(
+        70,
+        fitHeight / Math.tan((camera.fov * Math.PI) / 360) + 2
+      )
       camera.updateProjectionMatrix()
     }
 
@@ -277,9 +312,20 @@ export function CutawayScene(props: CutawaySceneProps) {
     }
     const handleMove = (event: PointerEvent) => {
       if (state.dragging && pointerId === event.pointerId) {
-        moved = Math.max(moved, Math.hypot(event.clientX - downX, event.clientY - downY))
-        state.targetAzimuth = clamp(state.targetAzimuth + event.movementX * 0.004, -0.55, 0.55)
-        state.targetPolar = clamp(state.targetPolar - event.movementY * 0.003, -0.15, 0.55)
+        moved = Math.max(
+          moved,
+          Math.hypot(event.clientX - downX, event.clientY - downY)
+        )
+        state.targetAzimuth = clamp(
+          state.targetAzimuth + event.movementX * 0.004,
+          -0.55,
+          0.55
+        )
+        state.targetPolar = clamp(
+          state.targetPolar - event.movementY * 0.003,
+          -0.15,
+          0.55
+        )
         return
       }
       const id = pick(event)
@@ -301,10 +347,14 @@ export function CutawayScene(props: CutawaySceneProps) {
     }
     const handleKey = (event: KeyboardEvent) => {
       const step = 0.1
-      if (event.key === 'ArrowLeft') state.targetAzimuth = clamp(state.targetAzimuth - step, -0.55, 0.55)
-      else if (event.key === 'ArrowRight') state.targetAzimuth = clamp(state.targetAzimuth + step, -0.55, 0.55)
-      else if (event.key === 'ArrowUp') state.targetPolar = clamp(state.targetPolar + step, -0.15, 0.55)
-      else if (event.key === 'ArrowDown') state.targetPolar = clamp(state.targetPolar - step, -0.15, 0.55)
+      if (event.key === 'ArrowLeft')
+        state.targetAzimuth = clamp(state.targetAzimuth - step, -0.55, 0.55)
+      else if (event.key === 'ArrowRight')
+        state.targetAzimuth = clamp(state.targetAzimuth + step, -0.55, 0.55)
+      else if (event.key === 'ArrowUp')
+        state.targetPolar = clamp(state.targetPolar + step, -0.15, 0.55)
+      else if (event.key === 'ArrowDown')
+        state.targetPolar = clamp(state.targetPolar - step, -0.15, 0.55)
       else return
       event.preventDefault()
     }
@@ -403,7 +453,9 @@ export function CutawayScene(props: CutawaySceneProps) {
         packetY = damp(packetY, -1.75, 7, delta)
         const index = stageAt(packetX)
         if (index === -1 && packetX > 0) {
-          const passed = stages.findIndex((_, i) => packetX > moduleX(i) + MODULE_W / 2)
+          const passed = stages.findIndex(
+            (_, i) => packetX > moduleX(i) + MODULE_W / 2
+          )
           if (passed >= 0) {
             phase = 'flow'
             onEvent('rejoin', stages[Math.max(0, passed)].id, elapsed)
@@ -419,6 +471,10 @@ export function CutawayScene(props: CutawaySceneProps) {
       }
 
       // camera
+      const focusX = focusMode
+        ? clamp(packetX, moduleX(0), moduleX(stages.length - 1))
+        : 0
+      target.x = damp(target.x, focusX, 3.2, delta)
       state.azimuth = damp(state.azimuth, state.targetAzimuth, 6, delta)
       state.polar = damp(state.polar, state.targetPolar, 6, delta)
       camera.position.set(
@@ -429,7 +485,6 @@ export function CutawayScene(props: CutawaySceneProps) {
       camera.lookAt(target)
 
       // modules
-      const shellColor = new THREE.Color(theme === 'dark' ? 0x131c1e : 0x9c9890)
       const faultColor = new THREE.Color(palette.fault)
       const okColor = new THREE.Color(palette.signal)
       const idleColor = new THREE.Color(theme === 'dark' ? 0x1d2b2b : 0x5c6663)
@@ -462,6 +517,10 @@ export function CutawayScene(props: CutawaySceneProps) {
           dummy.rotation.set(0, 0, 0)
           dummy.updateMatrix()
           shells.setMatrixAt(index * SLABS + slabIndex, dummy.matrix)
+          color.copy(slabIndex === 2 ? shellBack : shellBase)
+          if (faultLevel[index] > 0.01)
+            color.lerp(faultColor, faultLevel[index] * 0.35)
+          shells.setColorAt(index * SLABS + slabIndex, color)
         })
 
         for (let inner = 0; inner < INNER; inner += 1) {
@@ -485,13 +544,21 @@ export function CutawayScene(props: CutawaySceneProps) {
         }
 
         const plate = plates[index]
-        plate.position.set(cx, cy - MODULE_H / 2 - 0.55, cz + MODULE_D / 2 + 0.02)
+        plate.position.set(
+          cx,
+          cy - MODULE_H / 2 - 0.55,
+          cz + MODULE_D / 2 + 0.02
+        )
         ;(plate.material as THREE.MeshBasicMaterial).color
           .copy(new THREE.Color(0xffffff))
           .lerp(faultColor, faultLevel[index] * 0.75)
 
         const openBreaker =
-          faulted && (phase === 'bypass' || packetX > moduleX(index)) ? 1 : faulted ? 0.15 : 0
+          faulted && (phase === 'bypass' || packetX > moduleX(index))
+            ? 1
+            : faulted
+              ? 0.15
+              : 0
         shutterLevel[index] = damp(shutterLevel[index], openBreaker, 8, delta)
         const shutter = shutters[index]
         shutter.scale.y = Math.max(0.001, shutterLevel[index])
@@ -500,12 +567,14 @@ export function CutawayScene(props: CutawaySceneProps) {
           cy + (MODULE_H / 2) * (1 - shutterLevel[index]),
           cz + MODULE_D / 2 - 0.2
         )
-        ;(shutter.material as THREE.MeshStandardMaterial).opacity = 0.85 * shutterLevel[index]
+        ;(shutter.material as THREE.MeshStandardMaterial).opacity =
+          0.85 * shutterLevel[index]
 
         const hit = clickable[index]
         hit.position.set(cx, cy - 0.2, cz)
       })
       shells.instanceMatrix.needsUpdate = true
+      if (shells.instanceColor) shells.instanceColor.needsUpdate = true
       internals.instanceMatrix.needsUpdate = true
       if (internals.instanceColor) internals.instanceColor.needsUpdate = true
 
@@ -525,7 +594,6 @@ export function CutawayScene(props: CutawaySceneProps) {
       trail.instanceMatrix.needsUpdate = true
 
       rim.position.set(packetX, 1.5, 4)
-      shellMaterial.color.copy(shellColor)
 
       renderer.render(scene, camera)
     }

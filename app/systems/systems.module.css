@@ -18,14 +18,17 @@
   --etch: rgba(180, 230, 220, 0.05);
   color: var(--text);
   background-color: var(--chassis);
-  background-image:
-    repeating-linear-gradient(
-      115deg,
-      var(--etch) 0 1px,
-      transparent 1px 6px
-    );
+  background-image: repeating-linear-gradient(
+    115deg,
+    var(--etch) 0 1px,
+    transparent 1px 6px
+  );
   font-family:
-    ui-sans-serif, system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    'Helvetica Neue',
+    sans-serif;
 }
 
 :global(html.light) .page {
@@ -50,23 +53,23 @@
 
 @media (prefers-color-scheme: light) {
   :global(html:not(.dark)) .page {
-  --chassis: #eee7db;
-  --panel: #f6f1e7;
-  --panel-2: #e8e0d1;
-  --line: rgba(20, 45, 40, 0.2);
-  --line-strong: rgba(20, 45, 40, 0.42);
-  --text: #16211f;
-  --muted: rgba(22, 33, 31, 0.68);
-  --signal: #0d7a63;
-  --amber: #9a5a15;
-  --fault: #b1372a;
-  --paper: #fbf8f1;
-  --paper-ink: #14201e;
-  --screen: #061210;
-  --screen-ink: #cffbec;
-  --screen-signal: #86f0d2;
-  --shadow: 0 18px 34px rgba(35, 45, 40, 0.16);
-  --etch: rgba(20, 45, 40, 0.06);
+    --chassis: #eee7db;
+    --panel: #f6f1e7;
+    --panel-2: #e8e0d1;
+    --line: rgba(20, 45, 40, 0.2);
+    --line-strong: rgba(20, 45, 40, 0.42);
+    --text: #16211f;
+    --muted: rgba(22, 33, 31, 0.68);
+    --signal: #0d7a63;
+    --amber: #9a5a15;
+    --fault: #b1372a;
+    --paper: #fbf8f1;
+    --paper-ink: #14201e;
+    --screen: #061210;
+    --screen-ink: #cffbec;
+    --screen-signal: #86f0d2;
+    --shadow: 0 18px 34px rgba(35, 45, 40, 0.16);
+    --etch: rgba(20, 45, 40, 0.06);
   }
 }
 
@@ -200,32 +203,47 @@
 .instrument {
   display: grid;
   margin-top: clamp(1.5rem, 3vw, 2.25rem);
-  grid-template-areas:
-    'viewport scope'
-    'channels scope';
   grid-template-columns: minmax(0, 1fr) minmax(21rem, 27rem);
-  grid-template-rows: auto auto;
   align-items: start;
+  gap: clamp(0.9rem, 1.6vw, 1.4rem);
+}
+
+.column {
+  display: grid;
+  min-width: 0;
   gap: clamp(0.9rem, 1.6vw, 1.4rem);
 }
 
 .viewport {
   position: relative;
-  grid-area: viewport;
   padding: 0.75rem;
   border: 1px solid var(--line-strong);
   border-radius: 4px;
   background:
-    radial-gradient(circle at 0.95rem 0.95rem, var(--line-strong) 0 2.5px, transparent 3px),
-    radial-gradient(circle at calc(100% - 0.95rem) 0.95rem, var(--line-strong) 0 2.5px, transparent 3px),
-    radial-gradient(circle at 0.95rem calc(100% - 0.95rem), var(--line-strong) 0 2.5px, transparent 3px),
+    radial-gradient(
+      circle at 0.95rem 0.95rem,
+      var(--line-strong) 0 2.5px,
+      transparent 3px
+    ),
+    radial-gradient(
+      circle at calc(100% - 0.95rem) 0.95rem,
+      var(--line-strong) 0 2.5px,
+      transparent 3px
+    ),
+    radial-gradient(
+      circle at 0.95rem calc(100% - 0.95rem),
+      var(--line-strong) 0 2.5px,
+      transparent 3px
+    ),
     radial-gradient(
       circle at calc(100% - 0.95rem) calc(100% - 0.95rem),
       var(--line-strong) 0 2.5px,
       transparent 3px
     ),
     linear-gradient(180deg, var(--panel-2), var(--panel));
-  box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  box-shadow:
+    var(--shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .viewportInner {
@@ -241,7 +259,11 @@
   width: 100%;
   height: 100%;
   background:
-    radial-gradient(circle at 50% 55%, rgba(134, 240, 210, 0.08), transparent 60%),
+    radial-gradient(
+      circle at 50% 55%,
+      rgba(134, 240, 210, 0.08),
+      transparent 60%
+    ),
     var(--chassis);
 }
 
@@ -301,7 +323,6 @@
 /* ---------------------------------------------------------------- channels */
 
 .channels {
-  grid-area: channels;
   padding: 0.85rem 0.9rem 1rem;
   border: 1px solid var(--line);
   border-radius: 4px;
@@ -400,7 +421,6 @@
 /* ------------------------------------------------------------------ scope */
 
 .scopeColumn {
-  grid-area: scope;
   scroll-margin-top: 5rem;
 }
 
@@ -411,7 +431,9 @@
   border: 1px solid var(--line-strong);
   border-radius: 4px;
   background: linear-gradient(180deg, var(--panel-2), var(--panel));
-  box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  box-shadow:
+    var(--shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .scopeHead {
@@ -454,7 +476,9 @@
     linear-gradient(rgba(134, 240, 210, 0.11) 1px, transparent 1px),
     linear-gradient(90deg, rgba(134, 240, 210, 0.11) 1px, transparent 1px);
   background-position: center center;
-  background-size: 12.5% 20%, 12.5% 20%;
+  background-size:
+    12.5% 20%,
+    12.5% 20%;
   box-shadow: inset 0 0 2.5rem rgba(0, 0, 0, 0.75);
 }
 
@@ -764,7 +788,8 @@
 /* ------------------------------------------------------------------- spec */
 
 .spec {
-  padding: clamp(3rem, 6vw, 5.5rem) clamp(1rem, 4vw, 3rem) clamp(4rem, 8vw, 7rem);
+  padding: clamp(3rem, 6vw, 5.5rem) clamp(1rem, 4vw, 3rem)
+    clamp(4rem, 8vw, 7rem);
   background:
     repeating-linear-gradient(115deg, var(--etch) 0 1px, transparent 1px 6px),
     var(--chassis);
@@ -933,7 +958,6 @@
 /* ------------------------------------------------------------- transport */
 
 .transport {
-  grid-area: channels;
   padding: 0.9rem 1rem 1rem;
   border: 1px solid var(--line);
   border-radius: 4px;
@@ -1134,7 +1158,6 @@
 
 .logColumn {
   display: grid;
-  grid-area: scope;
   align-content: start;
   gap: clamp(0.9rem, 1.6vw, 1.4rem);
 }
@@ -1283,10 +1306,6 @@
 
 @media (max-width: 1080px) {
   .instrument {
-    grid-template-areas:
-      'viewport'
-      'channels'
-      'scope';
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -1338,6 +1357,6 @@
 
 @media (max-width: 720px) {
   .viewportInner {
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 1 / 1;
   }
 }

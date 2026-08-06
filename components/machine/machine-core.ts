@@ -128,8 +128,8 @@ export function useWebglSupported(): boolean | null {
       setSupported(
         Boolean(
           canvas.getContext('webgl2') ||
-            canvas.getContext('webgl') ||
-            canvas.getContext('experimental-webgl')
+          canvas.getContext('webgl') ||
+          canvas.getContext('experimental-webgl')
         )
       )
     } catch {
@@ -187,6 +187,11 @@ export function seededRandom(seed: number) {
   }
 }
 
-export function damp(current: number, target: number, lambda: number, dt: number) {
+export function damp(
+  current: number,
+  target: number,
+  lambda: number,
+  dt: number
+) {
   return current + (target - current) * (1 - Math.exp(-lambda * dt))
 }

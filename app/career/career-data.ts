@@ -76,8 +76,14 @@ export const rackUnits: RackUnit[] = [
     metrics: [
       { label: 'Program', value: 'Turing School of Software and Design, 2017' },
       { label: 'Degree', value: 'B.A. Economics, University of Kansas, 2015' },
-      { label: 'Freelance', value: 'U-Hoops — WordPress → React/Redux + Express + MongoDB' },
-      { label: 'Earlier', value: 'Project manager, JDB Capital (four properties)' }
+      {
+        label: 'Freelance',
+        value: 'U-Hoops — WordPress → React/Redux + Express + MongoDB'
+      },
+      {
+        label: 'Earlier',
+        value: 'Project manager, JDB Capital (four properties)'
+      }
     ],
     stack: ['React', 'Redux', 'Express', 'MongoDB', 'JavaScript'],
     net: ['bnr'],
@@ -102,7 +108,10 @@ export const rackUnits: RackUnit[] = [
       { label: 'Title', value: 'Solutions Architect' },
       { label: 'Since', value: 'July 2018' },
       { label: 'Mode', value: 'Embedded in client engineering teams' },
-      { label: 'Channels', value: 'Apple (2018–2020) · Chick-fil-A (2020–2022)' }
+      {
+        label: 'Channels',
+        value: 'Apple (2018–2020) · Chick-fil-A (2020–2022)'
+      }
     ],
     stack: ['Architecture', 'Client teams', 'Code review', 'Estimation'],
     net: ['apple', 'patch'],
@@ -131,7 +140,10 @@ export const rackUnits: RackUnit[] = [
       { label: 'Uptime', value: '100% through the growth' },
       { label: 'Runtime', value: 'Node 5 → Node 12, ES5 → ES6' },
       { label: 'Front end', value: 'Angular 1 → Vue rewrite' },
-      { label: 'Shipped', value: 'Apple Card integration + launch coordination' }
+      {
+        label: 'Shipped',
+        value: 'Apple Card integration + launch coordination'
+      }
     ],
     stack: ['Node', 'JavaScript', 'Vue', 'Express', 'MongoDB', 'AWS'],
     net: ['cfa'],
@@ -158,12 +170,26 @@ export const rackUnits: RackUnit[] = [
     metrics: [
       { label: 'Revenue', value: '<$1M/day → $5M/day (2022)' },
       { label: 'Partners', value: 'DoorDash · UberEats · Grubhub' },
-      { label: 'Combo meals', value: 'UberEats combos → ~10% higher revenue per order' },
+      {
+        label: 'Combo meals',
+        value: 'UberEats combos → ~10% higher revenue per order'
+      },
       { label: 'iOS', value: 'DoorDash checkout inside the Chick-fil-A app' },
-      { label: 'Infrastructure', value: 'Migrated the project to AWS CloudFormation' },
+      {
+        label: 'Infrastructure',
+        value: 'Migrated the project to AWS CloudFormation'
+      },
       { label: 'Operations', value: 'Logging, monitoring, alerting rebuilt' }
     ],
-    stack: ['Node', 'Go', 'TypeScript', 'AWS', 'CloudFormation', 'DynamoDB', 'Datadog'],
+    stack: [
+      'Node',
+      'Go',
+      'TypeScript',
+      'AWS',
+      'CloudFormation',
+      'DynamoDB',
+      'Datadog'
+    ],
     net: ['patch'],
     wave: 'packet'
   },
@@ -224,7 +250,10 @@ export const rackUnits: RackUnit[] = [
     metrics: [
       { label: 'Location', value: 'Raleigh, North Carolina' },
       { label: 'Email', value: 'devjbull@gmail.com' },
-      { label: 'Looking for', value: 'Platform, integrations, modernisation at scale' },
+      {
+        label: 'Looking for',
+        value: 'Platform, integrations, modernisation at scale'
+      },
       { label: 'Status', value: 'Open to conversations' }
     ],
     stack: [],
@@ -251,7 +280,12 @@ export function unitCenterY(index: number) {
   return RACK_HEIGHT / 2 - (index + 0.5) * UNIT_PITCH
 }
 
-export type Patch = { from: string; to: string; fromIndex: number; toIndex: number }
+export type Patch = {
+  from: string
+  to: string
+  fromIndex: number
+  toIndex: number
+}
 
 export const patches: Patch[] = rackUnits.flatMap((unit, index) =>
   unit.net

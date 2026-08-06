@@ -40,8 +40,10 @@ function drawFace(unit: RackUnit, theme: MachineTheme) {
   const palette = machinePalettes[theme]
   const metal = theme === 'dark' ? '#161d1f' : '#c9c6bd'
   const metalHi = theme === 'dark' ? '#222c2e' : '#e7e4da'
-  const ink = theme === 'dark' ? 'rgba(226, 240, 235, 0.94)' : 'rgba(24, 32, 30, 0.92)'
-  const inkFaint = theme === 'dark' ? 'rgba(226, 240, 235, 0.45)' : 'rgba(24, 32, 30, 0.5)'
+  const ink =
+    theme === 'dark' ? 'rgba(226, 240, 235, 0.94)' : 'rgba(24, 32, 30, 0.92)'
+  const inkFaint =
+    theme === 'dark' ? 'rgba(226, 240, 235, 0.45)' : 'rgba(24, 32, 30, 0.5)'
   return makeCanvasTexture(FACE_W, FACE_H, (ctx) => {
     const base = ctx.createLinearGradient(0, 0, 0, FACE_H)
     base.addColorStop(0, metalHi)
@@ -52,7 +54,9 @@ function drawFace(unit: RackUnit, theme: MachineTheme) {
 
     // brushed metal
     ctx.strokeStyle =
-      theme === 'dark' ? 'rgba(255, 255, 255, 0.035)' : 'rgba(255, 255, 255, 0.5)'
+      theme === 'dark'
+        ? 'rgba(255, 255, 255, 0.035)'
+        : 'rgba(255, 255, 255, 0.5)'
     ctx.lineWidth = 1
     for (let y = 0; y < FACE_H; y += 3) {
       ctx.beginPath()
@@ -62,7 +66,8 @@ function drawFace(unit: RackUnit, theme: MachineTheme) {
     }
 
     // rack ears + screws
-    ctx.fillStyle = theme === 'dark' ? 'rgba(0, 0, 0, 0.35)' : 'rgba(0, 0, 0, 0.14)'
+    ctx.fillStyle =
+      theme === 'dark' ? 'rgba(0, 0, 0, 0.35)' : 'rgba(0, 0, 0, 0.14)'
     ctx.fillRect(0, 0, 54, FACE_H)
     ctx.fillRect(FACE_W - 54, 0, 54, FACE_H)
     ;[
@@ -99,7 +104,11 @@ function drawFace(unit: RackUnit, theme: MachineTheme) {
     ctx.fillText(unit.face[0], 148, FACE_H / 2 - 16)
     ctx.fillStyle = inkFaint
     ctx.font = monoFont(19, 600)
-    ctx.fillText(`${unit.face[1]}  ·  ${unit.window.toUpperCase()}`, 148, FACE_H / 2 + 20)
+    ctx.fillText(
+      `${unit.face[1]}  ·  ${unit.window.toUpperCase()}`,
+      148,
+      FACE_H / 2 + 20
+    )
 
     // meter window
     const x0 = ((METER_X0 + UNIT_W / 2) / UNIT_W) * FACE_W
@@ -115,7 +124,8 @@ function drawFace(unit: RackUnit, theme: MachineTheme) {
     ctx.fillText(unit.meter.label.toUpperCase(), x0 - 10, 20)
 
     // ventilation slots
-    ctx.fillStyle = theme === 'dark' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)'
+    ctx.fillStyle =
+      theme === 'dark' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)'
     for (let index = 0; index < 6; index += 1) {
       ctx.fillRect(x1 + 42 + index * 12, 46, 5, FACE_H - 92)
     }
@@ -133,7 +143,12 @@ function radialTexture(color: string) {
   })
 }
 
-export function RackScene({ theme, activeId, onSelect, onHover }: RackSceneProps) {
+export function RackScene({
+  theme,
+  activeId,
+  onSelect,
+  onHover
+}: RackSceneProps) {
   const hostRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const activeRef = useRef(activeId)
@@ -190,7 +205,12 @@ export function RackScene({ theme, activeId, onSelect, onHover }: RackSceneProps
     shadowCamera.near = 1
     shadowCamera.far = 40
     scene.add(key)
-    const rim = new THREE.PointLight(palette.signal, theme === 'dark' ? 34 : 12, 30, 2)
+    const rim = new THREE.PointLight(
+      palette.signal,
+      theme === 'dark' ? 34 : 12,
+      30,
+      2
+    )
     rim.position.set(-6, 2, 5)
     scene.add(rim)
 
@@ -381,8 +401,7 @@ export function RackScene({ theme, activeId, onSelect, onHover }: RackSceneProps
     )
     rackUnits.forEach((_, unitIndex) => {
       for (let seg = 0; seg < SEGMENTS; seg += 1) {
-        const x =
-          METER_X0 + ((seg + 0.5) / SEGMENTS) * (METER_X1 - METER_X0)
+        const x = METER_X0 + ((seg + 0.5) / SEGMENTS) * (METER_X1 - METER_X0)
         dummy.position.set(x, unitCenterY(unitIndex), 0.36)
         dummy.rotation.set(0, 0, 0)
         dummy.updateMatrix()
@@ -404,8 +423,16 @@ export function RackScene({ theme, activeId, onSelect, onHover }: RackSceneProps
       material: THREE.MeshStandardMaterial
     }
     const cables: CableRig[] = patches.map((patch) => {
-      const a = new THREE.Vector3(UNIT_W / 2 - 0.55, unitCenterY(patch.fromIndex), 0.62)
-      const b = new THREE.Vector3(UNIT_W / 2 - 0.55, unitCenterY(patch.toIndex), 0.62)
+      const a = new THREE.Vector3(
+        UNIT_W / 2 - 0.55,
+        unitCenterY(patch.fromIndex),
+        0.62
+      )
+      const b = new THREE.Vector3(
+        UNIT_W / 2 - 0.55,
+        unitCenterY(patch.toIndex),
+        0.62
+      )
       const span = Math.abs(patch.toIndex - patch.fromIndex)
       const bow = 0.9 + span * 0.55
       const curve = new THREE.CatmullRomCurve3([
@@ -423,7 +450,10 @@ export function RackScene({ theme, activeId, onSelect, onHover }: RackSceneProps
         color: theme === 'dark' ? 0x24302f : 0x3d4744,
         roughness: 0.65
       })
-      const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 48, 0.055, 8, false), material)
+      const tube = new THREE.Mesh(
+        new THREE.TubeGeometry(curve, 48, 0.055, 8, false),
+        material
+      )
       tube.castShadow = true
       root.add(tube)
       return { from: patch.from, to: patch.to, curve, material }
@@ -477,9 +507,12 @@ export function RackScene({ theme, activeId, onSelect, onHover }: RackSceneProps
       camera.aspect = width / height
       const fitHeight = Math.max(
         (RACK_HEIGHT / 2) * 1.16,
-        (RACK_WIDTH / 2) * 1.06 / camera.aspect
+        ((RACK_WIDTH / 2) * 1.06) / camera.aspect
       )
-      state.radius = Math.min(40, fitHeight / Math.tan((camera.fov * Math.PI) / 360) + 1.2)
+      state.radius = Math.min(
+        40,
+        fitHeight / Math.tan((camera.fov * Math.PI) / 360) + 1.2
+      )
       camera.updateProjectionMatrix()
     }
 
@@ -517,9 +550,20 @@ export function RackScene({ theme, activeId, onSelect, onHover }: RackSceneProps
 
     const handleMove = (event: PointerEvent) => {
       if (state.dragging && pointerId === event.pointerId) {
-        moved = Math.max(moved, Math.hypot(event.clientX - downX, event.clientY - downY))
-        state.targetAzimuth = clamp(state.targetAzimuth + event.movementX * 0.004, -0.6, 0.6)
-        state.targetPolar = clamp(state.targetPolar - event.movementY * 0.003, -0.35, 0.45)
+        moved = Math.max(
+          moved,
+          Math.hypot(event.clientX - downX, event.clientY - downY)
+        )
+        state.targetAzimuth = clamp(
+          state.targetAzimuth + event.movementX * 0.004,
+          -0.6,
+          0.6
+        )
+        state.targetPolar = clamp(
+          state.targetPolar - event.movementY * 0.003,
+          -0.35,
+          0.45
+        )
         return
       }
       setHover(pick(event))
@@ -543,10 +587,14 @@ export function RackScene({ theme, activeId, onSelect, onHover }: RackSceneProps
 
     const handleKey = (event: KeyboardEvent) => {
       const step = 0.1
-      if (event.key === 'ArrowLeft') state.targetAzimuth = clamp(state.targetAzimuth - step, -0.6, 0.6)
-      else if (event.key === 'ArrowRight') state.targetAzimuth = clamp(state.targetAzimuth + step, -0.6, 0.6)
-      else if (event.key === 'ArrowUp') state.targetPolar = clamp(state.targetPolar + step, -0.35, 0.45)
-      else if (event.key === 'ArrowDown') state.targetPolar = clamp(state.targetPolar - step, -0.35, 0.45)
+      if (event.key === 'ArrowLeft')
+        state.targetAzimuth = clamp(state.targetAzimuth - step, -0.6, 0.6)
+      else if (event.key === 'ArrowRight')
+        state.targetAzimuth = clamp(state.targetAzimuth + step, -0.6, 0.6)
+      else if (event.key === 'ArrowUp')
+        state.targetPolar = clamp(state.targetPolar + step, -0.35, 0.45)
+      else if (event.key === 'ArrowDown')
+        state.targetPolar = clamp(state.targetPolar - step, -0.35, 0.45)
       else return
       event.preventDefault()
       state.idle = 0
@@ -577,7 +625,11 @@ export function RackScene({ theme, activeId, onSelect, onHover }: RackSceneProps
       state.idle += delta
 
       if (!state.dragging && state.idle > 7) {
-        state.targetAzimuth = clamp(-0.12 + Math.sin(elapsed * 0.1) * 0.16, -0.6, 0.6)
+        state.targetAzimuth = clamp(
+          -0.12 + Math.sin(elapsed * 0.1) * 0.16,
+          -0.6,
+          0.6
+        )
       }
       state.azimuth = damp(state.azimuth, state.targetAzimuth, 6, delta)
       state.polar = damp(state.polar, state.targetPolar, 6, delta)
@@ -596,7 +648,12 @@ export function RackScene({ theme, activeId, onSelect, onHover }: RackSceneProps
         const isHover = rig.unit.id === hovered
         rig.out = damp(rig.out, isActive ? 0.95 : isHover ? 0.28 : 0, 9, delta)
         rig.group.position.z = rig.out
-        rig.group.rotation.x = damp(rig.group.rotation.x, isActive ? -0.06 : 0, 8, delta)
+        rig.group.rotation.x = damp(
+          rig.group.rotation.x,
+          isActive ? -0.06 : 0,
+          8,
+          delta
+        )
 
         const goal = isActive ? 1 : 0.16
         rig.level = damp(rig.level, goal, isActive ? 2.4 : 6, delta)
@@ -612,13 +669,16 @@ export function RackScene({ theme, activeId, onSelect, onHover }: RackSceneProps
           ? meter.from + span * easeOut(Math.min(1, selectionAge / 1.4))
           : meter.from
         const ratio =
-          meter.to === 0 ? 0 : Math.min(1, Math.max(0, shown / Math.max(meter.to, 0.0001)))
+          meter.to === 0
+            ? 0
+            : Math.min(1, Math.max(0, shown / Math.max(meter.to, 0.0001)))
         const litCount = Math.round(ratio * SEGMENTS * (isActive ? 1 : 0.18))
         for (let seg = 0; seg < SEGMENTS; seg += 1) {
           const lit = seg < litCount
           const hot = seg > SEGMENTS * 0.78
           color.copy(lit ? (hot ? hotColor : litColor) : dimColor)
-          if (lit && isActive) color.multiplyScalar(1 + Math.sin(elapsed * 6 - seg) * 0.08)
+          if (lit && isActive)
+            color.multiplyScalar(1 + Math.sin(elapsed * 6 - seg) * 0.08)
           segments.setColorAt(index * SEGMENTS + seg, color)
           dummy.position.set(
             METER_X0 + ((seg + 0.5) / SEGMENTS) * (METER_X1 - METER_X0),
@@ -639,7 +699,9 @@ export function RackScene({ theme, activeId, onSelect, onHover }: RackSceneProps
       cables.forEach((cable) => {
         const live = cable.from === activeId2 || cable.to === activeId2
         cable.material.color.lerp(
-          live ? litColor : new THREE.Color(theme === 'dark' ? 0x24302f : 0x3d4744),
+          live
+            ? litColor
+            : new THREE.Color(theme === 'dark' ? 0x24302f : 0x3d4744),
           0.14
         )
       })
@@ -653,7 +715,8 @@ export function RackScene({ theme, activeId, onSelect, onHover }: RackSceneProps
         liveCables.forEach((cable, cableIndex) => {
           const forward = cable.from === activeId2
           for (let i = 0; i < perCable; i += 1) {
-            const phase = (elapsed * 0.42 + i / perCable + cableIndex * 0.17) % 1
+            const phase =
+              (elapsed * 0.42 + i / perCable + cableIndex * 0.17) % 1
             const t = forward ? phase : 1 - phase
             const point = cable.curve.getPoint(t)
             dummy.position.copy(point)
@@ -675,9 +738,14 @@ export function RackScene({ theme, activeId, onSelect, onHover }: RackSceneProps
 
       if (activeRig) {
         const rig = activeRig as UnitRig
-        glow.position.set(-UNIT_W / 2 + 0.42, unitCenterY(rig.index), rig.out + 0.5)
+        glow.position.set(
+          -UNIT_W / 2 + 0.42,
+          unitCenterY(rig.index),
+          rig.out + 0.5
+        )
         const strength = Math.max(0, 1 - selectionAge * 1.6)
-        ;(glow.material as THREE.SpriteMaterial).opacity = 0.15 + strength * 0.55
+        ;(glow.material as THREE.SpriteMaterial).opacity =
+          0.15 + strength * 0.55
         glow.scale.setScalar(2 + strength * 2)
       }
 

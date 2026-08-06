@@ -22,7 +22,10 @@ import styles from './career.module.css'
 
 const RackScene = dynamic(
   () => import('@/components/machine/rack-scene').then((mod) => mod.RackScene),
-  { ssr: false, loading: () => <div className={styles.sceneLoading} aria-hidden="true" /> }
+  {
+    ssr: false,
+    loading: () => <div className={styles.sceneLoading} aria-hidden="true" />
+  }
 )
 
 /* ---------------------------------------------------------------- waveform */
@@ -40,7 +43,10 @@ function stepPath(segments: Seg[]) {
         [end, y]
       ]
     })
-    .map(([x, y], index) => `${index === 0 ? 'M' : 'L'}${x.toFixed(2)} ${y.toFixed(2)}`)
+    .map(
+      ([x, y], index) =>
+        `${index === 0 ? 'M' : 'L'}${x.toFixed(2)} ${y.toFixed(2)}`
+    )
     .join(' ')
 }
 
@@ -82,7 +88,9 @@ function periodPath(wave: RackUnit['wave']) {
   }
   if (wave === 'packet') {
     const bits = [1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0]
-    return stepPath(bits.map((bit, index) => [index * 5, (index + 1) * 5, bit as 0 | 1]))
+    return stepPath(
+      bits.map((bit, index) => [index * 5, (index + 1) * 5, bit as 0 | 1])
+    )
   }
   if (wave === 'handshake') {
     return stepPath([
@@ -100,7 +108,8 @@ function periodPath(wave: RackUnit['wave']) {
   }
   return analogPath((t) => {
     const ripple = Math.sin(t * Math.PI * 14) * 1.1
-    const dip = t > 0.52 && t < 0.62 ? 12 * Math.sin(((t - 0.52) / 0.1) * Math.PI) : 0
+    const dip =
+      t > 0.52 && t < 0.62 ? 12 * Math.sin(((t - 0.52) / 0.1) * Math.PI) : 0
     return HI + 2 + ripple + dip
   })
 }
@@ -110,7 +119,10 @@ function useWaveform(wave: RackUnit['wave']) {
     const single = periodPath(wave)
     return [0, 100, 200]
       .map((offset) =>
-        single.replace(/([ML])([\d.-]+) /g, (_, cmd, x) => `${cmd}${Number(x) + offset} `)
+        single.replace(
+          /([ML])([\d.-]+) /g,
+          (_, cmd, x) => `${cmd}${Number(x) + offset} `
+        )
       )
       .join(' ')
   }, [wave])
@@ -166,20 +178,35 @@ function RackElevation({
         role="img"
         aria-label="Front elevation of the career rack: seven labelled units with meters."
       >
-        <rect x="0" y="0" width={PLAN_W} height={PLAN_H} className={styles.planFrame} />
+        <rect
+          x="0"
+          y="0"
+          width={PLAN_W}
+          height={PLAN_H}
+          className={styles.planFrame}
+        />
         {rackUnits.map((unit, index) => {
           const active = unit.id === activeId
           const y = planY(unitCenterY(index)) - unitPlanHeight / 2
-          const ratio =
-            unit.meter.to === 0 ? 0 : active ? 1 : 0.18
+          const ratio = unit.meter.to === 0 ? 0 : active ? 1 : 0.18
           return (
             <g
               key={unit.id}
               className={active ? styles.planUnitActive : styles.planUnit}
               onClick={() => onSelect(unit.id)}
             >
-              <rect x="26" y={y} width={PLAN_W - 52} height={unitPlanHeight} rx="4" />
-              <text x="58" y={y + unitPlanHeight / 2 + 9} className={styles.planSlot}>
+              <rect
+                x="26"
+                y={y}
+                width={PLAN_W - 52}
+                height={unitPlanHeight}
+                rx="4"
+              />
+              <text
+                x="58"
+                y={y + unitPlanHeight / 2 + 9}
+                className={styles.planSlot}
+              >
                 {unit.slot}
               </text>
               <text x="120" y={y + unitPlanHeight / 2 + 9}>
@@ -257,7 +284,9 @@ function Scope({
       <div className={styles.meterBlock} aria-live="polite">
         <p className={styles.meterLabel}>{meter.label}</p>
         <p className={styles.meterValue}>
-          <span className={styles.meterFrom}>{formatMeter(meter, meter.from)}</span>
+          <span className={styles.meterFrom}>
+            {formatMeter(meter, meter.from)}
+          </span>
           <span aria-hidden="true" className={styles.meterArrow}>
             →
           </span>
@@ -318,14 +347,29 @@ const specSheet = [
   { label: 'Title', value: 'Solutions Architect, Big Nerd Ranch' },
   { label: 'Since', value: 'July 2018' },
   { label: 'Location', value: 'Raleigh, North Carolina' },
-  { label: 'Client channels', value: 'Apple (2018–2020) · Chick-fil-A (2020–2022)' },
-  { label: 'Peak scale touched', value: '15M users · $5M/day in delivery revenue' },
+  {
+    label: 'Client channels',
+    value: 'Apple (2018–2020) · Chick-fil-A (2020–2022)'
+  },
+  {
+    label: 'Peak scale touched',
+    value: '15M users · $5M/day in delivery revenue'
+  },
   { label: 'Languages', value: 'JavaScript · TypeScript · Go' },
   { label: 'Frameworks', value: 'Node · Express · Vue · React · Mongoose' },
   { label: 'Data', value: 'MongoDB · DynamoDB · Postgres' },
-  { label: 'Tooling', value: 'AWS · Docker · Kubernetes · GitHub Actions · Git' },
-  { label: 'Operations', value: 'Datadog · Splunk · OpsGenie · Jira · Confluence' },
-  { label: 'Education', value: 'Turing School 2017 · B.A. Economics, Kansas 2015' }
+  {
+    label: 'Tooling',
+    value: 'AWS · Docker · Kubernetes · GitHub Actions · Git'
+  },
+  {
+    label: 'Operations',
+    value: 'Datadog · Splunk · OpsGenie · Jira · Confluence'
+  },
+  {
+    label: 'Education',
+    value: 'Turing School 2017 · B.A. Economics, Kansas 2015'
+  }
 ]
 
 export function CareerExperience() {
@@ -375,9 +419,10 @@ export function CareerExperience() {
             <p className={styles.lede}>
               Solutions Architect at Big Nerd Ranch since 2018. Backend lead on
               Apple’s chatbot while it went from 1M to 15M users, then
-              engineering lead on Chick-fil-A’s third-party delivery integrations
-              while daily revenue went from under $1M to $5M. Every unit in this
-              rack is a real engagement with a real number on the front panel.
+              engineering lead on Chick-fil-A’s third-party delivery
+              integrations while daily revenue went from under $1M to $5M. Every
+              unit in this rack is a real engagement with a real number on the
+              front panel.
             </p>
           </div>
           <ul className={styles.statusStack} aria-label="Rack status">
@@ -397,64 +442,74 @@ export function CareerExperience() {
         </header>
 
         <div className={styles.instrument}>
-          <div className={styles.viewport}>
-            <div className={styles.viewportInner}>
-              {live ? (
-                <RackScene
-                  theme={theme}
-                  activeId={activeId}
-                  onSelect={selectFromCanvas}
-                  onHover={setHoverId}
-                />
-              ) : (
-                <RackElevation activeId={activeId} onSelect={select} />
+          <div className={styles.column}>
+            <div className={styles.viewport}>
+              <div className={styles.viewportInner}>
+                {live ? (
+                  <RackScene
+                    theme={theme}
+                    activeId={activeId}
+                    onSelect={selectFromCanvas}
+                    onHover={setHoverId}
+                  />
+                ) : (
+                  <RackElevation activeId={activeId} onSelect={select} />
+                )}
+              </div>
+
+              <div className={styles.viewportRail}>
+                <span className={styles.railTag}>
+                  {live
+                    ? 'DRAG TO TILT · CLICK A UNIT'
+                    : 'STATIC RACK ELEVATION'}
+                </span>
+                <span className={styles.railTag}>
+                  {hoverId
+                    ? `HOVER ${unitsById[hoverId].slot} · ${unitsById[hoverId].org}`
+                    : `PULLED ${unit.slot} · ${unit.org}`}
+                </span>
+              </div>
+
+              {live && !touched && (
+                <p className={styles.coach} aria-hidden="true">
+                  <span>1 · drag to tilt the rack</span>
+                  <span>2 · click a unit to pull it out</span>
+                </p>
               )}
             </div>
 
-            <div className={styles.viewportRail}>
-              <span className={styles.railTag}>
-                {live ? 'DRAG TO TILT · CLICK A UNIT' : 'STATIC RACK ELEVATION'}
-              </span>
-              <span className={styles.railTag}>
-                {hoverId
-                  ? `HOVER ${unitsById[hoverId].slot} · ${unitsById[hoverId].org}`
-                  : `PULLED ${unit.slot} · ${unit.org}`}
-              </span>
-            </div>
-
-            {live && !touched && (
-              <p className={styles.coach} aria-hidden="true">
-                <span>1 · drag to tilt the rack</span>
-                <span>2 · click a unit to pull it out</span>
-              </p>
-            )}
-          </div>
-
-          <div className={styles.channels}>
-            <p className={styles.channelsLabel}>Rack units</p>
-            <div className={styles.channelGrid} role="group" aria-label="Rack units">
-              {rackUnits.map((item) => {
-                const isActive = item.id === activeId
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className={isActive ? styles.channelActive : styles.channel}
-                    aria-pressed={isActive}
-                    onClick={() => select(item.id)}
-                    onMouseEnter={() => setHoverId(item.id)}
-                    onMouseLeave={() => setHoverId(null)}
-                    onFocus={() => setHoverId(item.id)}
-                    onBlur={() => setHoverId(null)}
-                  >
-                    <span className={styles.channelDesignator}>
-                      <i aria-hidden="true" />
-                      {item.slot} · {item.window}
-                    </span>
-                    <span className={styles.channelName}>{item.org}</span>
-                  </button>
-                )
-              })}
+            <div className={styles.channels}>
+              <p className={styles.channelsLabel}>Rack units</p>
+              <div
+                className={styles.channelGrid}
+                role="group"
+                aria-label="Rack units"
+              >
+                {rackUnits.map((item) => {
+                  const isActive = item.id === activeId
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className={
+                        isActive ? styles.channelActive : styles.channel
+                      }
+                      aria-pressed={isActive}
+                      onClick={() => select(item.id)}
+                      onMouseEnter={() => setHoverId(item.id)}
+                      onMouseLeave={() => setHoverId(null)}
+                      onFocus={() => setHoverId(item.id)}
+                      onBlur={() => setHoverId(null)}
+                    >
+                      <span className={styles.channelDesignator}>
+                        <i aria-hidden="true" />
+                        {item.slot} · {item.window}
+                      </span>
+                      <span className={styles.channelName}>{item.org}</span>
+                    </button>
+                  )
+                })}
+              </div>
             </div>
           </div>
 
@@ -525,7 +580,10 @@ export function CareerExperience() {
             ))}
           </dl>
           <div className={styles.specActions}>
-            <Link className={styles.primaryAction} href="mailto:devjbull@gmail.com">
+            <Link
+              className={styles.primaryAction}
+              href="mailto:devjbull@gmail.com"
+            >
               devjbull@gmail.com <span aria-hidden="true">↗</span>
             </Link>
             <Link
