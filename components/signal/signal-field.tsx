@@ -292,7 +292,17 @@ const rgb = (hex: string) =>
     parseInt(hex.slice(5, 7), 16) / 255
   )
 
-const PALETTE = {
+type Palette = {
+  a: THREE.Vector3
+  b: THREE.Vector3
+  core: THREE.Vector3
+  opacity: number
+  gamma: number
+  vignette: number
+  coreLo: number
+}
+
+const PALETTE: Record<'dark' | 'light', Palette> = {
   dark: {
     a: rgb('#3ad0bd'),
     b: rgb('#6f63f0'),
@@ -311,7 +321,7 @@ const PALETTE = {
     vignette: 0.22,
     coreLo: 0.66
   }
-} as const
+}
 
 /* ------------------------------------------------------------------ */
 /* component                                                           */

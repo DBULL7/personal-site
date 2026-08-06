@@ -21,40 +21,43 @@ type Transmission = {
   readout: { k: string; v: string }[]
 }
 
+// TODO(devon): the résumé on file ends in 2022. Confirm current title and any
+// client work since the Chick-fil-A engagement, then add a sixth transmission.
 const transmissions: Transmission[] = [
   {
-    id: 'founder',
+    id: 'haller',
     index: '00',
-    word: 'FOUNDER',
+    word: 'HALLER',
     caption: 'transmission 00',
-    kicker: 'Origin',
-    title: 'Founder first. Engineer second. In that order, on purpose.',
+    kicker: 'Origin · 2015',
+    title: 'I shipped the prototype before I could call myself an engineer.',
     body: [
-      'I started a tech company before anyone paid me to write software. I wrote the code, sold the thing, and did the arithmetic that decides whether a company still exists in ninety days. That is the part of engineering no tutorial covers: every technical decision is a bet with a due date attached.',
-      'It left me with a habit I have never dropped. Before I ask what a system costs to build, I ask what it costs to own — on a Tuesday, eighteen months from now, when the person maintaining it has never met me.'
+      'In 2015 I was COO of Haller. I wrote the business plan, got us admitted to a business accelerator, and then — because there was nobody else to hand it to — taught myself Sketch and enough Swift to build the prototype myself. My degree is in economics, not computer science.',
+      'That year left me with the instinct I still lead with: every technical decision is a bet with a due date and a burn rate attached. Turing School followed in 2017, deliberately. I had already proven I could learn a stack under pressure; I wanted to learn one properly.'
     ],
     readout: [
-      { k: 'Role', v: 'Founder' },
-      { k: 'Scope', v: 'Product · sales · code' },
-      { k: 'Residue', v: 'Architecture is a budget' }
+      { k: 'Role', v: 'COO, Haller' },
+      { k: 'Result', v: 'Accelerator admission' },
+      { k: 'Self-taught', v: 'Sketch · Swift prototype' },
+      { k: 'Education', v: 'Turing School 2017 · B.A. Economics, Kansas 2015' }
     ]
   },
   {
-    id: 'consulting',
+    id: 'firm',
     index: '01',
-    word: 'ONE FIRM',
+    word: 'BIG NERD RANCH',
     caption: 'transmission 01',
-    kicker: 'The arc',
-    title: 'One consulting firm. A long run of other people’s hardest rooms.',
+    kicker: 'The arc · since 2018',
+    title: 'One firm since 2018. Big Nerd Ranch, Solutions Architect.',
     body: [
-      'My whole engineering career has been with a single contracting and consulting firm, which means I have had an unusual number of first days. You land inside a codebase you did not write, beside a team that already made its decisions, against a deadline that predates you.',
-      'The work is to be useful in week one and trusted by week four. Read the system before rewriting it. Find the load-bearing assumptions nobody documented. Ship something small and correct that proves you actually understood the thing — then earn the bigger swing.'
+      'My whole engineering career has been with a single consulting firm, which means an unusual number of first days. You land in a codebase you did not write, beside a team that already made its decisions, against a deadline that predates you. Being useful in week one and trusted by week four is the actual skill — the languages are the easy part.',
+      'It also means my work gets scored in somebody else’s numbers: their uptime, their revenue per order, their page load. That turns out to be a very honest way to keep score.'
     ],
     readout: [
-      { k: 'Employer', v: 'One firm, whole career' },
-      { k: 'Mode', v: 'Embedded consultant' },
-      { k: 'Cadence', v: 'New domain · new team · repeat' },
-      { k: 'Core skill', v: 'Acquiring context fast' }
+      { k: 'Employer', v: 'Big Nerd Ranch' },
+      { k: 'Since', v: 'July 2018' },
+      { k: 'Title', v: 'Solutions Architect' },
+      { k: 'Mode', v: 'Placed inside client engineering teams' }
     ]
   },
   {
@@ -62,17 +65,21 @@ const transmissions: Transmission[] = [
     index: '02',
     word: 'APPLE',
     caption: 'transmission 02',
-    kicker: 'Client engagement',
-    title: 'Embedded engineering at Apple, where there is no hotfix on Friday.',
+    kicker: 'Client engagement · 2018–2020',
+    title:
+      'Backend lead on Apple’s chatbot, from one million users to fifteen.',
     body: [
-      'An embedded engagement inside Apple: the seam where hardware and software have to behave as one product. What ships is what lives in somebody’s hand, and the review standard matches that.',
-      'It rewires your defaults. You instrument before you theorise. You respect the timing budget as a hard wall, not a target. You write the failure path first, because the failure path is the product for everyone unlucky enough to find it.'
+      'Two years as backend lead on Apple’s chatbot platform. I implemented the Apple Card integration and helped coordinate its launch, and helped carry the frontend off Angular 1 and onto Vue while the product stayed live in front of everybody.',
+      'The numbers are the argument. Page load from sixty seconds to two. A critical service refactored from ES5 to ES6. Node 5 to Node 12 under production traffic. And 100% uptime while the audience went from one million users to fifteen million. At that volume you stop guessing: instrument first, keep every change reversible, and write the failure path before the feature.'
     ],
     readout: [
       { k: 'Client', v: 'Apple' },
-      { k: 'Domain', v: 'Embedded engineering' },
-      { k: 'Constraint', v: 'Ship-once semantics' },
-      { k: 'Discipline', v: 'Measure, then assert' }
+      { k: 'Role', v: 'Backend lead' },
+      { k: 'Years', v: '2018 – 2020' },
+      { k: 'Shipped', v: 'Apple Card integration' },
+      { k: 'Page load', v: '60s → 2s' },
+      { k: 'Scale', v: '1M → 15M users · 100% uptime' },
+      { k: 'Migrations', v: 'Angular 1 → Vue · Node 5 → 12' }
     ]
   },
   {
@@ -80,17 +87,21 @@ const transmissions: Transmission[] = [
     index: '03',
     word: 'CHICK-FIL-A',
     caption: 'transmission 03',
-    kicker: 'Client engagement',
-    title: 'Embedded systems for a working kitchen, at national scale.',
+    kicker: 'Client engagement · 2020–2022',
+    title:
+      'Project engineering lead for third-party delivery, straight through the pandemic.',
     body: [
-      'A second embedded engagement, for Chick-fil-A, in an environment that is nothing like a lab: heat, noise, grease, staff turnover, thousands of locations, and no engineer within a hundred miles of almost any of them.',
-      'Software here is graded on what it does at 12:15 on a Saturday. Recover without being asked. Fail loudly, to the one person who can act. Never require somebody mid-rush to understand your architecture in order to sell a sandwich.'
+      'Two years leading Chick-fil-A’s third-party delivery integrations. DoorDash, UberEats and Grubhub arrive as three different opinions about what an order is, and have to resolve into one system that a restaurant can actually run on. I held that work through the steepest growth curve any of us had seen: under $1M a day when I started, $5M a day by 2022.',
+      'Specifics, because they are the point. Combo meals on UberEats, worth roughly ten percent more average revenue per order. Checkout with DoorDash inside the Chick-fil-A iOS app, coordinated directly with DoorDash’s engineers. A migration of the project’s infrastructure onto AWS CloudFormation. And a long, unglamorous push on logging, monitoring and observability — because at that volume the question is never “is something broken”, it is “whose”.'
     ],
     readout: [
       { k: 'Client', v: 'Chick-fil-A' },
-      { k: 'Domain', v: 'Embedded · operations' },
-      { k: 'Constraint', v: 'Unattended, at scale' },
-      { k: 'Discipline', v: 'Design for the worst hour' }
+      { k: 'Role', v: 'Project engineering lead' },
+      { k: 'Years', v: '2020 – 2022' },
+      { k: 'Partners', v: 'DoorDash · UberEats · Grubhub' },
+      { k: 'Revenue', v: '<$1M → $5M per day' },
+      { k: 'Lift', v: '~10% higher revenue per order' },
+      { k: 'Infrastructure', v: 'Migrated to AWS CloudFormation' }
     ]
   },
   {
@@ -98,19 +109,19 @@ const transmissions: Transmission[] = [
     index: '04',
     word: 'RANGE',
     caption: 'transmission 04',
-    kicker: 'Beyond the device',
-    title: 'Deep on devices. Not confined to them.',
+    kicker: 'The stack behind the numbers',
+    title: 'What I actually build with.',
     body: [
-      'Embedded is where I go deep; it is not the edge of the map. I build product interfaces in TypeScript and React, services in Node and Go, and state in Postgres, DynamoDB or MongoDB — chosen from the access pattern, not from habit.',
-      'Those run on AWS and Google Cloud, usually through Kubernetes, behind a CI/CD path I would be comfortable handing to someone on their second week. Datadog closes the loop. And I spend real hours on applied AI: agents, voice, and tooling treated as components with error bars rather than as magic.'
+      'JavaScript, TypeScript and Go. Node and Express on the server, Vue and React on the surface. State in MongoDB, DynamoDB or Postgres, chosen from the access pattern rather than from habit. AWS, Docker, Kubernetes and GitHub Actions underneath. Datadog, Splunk and OpsGenie for the part of the job that happens at three in the morning.',
+      'Before the client work there was a freelance rewrite of a WordPress site onto React, Redux, Express and MongoDB — accounts, tour management, a message board — which is where I first owned an entire system end to end. Lately I spend real hours on applied AI, treated exactly like a delivery partner: a component with wide error bars, wrapped in a fallback path.'
     ],
     readout: [
-      { k: 'Interface', v: 'TypeScript · React' },
-      { k: 'Services', v: 'Node.js · Go' },
-      { k: 'State', v: 'Postgres · DynamoDB · MongoDB' },
-      { k: 'Runtime', v: 'AWS · Google Cloud · Kubernetes' },
-      { k: 'Feedback', v: 'CI/CD · Datadog' },
-      { k: 'Exploring', v: 'Applied AI · agents · voice' }
+      { k: 'Languages', v: 'JavaScript · TypeScript · Go' },
+      { k: 'Server', v: 'Node · Express' },
+      { k: 'Interface', v: 'Vue · React' },
+      { k: 'State', v: 'MongoDB · DynamoDB · Postgres' },
+      { k: 'Cloud', v: 'AWS · Docker · Kubernetes · GitHub Actions' },
+      { k: 'Signal', v: 'Datadog · Splunk · OpsGenie' }
     ]
   }
 ]
@@ -278,12 +289,15 @@ export function CareerExperience() {
             <DecodeText text="signal." duration={0.8} delay={0.25} />
           </h1>
           <p className={styles.heroLede}>
-            I am Devon Bull — a senior software engineer in Raleigh, North
-            Carolina. I ran a tech company before I ran a build pipeline. Now I
-            work for one consulting firm and land inside other people’s systems:
-            embedded engineering for <strong>Apple</strong> and{' '}
-            <strong>Chick-fil-A</strong>, plus the full-stack and cloud work
-            that surrounds a device once it starts talking.
+            I am Devon Bull — a software engineer and Solutions Architect in
+            Raleigh, North Carolina. Economics degree, a startup I helped run, a
+            prototype I taught myself to build, then a bootcamp. Since 2018 I
+            have worked for one consulting firm, <strong>Big Nerd Ranch</strong>
+            , leading backend and platform work inside two of the largest
+            consumer brands in America: <strong>Apple</strong>’s chatbot as it
+            went from one million to fifteen million users, and{' '}
+            <strong>Chick-fil-A</strong>’s third-party delivery integrations as
+            they went from under $1M to $5M a day.
           </p>
           <p className={styles.heroNote}>
             Scroll and each section resolves out of the noise. Or don’t — every
@@ -293,10 +307,10 @@ export function CareerExperience() {
 
           <dl className={styles.readoutStrip}>
             {[
-              { k: 'Firms', v: 'One' },
-              { k: 'Clients', v: 'Apple · Chick-fil-A' },
-              { k: 'Depth', v: 'Firmware → Kubernetes' },
-              { k: 'Base', v: 'Raleigh, NC' }
+              { k: 'Firm', v: 'Big Nerd Ranch · since 2018' },
+              { k: 'Role', v: 'Solutions Architect' },
+              { k: 'Scale', v: '1M → 15M users' },
+              { k: 'Throughput', v: '$1M → $5M per day' }
             ].map((item) => (
               <div key={item.k}>
                 <dt>{item.k}</dt>
@@ -306,7 +320,7 @@ export function CareerExperience() {
           </dl>
 
           <div className={styles.heroActions}>
-            <a className={styles.primaryAction} href="#transmission-founder">
+            <a className={styles.primaryAction} href="#transmission-haller">
               Begin decoding <span aria-hidden="true">↓</span>
             </a>
             <button
@@ -366,11 +380,14 @@ export function CareerExperience() {
             <DecodeText text="Currently listening." duration={1} />
           </h2>
           <p className={styles.contactBody}>
-            The work I want has hardware, software and operations all holding a
-            vote, and a team that would rather be correct than comfortable. If
+            The work I want has real traffic on it, integrations that fight
+            back, and a team that would rather be correct than comfortable. If
             that is the room you are standing in, say something.
           </p>
           <div className={styles.contactLinks}>
+            <a href="mailto:devjbull@gmail.com">
+              devjbull@gmail.com <span aria-hidden="true">↗</span>
+            </a>
             <a
               href="https://www.linkedin.com/in/bulldevon"
               target="_blank"

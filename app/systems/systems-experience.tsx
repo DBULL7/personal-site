@@ -25,105 +25,119 @@ type Capability = {
 
 const capabilities: Capability[] = [
   {
-    id: 'embedded',
+    id: 'scale',
     index: '01',
-    short: 'EMBEDDED',
-    name: 'Devices & firmware',
-    tools: 'Embedded C/C++ · device software · the hardware boundary',
-    claim: 'On a device, “we’ll patch it” is a hope, not a plan.',
+    short: 'SCALE',
+    name: 'Traffic & scale',
+    tools: 'Node · Express · high-volume consumer platforms',
+    claim: 'At fifteen million users, every interesting failure is in a seam.',
     tradeoff:
-      'I would rather ship a smaller feature set with a proven recovery path than a rich one that needs a human in the room. Across both embedded engagements — Apple and Chick-fil-A — the expensive defects were never clever algorithms. They were state that survived a reboot it had no business surviving.',
+      'Apple’s chatbot grew from one million users to fifteen million while I was backend lead on it, at 100% uptime. None of that was clever. It was refusing to ship anything I could not roll back, instrumenting before theorising, and treating every dependency as a thing that will eventually be down.',
     x: 0.2,
+    y: 0.24
+  },
+  {
+    id: 'integrations',
+    index: '02',
+    short: 'INTEGRATIONS',
+    name: 'Third-party integrations',
+    tools: 'DoorDash · UberEats · Grubhub · Apple Card',
+    claim:
+      'An integration is a contract with someone who will change it without telling you.',
+    tradeoff:
+      'Three delivery platforms arrive with three different opinions about what an order is. The work is one internal model they all translate into, so no partner’s shape leaks into the domain — plus alerting specific enough to name which of them broke at 11:58 on a Friday.',
+    x: 0.47,
+    y: 0.14
+  },
+  {
+    id: 'modernization',
+    index: '03',
+    short: 'MODERNIZATION',
+    name: 'Legacy modernization',
+    tools: 'Angular 1 → Vue · ES5 → ES6 · Node 5 → 12',
+    claim:
+      'You move a live system the way you defuse one: a wire at a time, verified.',
+    tradeoff:
+      'All three of those migrations happened under production traffic, on products people were using that afternoon. Strangle one seam, ship it, measure, repeat. A big-bang rewrite is a schedule risk wearing an engineering plan as a disguise.',
+    x: 0.75,
     y: 0.28
   },
   {
-    id: 'interface',
-    index: '02',
-    short: 'INTERFACE',
-    name: 'Product interface',
-    tools: 'TypeScript · React',
-    claim: 'The component library is not the architecture. The state model is.',
+    id: 'performance',
+    index: '04',
+    short: 'PERFORMANCE',
+    name: 'Performance',
+    tools: 'Profiling · payload · critical path',
+    claim: 'Sixty seconds to two is never one fix. It is thirty, in order.',
     tradeoff:
-      'The first day on a UI goes to enumerating which states are genuinely possible and making the impossible ones unrepresentable. It costs a day. It buys back the fortnight otherwise spent on defects that are really two booleans which should have been one union.',
-    x: 0.46,
-    y: 0.16
-  },
-  {
-    id: 'services',
-    index: '03',
-    short: 'SERVICES',
-    name: 'Application services',
-    tools: 'Node.js · Go',
-    claim:
-      'Go where the concurrency is real. Node where iteration speed is worth more.',
-    tradeoff:
-      'Choosing a language is a staffing decision wearing a technical costume. I have handed elegant Go services to teams who live in TypeScript and watched ownership quietly evaporate. Now I ask who carries the pager before I ask what benchmarks fastest.',
-    x: 0.72,
-    y: 0.3
+      'Performance work is triage. Measure the path a real user actually takes, rank by what the profile says instead of what the room suspects, and stop when the next fix costs more than it returns. The last 200ms is usually somebody’s pet idea.',
+    x: 0.86,
+    y: 0.6
   },
   {
     id: 'state',
-    index: '04',
+    index: '05',
     short: 'STATE',
     name: 'Data & state',
-    tools: 'Postgres · DynamoDB · MongoDB',
+    tools: 'MongoDB · DynamoDB · Postgres',
     claim: 'Pick the database from the access pattern, not from the résumé.',
     tradeoff:
-      'Postgres until something proves it cannot cope. DynamoDB when the access pattern is genuinely known and the scale is genuinely real — it is a superb key-value store and a punishing query engine. The failure mode I look for first is a document store chosen because nobody wanted to write a migration.',
-    x: 0.83,
-    y: 0.62
+      'Postgres until something proves it cannot cope. DynamoDB when the access pattern is genuinely known and the scale is genuinely real — it is a superb key-value store and a punishing query engine. The first thing I look for is a document store chosen because nobody wanted to write a migration.',
+    x: 0.63,
+    y: 0.8
   },
   {
     id: 'runtime',
-    index: '05',
+    index: '06',
     short: 'RUNTIME',
-    name: 'Cloud runtime',
-    tools: 'AWS · Google Cloud · Kubernetes',
-    claim:
-      'Kubernetes is a cost. Take it on when you are buying something specific with it.',
+    name: 'Cloud & delivery',
+    tools: 'AWS · CloudFormation · Docker · Kubernetes · GitHub Actions',
+    claim: 'Infrastructure you cannot recreate from a file is a rumour.',
     tradeoff:
-      'Most teams need a boring deployment target and a rollback they trust more than they need a scheduler. When Kubernetes is the right answer it is right for a reason somebody can say out loud. When it is not, it becomes a second product the team maintains for free, forever.',
-    x: 0.56,
+      'That is why I oversaw the move of the Chick-fil-A delivery project onto AWS CloudFormation. Most teams need a boring deployment target and a rollback they trust more than they need a scheduler; when Kubernetes is the right answer, it is right for a reason somebody can say out loud.',
+    x: 0.33,
     y: 0.78
   },
   {
-    id: 'feedback',
-    index: '06',
-    short: 'FEEDBACK',
-    name: 'Delivery & feedback',
-    tools: 'CI/CD · GitHub Actions · Datadog',
+    id: 'observability',
+    index: '07',
+    short: 'OBSERVABILITY',
+    name: 'Observability & on-call',
+    tools: 'Datadog · Splunk · OpsGenie',
     claim: 'An alert nobody acts on is a lie you tell yourself every night.',
     tradeoff:
-      'Four alarms that always mean something beat forty that mean maybe. Pipelines the same: a paved road a second-week engineer can follow, checks that fail for exactly one legible reason, and enough production signal to answer “is it us?” inside a minute.',
-    x: 0.28,
-    y: 0.72
+      'At $5M a day the question is never “is something broken”, it is “whose”. Four alarms that always mean something beat forty that mean maybe, and enough logging to answer that question inside a minute is worth more than a quarter of features.',
+    x: 0.15,
+    y: 0.55
   },
   {
     id: 'ai',
-    index: '07',
+    index: '08',
     short: 'APPLIED AI',
     name: 'Applied AI',
     tools: 'Agents · voice interfaces · developer tooling',
     claim:
-      'Models are components with terrible error bars. Design the system around that.',
+      'A model is a third-party integration with worse error bars. Treat it like one.',
     tradeoff:
-      'The interesting engineering is never the prompt; it is the containment. What happens when the output is confidently wrong, how a person sees that, and what the model is allowed to touch. I write the fallback path first — the same instinct firmware taught me.',
+      'The interesting engineering is never the prompt, it is the containment: what happens when the output is confidently wrong, how a person sees that, and what the thing is allowed to touch. I write the fallback path first — the habit came from integrations, not from hype.',
     x: 0.5,
     y: 0.47
   }
 ]
 
 const links: [number, number][] = [
-  [0, 2],
+  [0, 1],
+  [0, 6],
   [1, 2],
+  [1, 7],
   [2, 3],
-  [2, 4],
+  [3, 4],
   [4, 5],
-  [5, 1],
-  [6, 2],
-  [6, 1],
-  [6, 4],
-  [0, 5]
+  [5, 6],
+  [6, 0],
+  [7, 0],
+  [7, 4],
+  [5, 3]
 ]
 
 const pushbacks = [
@@ -260,7 +274,7 @@ export function SystemsExperience() {
             <span aria-hidden="true">·</span>
             <span>02 — field map</span>
             <span aria-hidden="true">·</span>
-            <span>Seven attractors</span>
+            <span>Eight attractors</span>
           </p>
           <h1 id="systems-title" className={styles.heroTitle}>
             <DecodeText text="The stack is not a ladder." duration={0.9} />{' '}
@@ -273,17 +287,17 @@ export function SystemsExperience() {
             </em>
           </h1>
           <p className={styles.heroLede}>
-            Seven capabilities I actually reach for, each with the tradeoff I
-            make when I reach for it. Touch one and the field reorganises around
-            it — the more you perturb it, the more structure shows. The words do
-            not move.
+            Eight things I actually reach for, each with the tradeoff I make
+            when I reach for it — drawn from Apple’s chatbot at fifteen million
+            users and Chick-fil-A’s delivery integrations at $5M a day. Touch
+            one and the field reorganises around it. The words do not move.
           </p>
           <dl className={styles.readoutStrip}>
             {[
-              { k: 'Attractors', v: 'Seven' },
-              { k: 'Depth', v: 'Firmware → Kubernetes' },
-              { k: 'Bias', v: 'Boring until proven otherwise' },
-              { k: 'Proof', v: 'Apple · Chick-fil-A' }
+              { k: 'Attractors', v: 'Eight' },
+              { k: 'Proven at', v: '15M users · $5M/day' },
+              { k: 'Firm', v: 'Big Nerd Ranch' },
+              { k: 'Bias', v: 'Boring until proven otherwise' }
             ].map((item) => (
               <div key={item.k}>
                 <dt>{item.k}</dt>
@@ -303,7 +317,9 @@ export function SystemsExperience() {
         >
           <header className={styles.sectionHead}>
             <span className={styles.sectionKicker}>The field</span>
-            <h2 id="field-heading">Seven attractors, and what each one costs</h2>
+            <h2 id="field-heading">
+              Eight attractors, and what each one costs
+            </h2>
             <p>
               Hover a card, or tab to its title and press it to hold that
               attractor open. Every one of these is a position I have had to
@@ -386,9 +402,10 @@ export function SystemsExperience() {
             <DecodeText text="Same engineer. Other frequency." duration={1} />
           </h2>
           <p>
-            The career that produced these opinions — one consulting firm,
-            embedded work for Apple and Chick-fil-A, and a founder’s habit of
-            counting the cost of ownership — is one page over.
+            The career that produced these opinions — Big Nerd Ranch since 2018,
+            backend lead on Apple’s chatbot, engineering lead on Chick-fil-A’s
+            delivery integrations, and a founder’s habit of counting the cost of
+            ownership — is one page over.
           </p>
           <div className={styles.outroLinks}>
             <Link href="/career">

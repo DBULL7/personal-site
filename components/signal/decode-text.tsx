@@ -119,7 +119,11 @@ export function DecodeText({
       id,
       'data-resolving': started && display !== text ? 'true' : undefined
     },
-    createElement('span', { 'aria-hidden': 'true', className: styles.visual }, display),
+    createElement(
+      'span',
+      { 'aria-hidden': 'true', className: styles.visual },
+      display
+    ),
     createElement('span', { className: styles.sr }, text)
   )
 }
