@@ -1,7 +1,7 @@
-// Career content for /career. Every fact here comes from Devon's own resumes.
-// TODO(devon): the resume of record ends in 2022. Confirm current title/level and
-// what client work has happened since Chick-fil-A, then extend SLOT 03 and add slots.
-// TODO(devon): confirm there is no NDA problem naming Apple and Chick-fil-A here.
+// Career content for /career. Every fact here comes from Devon's own resumes and
+// his own follow-up corrections.
+// TODO(devon): exact start/end months for the two most recent Apple eras (SLOT 06, SLOT 07).
+// TODO(devon): current title at Stellar Elements (the 2022 resume said Solutions Architect).
 // TODO(devon): decide whether to link a current resume PDF from the OUTPUT slot.
 
 export type Meter = {
@@ -66,7 +66,7 @@ export const rackUnits: RackUnit[] = [
     role: 'Retune · economics → engineering',
     face: ['TURING SCHOOL', 'FE DEV'],
     headline: 'No CS degree. That is a feature.',
-    body: 'B.A. Economics from the University of Kansas in 2015, property management before that, a startup after it, then Turing School of Software and Design in 2017 for front-end development. I came into engineering through the business door, which is why I still ask what a feature is worth before I ask how it should be built. In parallel I freelanced: rewriting U-Hoops from a WordPress site into React/Redux with an Express and MongoDB backend, plus accounts, tour management and a message board.',
+    body: 'B.A. Economics from the University of Kansas in 2015, property management before that, a startup after it, then Turing School of Software and Design in 2017. I came into engineering through the business door, which is why I still ask what a feature is worth before I ask how it should be built. In parallel I freelanced: rewriting U-Hoops from a WordPress site into React/Redux with an Express and MongoDB backend, plus accounts, tour management and a message board.',
     meter: {
       label: 'Computer science degrees',
       from: 0,
@@ -86,44 +86,55 @@ export const rackUnits: RackUnit[] = [
       }
     ],
     stack: ['React', 'Redux', 'Express', 'MongoDB', 'JavaScript'],
-    net: ['bnr'],
+    net: ['firm'],
     wave: 'clock'
   },
   {
-    id: 'bnr',
+    id: 'firm',
     slot: '03',
-    org: 'Big Nerd Ranch',
+    org: 'Stellar Elements',
     window: 'Jul 2018 → present',
-    role: 'Host frame · Solutions Architect',
-    face: ['BIG NERD RANCH', 'SOLUTIONS ARCH'],
-    headline: 'One firm. Every client system patched through it.',
-    body: 'Big Nerd Ranch is the one consulting firm on my résumé — Solutions Architect since July 2018. Consulting means being dropped into a codebase other people have lived in for years and being useful inside the first sprint: read the system, find the seam, ship one small correct change, earn the larger one. Both client channels below run through this frame.',
+    role: 'Host frame · one firm, seven years',
+    face: ['STELLAR ELEMENTS', 'EX BIG NERD RANCH'],
+    headline: 'One firm for seven years, and the work kept getting harder.',
+    body: 'Stellar Elements — formerly Big Nerd Ranch, now an Amdocs company — has been my employer since July 2018, through a rebrand and an acquisition. Every unit above slot 03 is a client engagement that ran through this frame: backend lead at consumer scale, then engineering lead through a hypergrowth integration crisis, then sole owner of an internal product at Apple, then platform and developer-experience work. Same firm, escalating scope. Being handed the next hard thing repeatedly is the part of the résumé I am proudest of.',
     meter: {
-      label: 'Consulting firms on my résumé',
+      label: 'Years at one firm',
       from: 0,
-      to: 1,
-      note: 'Big Nerd Ranch, July 2018 to present. Two long client engagements.'
+      to: 7,
+      note: 'July 2018 to present, through the Big Nerd Ranch → Stellar Elements transition.'
     },
     metrics: [
-      { label: 'Title', value: 'Solutions Architect' },
-      { label: 'Since', value: 'July 2018' },
-      { label: 'Mode', value: 'Embedded in client engineering teams' },
       {
-        label: 'Channels',
-        value: 'Apple (2018–2020) · Chick-fil-A (2020–2022)'
+        label: 'Employer',
+        value: 'Stellar Elements (formerly Big Nerd Ranch), an Amdocs company'
+      },
+      { label: 'Since', value: 'July 2018 — present' },
+      {
+        label: 'Last stated title',
+        value: 'Solutions Architect (2022 résumé)'
+      },
+      {
+        label: 'Clients',
+        value: 'Apple (2018–present, three eras) · Chick-fil-A (2020–2022)'
       }
     ],
-    stack: ['Architecture', 'Client teams', 'Code review', 'Estimation'],
-    net: ['apple', 'patch'],
+    stack: [
+      'Architecture',
+      'Product engineering',
+      'Client teams',
+      'Code review'
+    ],
+    net: ['apple1', 'patch'],
     wave: 'rail'
   },
   {
-    id: 'apple',
+    id: 'apple1',
     slot: '04',
-    org: 'Apple',
+    org: 'Apple · chatbot',
     window: '2018 → 2020',
-    role: 'Client channel 01 · backend lead',
-    face: ['APPLE', 'BACKEND LEAD'],
+    role: 'Apple era 1 · backend lead',
+    face: ['APPLE / CHATBOT', 'BACKEND LEAD'],
     headline: 'One million users to fifteen million, and a 30× faster page.',
     body: 'Backend lead on Apple’s chatbot platform. I implemented the Apple Card integration and helped coordinate its launch, helped move the front end from Angular 1 to Vue, refactored a critical service from ES5 to ES6, and helped drag the runtime from Node 5 to Node 12 — the unglamorous modernisation that has to happen underneath a product nobody is allowed to take offline. Page load went from sixty seconds to two. Traffic went from one million users to fifteen million with 100% uptime.',
     meter: {
@@ -154,7 +165,7 @@ export const rackUnits: RackUnit[] = [
     slot: '05',
     org: 'Chick-fil-A',
     window: '2020 → 2022',
-    role: 'Client channel 02 · project engineering lead',
+    role: 'Client channel · project engineering lead',
     face: ['CHICK-FIL-A', 'ENG LEAD · 3PD'],
     headline: 'Under $1M a day to $5M a day, without dropping the orders.',
     body: 'Project engineering lead for third-party delivery: DoorDash, UberEats and Grubhub patched into Chick-fil-A’s ordering platform. Covid turned a side channel into a main one, and the number that mattered was revenue per day — under one million to five million by 2022 — while every partner integration kept working. I shipped combo meals on UberEats, worth roughly ten percent more per order; worked with DoorDash’s engineers to put DoorDash checkout inside the Chick-fil-A iOS app; oversaw migrating the project’s infrastructure to AWS CloudFormation; and rebuilt logging, monitoring and alerting so we saw a partner outage before the partner called us.',
@@ -190,18 +201,77 @@ export const rackUnits: RackUnit[] = [
       'DynamoDB',
       'Datadog'
     ],
-    net: ['patch'],
+    net: ['apple2'],
     wave: 'packet'
   },
   {
-    id: 'patch',
+    id: 'apple2',
     slot: '06',
+    org: 'Apple · cloud resources UI',
+    window: '~2022 → ~2024',
+    role: 'Apple era 2 · sole engineer',
+    face: ['APPLE / CLOUD UI', 'SOLO · 2 YEARS'],
+    headline: 'Two years as the only engineer on the product.',
+    body: 'Sole engineer owning Apple’s React and TypeScript UI for managing third-party cloud resources: design decisions, build, ship, maintain, support — no team to hide behind and no one else to hand the ambiguous part to. Two years of being the person who decides what the interface should do, then makes it do that, inside a company with a very specific bar for what shipped software feels like.',
+    meter: {
+      label: 'Engineers on the product',
+      from: 0,
+      to: 1,
+      note: 'One. Me, for roughly two years, on a real internal product at Apple.'
+    },
+    metrics: [
+      { label: 'Ownership', value: 'Sole engineer, end to end' },
+      {
+        label: 'Surface',
+        value: 'UI for managing third-party cloud resources'
+      },
+      { label: 'Stack', value: 'React · TypeScript' },
+      { label: 'Duration', value: '≈ 2 years' }
+    ],
+    stack: ['React', 'TypeScript', 'Design systems', 'Cloud APIs'],
+    net: ['apple3'],
+    wave: 'pwm'
+  },
+  {
+    id: 'apple3',
+    slot: '07',
+    org: 'Apple · developer portal',
+    window: '~2024 → present',
+    role: 'Apple era 3 · product + platform',
+    face: ['APPLE / DEV PORTAL', 'CURRENT WORK'],
+    headline: 'The place Apple engineers go to manage their clouds.',
+    body: 'Building Apple’s internal cloud website: where users manage their clouds across Apple-internal resources and third-party providers, in React and TypeScript. It is now expanding into a complete Developer Portal experience — the surface other engineers work through every day, which is the kind of product where a bad decision costs everybody an hour a week and a good one is invisible. Developer-experience product work at Apple scale, and the current job.',
+    meter: {
+      label: 'Years with Apple as a client',
+      from: 0,
+      to: 7,
+      note: 'Three eras since 2018: chatbot backend, solo cloud UI, now the developer portal.'
+    },
+    metrics: [
+      {
+        label: 'Product',
+        value: 'Apple internal cloud website → Developer Portal'
+      },
+      {
+        label: 'Scope',
+        value: 'Apple-internal and third-party cloud providers'
+      },
+      { label: 'Stack', value: 'React · TypeScript' },
+      { label: 'Status', value: 'Current engagement' }
+    ],
+    stack: ['React', 'TypeScript', 'Developer experience', 'Internal platform'],
+    net: ['patch'],
+    wave: 'clock'
+  },
+  {
+    id: 'patch',
+    slot: '08',
     org: 'Patch field',
     window: 'Current',
     role: 'Stack · chosen by access pattern',
     face: ['PATCH FIELD', 'STACK'],
     headline: 'The stack, as actually used in production.',
-    body: 'JavaScript, TypeScript, Go, Node, Express, Vue and React on the application side. MongoDB, DynamoDB and Postgres on the data side, picked by access pattern rather than by preference. AWS, Docker, Kubernetes and GitHub Actions to ship it; Datadog, Splunk and OpsGenie to watch it; Jira and Confluence because consulting is also a paperwork job.',
+    body: 'React and TypeScript on the product side, with Vue and JavaScript in the history and Node, Express and Go behind it. MongoDB, DynamoDB and Postgres on the data side, picked by access pattern rather than by preference. AWS, Docker, Kubernetes and GitHub Actions to ship it; Datadog, Splunk and OpsGenie to watch it; Jira and Confluence because client work is also a paperwork job.',
     meter: {
       label: 'Datastores run in production',
       from: 0,
@@ -209,19 +279,19 @@ export const rackUnits: RackUnit[] = [
       note: 'MongoDB, DynamoDB, Postgres — three different access-pattern bets.'
     },
     metrics: [
-      { label: 'Languages', value: 'JavaScript · TypeScript · Go' },
-      { label: 'Frameworks', value: 'Node · Express · Vue · React · Mongoose' },
+      { label: 'Front end', value: 'React · TypeScript · Vue' },
+      { label: 'Back end', value: 'Node · Express · Go · Mongoose' },
       { label: 'Data', value: 'MongoDB · DynamoDB · Postgres' },
       { label: 'Ship', value: 'AWS · Docker · Kubernetes · GitHub Actions' },
       { label: 'Watch', value: 'Datadog · Splunk · OpsGenie' }
     ],
     stack: [
-      'JavaScript',
+      'React',
       'TypeScript',
+      'JavaScript',
       'Go',
       'Node',
       'Vue',
-      'React',
       'MongoDB',
       'DynamoDB',
       'Postgres',
@@ -230,17 +300,17 @@ export const rackUnits: RackUnit[] = [
       'Datadog'
     ],
     net: ['out'],
-    wave: 'pwm'
+    wave: 'rail'
   },
   {
     id: 'out',
-    slot: '07',
+    slot: '09',
     org: 'Output',
     window: 'Open',
-    role: 'Output jack · contact',
+    role: 'Output jack · product engineer',
     face: ['OUTPUT', 'PATCH IN'],
-    headline: 'Patch in.',
-    body: 'Raleigh, North Carolina. Interested in high-traffic consumer platforms, integration work between systems that were never designed to talk to each other, and legacy modernisation that has to happen while the thing stays up.',
+    headline: 'Product engineer. Patch in.',
+    body: 'Raleigh, North Carolina. The work I want is the work this rack is made of: product engineering where somebody has to hold the interface, the service behind it and the question of whether it was worth building — internal platforms and developer experience, consumer products at scale, or the integration problem between systems that were never designed to talk.',
     meter: {
       label: 'Open channels',
       from: 0,
@@ -248,12 +318,9 @@ export const rackUnits: RackUnit[] = [
       note: 'devjbull@gmail.com — usually a same-day reply.'
     },
     metrics: [
+      { label: 'Target role', value: 'Product engineer / senior full-stack' },
       { label: 'Location', value: 'Raleigh, North Carolina' },
       { label: 'Email', value: 'devjbull@gmail.com' },
-      {
-        label: 'Looking for',
-        value: 'Platform, integrations, modernisation at scale'
-      },
       { label: 'Status', value: 'Open to conversations' }
     ],
     stack: [],
@@ -273,7 +340,7 @@ export const unitsById = Object.fromEntries(
 ) as Record<string, RackUnit>
 
 export const RACK_WIDTH = 12
-export const RACK_HEIGHT = 8
+export const RACK_HEIGHT = 10.4
 export const UNIT_PITCH = RACK_HEIGHT / rackUnits.length
 
 export function unitCenterY(index: number) {

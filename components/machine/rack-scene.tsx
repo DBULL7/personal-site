@@ -506,7 +506,7 @@ export function RackScene({
       renderer.setSize(width, height, false)
       camera.aspect = width / height
       const fitHeight = Math.max(
-        (RACK_HEIGHT / 2) * 1.16,
+        (RACK_HEIGHT / 2) * 1.07,
         ((RACK_WIDTH / 2) * 1.06) / camera.aspect
       )
       state.radius = Math.min(

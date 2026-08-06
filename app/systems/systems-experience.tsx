@@ -490,7 +490,10 @@ export function SystemsExperience() {
             integrations from 2020 to 2022, through the Covid demand curve that
             took daily delivery revenue from under $1M to $5M. Before that,
             backend lead on Apple’s chatbot while it went from 1M to 15M users
-            with 100% uptime. Both through one consulting firm: Big Nerd Ranch.
+            with 100% uptime. Since then, two years as the sole engineer on
+            Apple’s cloud-resource UI and now Apple’s internal cloud site as it
+            grows into a full developer portal. Seven years, one firm: Stellar
+            Elements, formerly Big Nerd Ranch, an Amdocs company.
           </p>
           <div className={styles.specActions}>
             <Link className={styles.primaryAction} href="/career">

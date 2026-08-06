@@ -344,19 +344,21 @@ function Scope({
 
 const specSheet = [
   { label: 'Name', value: 'Devon Bull' },
-  { label: 'Title', value: 'Solutions Architect, Big Nerd Ranch' },
-  { label: 'Since', value: 'July 2018' },
-  { label: 'Location', value: 'Raleigh, North Carolina' },
+  { label: 'Target role', value: 'Product engineer / senior full-stack' },
   {
-    label: 'Client channels',
-    value: 'Apple (2018–2020) · Chick-fil-A (2020–2022)'
+    label: 'Employer',
+    value: 'Stellar Elements (formerly Big Nerd Ranch), an Amdocs company'
   },
+  { label: 'Tenure', value: 'July 2018 → present · one firm, 7+ years' },
+  { label: 'Location', value: 'Raleigh, North Carolina' },
+  { label: 'Apple', value: '2018 → present across three eras' },
+  { label: 'Chick-fil-A', value: '2020 → 2022, third-party delivery lead' },
   {
     label: 'Peak scale touched',
     value: '15M users · $5M/day in delivery revenue'
   },
-  { label: 'Languages', value: 'JavaScript · TypeScript · Go' },
-  { label: 'Frameworks', value: 'Node · Express · Vue · React · Mongoose' },
+  { label: 'Front end', value: 'React · TypeScript · Vue · Redux' },
+  { label: 'Back end', value: 'Node · Express · Go · Mongoose' },
   { label: 'Data', value: 'MongoDB · DynamoDB · Postgres' },
   {
     label: 'Tooling',
@@ -369,19 +371,20 @@ const specSheet = [
   {
     label: 'Education',
     value: 'Turing School 2017 · B.A. Economics, Kansas 2015'
-  }
+  },
+  { label: 'Email', value: 'devjbull@gmail.com' }
 ]
 
 export function CareerExperience() {
   const theme = useMachineTheme()
   const reduced = usePrefersReducedMotion()
   const webgl = useWebglSupported()
-  const [activeId, setActiveId] = useState('apple')
+  const [activeId, setActiveId] = useState('apple1')
   const [hoverId, setHoverId] = useState<string | null>(null)
   const [touched, setTouched] = useState(false)
   const scopeRef = useRef<HTMLDivElement>(null)
 
-  const unit = unitsById[activeId]
+  const unit = unitsById[activeId] ?? rackUnits[0]
   const live = webgl === true && !reduced
 
   const select = useCallback((id: string) => {
@@ -417,12 +420,15 @@ export function CareerExperience() {
             <p className={styles.eyebrow}>Rack 01 · career · devon bull</p>
             <h1 id="career-title">Pull the unit. Read the meter.</h1>
             <p className={styles.lede}>
-              Solutions Architect at Big Nerd Ranch since 2018. Backend lead on
-              Apple’s chatbot while it went from 1M to 15M users, then
-              engineering lead on Chick-fil-A’s third-party delivery
-              integrations while daily revenue went from under $1M to $5M. Every
-              unit in this rack is a real engagement with a real number on the
-              front panel.
+              Product engineer in Raleigh, NC. Seven years at one firm — Stellar
+              Elements, formerly Big Nerd Ranch, now an Amdocs company — and
+              seven years inside Apple across three eras: backend lead on the
+              chatbot as it went 1M → 15M users, two years as the sole engineer
+              on an internal cloud UI, and now Apple’s internal cloud site as it
+              becomes a full developer portal. In between, engineering lead on
+              Chick-fil-A’s delivery integrations while daily revenue went from
+              under $1M to $5M. Every unit in this rack is a real engagement
+              with a real number on the front panel.
             </p>
           </div>
           <ul className={styles.statusStack} aria-label="Rack status">
