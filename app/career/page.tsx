@@ -4,7 +4,7 @@ import { CareerExperience } from './career-experience'
 export const metadata: Metadata = {
   title: 'Career | Devon Bull',
   description:
-    'Devon Bull’s experience across embedded client work, full-stack platforms, consulting, and engineering leadership.',
+    'Devon Bull — Solutions Architect at Big Nerd Ranch. Backend lead on Apple’s chatbot (1M → 15M users), engineering lead on Chick-fil-A third-party delivery (<$1M → $5M per day).',
   alternates: { canonical: '/career' }
 }
 
