@@ -313,13 +313,13 @@ const PALETTE: Record<'dark' | 'light', Palette> = {
     coreLo: 0.42
   },
   light: {
-    a: rgb('#0a7f6c'),
-    b: rgb('#3a32ab'),
-    core: rgb('#101c26'),
-    opacity: 0.52,
-    gamma: 1.3,
-    vignette: 0.22,
-    coreLo: 0.66
+    a: rgb('#0d7a68'),
+    b: rgb('#a2481c'),
+    core: rgb('#1b2a33'),
+    opacity: 0.72,
+    gamma: 1.55,
+    vignette: 0.16,
+    coreLo: 0.6
   }
 }
 

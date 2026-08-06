@@ -492,3 +492,19 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+@media (max-width: 860px) {
+  .veil {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--sig-bg) 74%, transparent) 0%,
+      color-mix(in srgb, var(--sig-bg) 66%, transparent) 55%,
+      color-mix(in srgb, var(--sig-bg) 86%, transparent) 100%
+    );
+  }
+}
+
+html:not(.dark) .grain {
+  opacity: 0.06;
+  mix-blend-mode: multiply;
+}

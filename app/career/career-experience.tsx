@@ -129,8 +129,9 @@ const transmissions: Transmission[] = [
 const HERO_MASK: SignalMask = {
   text: 'DEVON BULL',
   caption: 'senior engineer',
-  oy: 0.27,
-  ox: 0.15
+  oy: 0.33,
+  ox: 0.14,
+  scale: 0.86
 }
 
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 2.2)
@@ -153,7 +154,13 @@ export function CareerExperience() {
       return { text: 'OPEN', caption: 'signal outbound', ox: 0.16, oy: 0.08 }
     const t = transmissions.find((item) => item.id === activeId)
     return t
-      ? { text: t.word, caption: t.caption, ox: 0.17, oy: -0.16 }
+      ? {
+          text: t.word,
+          caption: t.caption,
+          ox: 0.17,
+          oy: -0.27,
+          scale: 0.88
+        }
       : HERO_MASK
   }, [activeId])
 
@@ -248,7 +255,7 @@ export function CareerExperience() {
         <SignalFieldMount
           stateRef={stateRef}
           mask={mask}
-          gain={activeId === 'hero' ? 1 : 0.86}
+          gain={activeId === 'hero' ? 1 : 0.74}
         />
       </div>
       <div className={styles.veil} aria-hidden="true" />
