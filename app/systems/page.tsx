@@ -11,8 +11,13 @@ import styles from './systems.module.css'
 export const metadata: Metadata = {
   title: 'Systems | Devon Bull — Technical Depth',
   description:
-    'How Devon Bull actually builds: the problems he is good at, a decision log with the tradeoffs and what they cost, an annotated stack (Node, TypeScript, Go, Vue, React, MongoDB, DynamoDB, Postgres, AWS, Kubernetes, Datadog), and explicit seniority signals.',
+    'How Devon Bull actually builds: the problems he is good at, a decision log with the tradeoffs and what they cost, an annotated stack (React, TypeScript, Node, Go, Vue, MongoDB, DynamoDB, Postgres, AWS, Kubernetes, Datadog), and explicit seniority signals from seven years of Apple and Chick-fil-A work.',
   keywords: [
+    'product engineer',
+    'React',
+    'TypeScript',
+    'developer platform',
+    'internal tooling',
     'Node.js',
     'TypeScript',
     'Go',
@@ -79,11 +84,11 @@ export default function SystemsPage() {
               A list of technologies proves nothing. Here is the thinking.
             </h1>
             <p className={styles.lede}>
-              Everybody&rsquo;s portfolio says AWS, Node, Postgres. This page is
+              Everybody&rsquo;s portfolio says React, Node, AWS. This page is
               the part that is harder to fake: the problems I am good at, the
               calls I have made and what they cost, and where each tool actually
-              sits in my hands. Companion to the{' '}
-              <Link href="/career">work record</Link>.
+              sits in my hands. Seven years of it, mostly at Apple. Companion to
+              the <Link href="/career">work record</Link>.
             </p>
           </div>
 
@@ -136,8 +141,9 @@ export default function SystemsPage() {
             title="Problems I am good at"
             note={
               <>
-                Not a tech list &mdash; situations. If one of these is happening
-                on your team right now, that is the conversation to have.
+                Not a tech list &mdash; situations, with the engagement each one
+                came from attached. If one of these is happening on your team
+                right now, that is the conversation to have.
               </>
             }
           />

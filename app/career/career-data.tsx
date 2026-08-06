@@ -15,20 +15,30 @@ export type Engagement = {
   taught: React.ReactNode
 }
 
-/** The four numbers that answer "should we talk to this person" in ten seconds. */
+/** The numbers that answer "should we talk to this person" in ten seconds. */
 export const proofPoints: Array<{
   value: string
   label: string
   source: string
 }> = [
   {
-    value: '60s → 2s',
-    label: 'Page load on Apple’s chatbot platform',
-    source: 'Apple · 2018–2020'
+    value: '7 years',
+    label: 'One firm, July 2018 to now, through an acquisition',
+    source: 'Stellar Elements'
+  },
+  {
+    value: '3 eras',
+    label: 'Apple engagements across seven years, scope growing each time',
+    source: 'Apple · 2018–present'
   },
   {
     value: '1M → 15M',
     label: 'Users carried at 100% uptime',
+    source: 'Apple · 2018–2020'
+  },
+  {
+    value: '60s → 2s',
+    label: 'Page load on Apple’s chatbot platform',
     source: 'Apple · 2018–2020'
   },
   {
@@ -37,9 +47,9 @@ export const proofPoints: Array<{
     source: 'Chick-fil-A · 2020–2022'
   },
   {
-    value: '+10%',
-    label: 'Average order value from combo meals on UberEats',
-    source: 'Chick-fil-A · 2020–2022'
+    value: '2 years solo',
+    label: 'Sole engineer owning an Apple internal product end to end',
+    source: 'Apple · 2022–2024'
   }
 ]
 
@@ -47,29 +57,35 @@ export const factSheet: Array<[string, React.ReactNode]> = [
   [
     'Firm',
     <>
-      Big Nerd Ranch &mdash; Solutions Architect, July 2018 &rarr; present.{' '}
-      <Todo>confirm current title and level</Todo>
+      Stellar Elements (formerly Big Nerd Ranch), an Amdocs company &middot;
+      July 2018 &rarr; present
+    </>
+  ],
+  [
+    'Title',
+    <>
+      Solutions Architect &middot; <Todo>confirm current title and level</Todo>
     </>
   ],
   [
     'Clients',
     <>
-      Apple (2018&ndash;2020) &middot; Chick-fil-A (2020&ndash;2022) &middot;{' '}
-      <Todo>what you have been building since 2022</Todo>
+      Apple (2018&ndash;2020, 2022&ndash;present) &middot; Chick-fil-A
+      (2020&ndash;2022)
     </>
   ],
   [
     'Works on',
     <>
-      High-traffic consumer platforms, third-party integrations, and legacy
-      modernisation that has to happen without downtime
+      Product surfaces and the systems under them &mdash; internal developer
+      platforms, third-party integrations, and consumer-scale backends
     </>
   ],
   [
     'Builds with',
     <>
-      JavaScript &middot; TypeScript &middot; Node &middot; Express &middot; Go
-      &middot; Vue &middot; React
+      React &middot; TypeScript &middot; Node &middot; Express &middot; Go
+      &middot; Vue &middot; JavaScript
     </>
   ],
   ['Stores in', <>MongoDB &middot; DynamoDB &middot; Postgres</>],
@@ -100,44 +116,120 @@ export const factSheet: Array<[string, React.ReactNode]> = [
 
 export const engagements: Engagement[] = [
   {
-    id: 'current',
-    client: '2022 → present',
-    kind: 'Current work',
-    period: '2022 → now',
+    id: 'apple-developer-portal',
+    client: 'Apple — internal cloud & developer portal',
+    kind: 'Client engagement · Apple, era 3',
+    period: '2024 → present',
     role: (
-      <Todo>current title, and whether you are still at Big Nerd Ranch</Todo>
+      <>
+        Product engineer &mdash; React &amp; TypeScript.{' '}
+        <Todo>confirm current title and exact start month</Todo>
+      </>
     ),
-    team: <Todo>team size and reporting line</Todo>,
-    domain:
-      'The most important entry on this page, and the one I cannot write for you',
-    headline: 'Unwritten',
+    team: <Todo>team size, and who you work with on the Apple side</Todo>,
+    domain: 'Internal developer platform at Apple scale',
+    headline: 'Developer platform',
     shipped: [
-      <Todo key="n1">
-        the client or product you have been on since the Chick-fil-A engagement
-        ended
-      </Todo>,
-      <Todo key="n2">
-        what shipped, and the number that proves it &mdash; same shape as the
-        two records below
-      </Todo>,
-      <Todo key="n3">
-        anything that changed about how you work: scope, ownership, people
+      <>
+        Apple&rsquo;s internal cloud website: the place Apple engineers manage
+        their clouds across{' '}
+        <strong>Apple-internal resources and third-party providers</strong> in
+        one interface.
+      </>,
+      <>
+        Currently expanding it into a complete{' '}
+        <strong>Developer Portal experience</strong> &mdash; the surface other
+        engineers inside Apple use to get their work done.
+      </>,
+      <Todo key="dp1">
+        one concrete number: teams onboarded, providers supported, steps removed
+        from a workflow, time saved per request
       </Todo>
     ],
     hard: (
       <>
-        Four years is the freshest and most scrutinised part of any
-        r&eacute;sum&eacute;, and right now it is the only part of this page
-        with nothing in it. Everything else here is verified from the record.{' '}
+        Internal tools have the hardest users in the building: engineers who
+        already know how the underlying system works and will route around you
+        the moment the UI is slower than the CLI. Unifying Apple-internal
+        infrastructure and third-party cloud providers behind one interface
+        means every provider&rsquo;s model has to be reconciled without
+        pretending the differences do not exist. And a developer portal is a
+        product, not a page &mdash; it succeeds on whether someone finishes the
+        task, not on whether the endpoint returned 200.
+      </>
+    ),
+    stack: (
+      <>
+        React, TypeScript, multi-cloud provider APIs.{' '}
         <Todo>
-          fill this record first &mdash; it is worth more than every other
-          placeholder combined
+          confirm the backend, build tooling, and design system in use
         </Todo>
       </>
     ),
-    stack: <Todo>what you have actually been writing since 2022</Todo>,
     taught: (
-      <Todo>one honest sentence about what the last four years taught you</Todo>
+      <>
+        Developer experience is product work with a technical audience. The
+        research, the flows, and the &ldquo;why did they abandon here&rdquo;
+        questions are exactly the same &mdash; the users just have opinions
+        about your API shape too.
+      </>
+    )
+  },
+  {
+    id: 'apple-cloud-ui',
+    client: 'Apple — third-party cloud resource UI',
+    kind: 'Client engagement · Apple, era 2',
+    period: '2022 → 2024',
+    role: (
+      <>
+        Sole engineer &mdash; design, build, ship, maintain.{' '}
+        <Todo>confirm exact start and end months</Todo>
+      </>
+    ),
+    team: (
+      <>
+        One. Me. <Todo>who you reported to, and who the stakeholders were</Todo>
+      </>
+    ),
+    domain: 'The UI Apple engineers used to manage third-party cloud resources',
+    headline: '2 years, solo',
+    shipped: [
+      <>
+        Owned Apple&rsquo;s React and TypeScript interface for managing
+        third-party cloud resources as the{' '}
+        <strong>only engineer on it, for two years</strong>.
+      </>,
+      <>
+        Everything: requirements, architecture, implementation, release,
+        support, and the follow-up work when a user said it was confusing.
+      </>,
+      <Todo key="ui1">
+        the number that shows adoption &mdash; users, teams, resources managed,
+        or tickets deflected
+      </Todo>
+    ],
+    hard: (
+      <>
+        Being the only engineer removes every place to hide, and it changes what
+        good engineering means. There is no one to review the clever solution,
+        so you stop writing clever solutions. Scope has to be cut in public,
+        with a reason. The bus factor is one, so the code has to read like
+        documentation and the documentation has to actually exist. Two years of
+        that is the most useful engineering discipline I have been through.
+      </>
+    ),
+    stack: (
+      <>
+        React, TypeScript, third-party cloud provider APIs.{' '}
+        <Todo>confirm state management, testing, and CI on this project</Todo>
+      </>
+    ),
+    taught: (
+      <>
+        When you are the whole team, taste becomes a delivery mechanism. Every
+        hour spent on a clever abstraction is an hour not spent on the thing a
+        user actually asked for.
+      </>
     )
   },
   {
@@ -203,9 +295,9 @@ export const engagements: Engagement[] = [
     )
   },
   {
-    id: 'apple',
-    client: 'Apple',
-    kind: 'Client engagement · Big Nerd Ranch',
+    id: 'apple-chatbot',
+    client: 'Apple — chatbot platform',
+    kind: 'Client engagement · Apple, era 1',
     period: '2018 → 2020',
     role: 'Backend lead — Apple chatbot platform',
     team: <Todo>team size, and who you reported to</Todo>,
@@ -316,12 +408,13 @@ export const path: Array<{
     )
   },
   {
-    year: '2018',
-    title: 'Big Nerd Ranch',
+    year: '2018–now',
+    title: 'Big Nerd Ranch → Stellar Elements',
     detail: (
       <>
-        Hired as an engineer, ended up leading backend work for Apple within the
-        first engagement.
+        Seven years, one firm, through a rebrand and an acquisition by Amdocs.
+        Backend lead, then engineering lead, then solo product owner, then
+        developer platform work.
       </>
     )
   }
@@ -334,34 +427,35 @@ export const lookingFor: Array<{
 }> = [
   {
     index: '01',
-    title: 'Scale that is already real',
+    title: 'Product engineer, properly defined',
     body: (
       <>
-        I am most useful on products with live traffic and something to lose.
-        The two engagements above were both &ldquo;this is growing fast and
-        cannot go down&rdquo; problems, and that is the work I want more of.
+        A role where the same person decides what to build and builds it. I have
+        done both ends &mdash; wrote a business plan and got a company into an
+        accelerator; also took a page from sixty seconds to two. The interesting
+        work lives where those two skills touch.
       </>
     )
   },
   {
     index: '02',
-    title: 'Ownership of a system, not a ticket queue',
+    title: 'Ownership of a surface, end to end',
     body: (
       <>
-        Backend lead and project engineering lead are the roles I have actually
-        held. I want the domain end to end &mdash; the services, the deploy
-        path, the dashboards, the pager.
+        I spent two years as the only engineer on an Apple internal product, and
+        I would take that shape again: the UI, the services behind it, the
+        release, and the conversation with the person who has to use it.
       </>
     )
   },
   {
     index: '03',
-    title: 'Legacy worth modernising',
+    title: 'Users who are hard to impress',
     body: (
       <>
-        Framework migrations, runtime upgrades, and performance work on systems
-        that cannot stop serving traffic. Most engineers avoid this. It is the
-        thing I have the most evidence for.
+        Developer platforms, internal tools, integration-heavy products.
+        Engineers route around a bad interface instantly, which makes them the
+        most honest feedback loop you can get.
       </>
     )
   }

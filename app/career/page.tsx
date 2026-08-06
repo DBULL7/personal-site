@@ -18,12 +18,18 @@ import {
 import styles from './career.module.css'
 
 export const metadata: Metadata = {
-  title: 'Career | Devon Bull — Solutions Architect, Big Nerd Ranch',
+  title: 'Career | Devon Bull — Product Engineer',
   description:
-    'Work record for Devon Bull, Raleigh NC. Backend lead on Apple’s chatbot platform (1M → 15M users, 100% uptime, 60s → 2s page load). Project engineering lead on Chick-fil-A third-party delivery (DoorDash, UberEats, Grubhub) from $1M to $5M a day. Open to senior and lead roles.',
+    'Work record for Devon Bull, product engineer in Raleigh NC. Seven years at one firm, most of it building for Apple: backend lead on the chatbot platform (1M → 15M users, 100% uptime, 60s → 2s), two years as sole engineer on an Apple internal product, now Apple’s internal cloud site and developer portal. Chick-fil-A delivery integrations from $1M to $5M a day.',
   keywords: [
+    'product engineer',
     'senior software engineer',
-    'solutions architect',
+    'full-stack engineer',
+    'React',
+    'TypeScript',
+    'developer platform',
+    'Stellar Elements',
+    'Amdocs',
     'Big Nerd Ranch',
     'Raleigh NC',
     'Apple',
@@ -36,9 +42,9 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/career' },
   openGraph: {
-    title: 'Career | Devon Bull — Solutions Architect',
+    title: 'Career | Devon Bull — Product Engineer',
     description:
-      'Apple chatbot backend lead: 1M → 15M users at 100% uptime, 60s → 2s page load. Chick-fil-A delivery integrations: $1M → $5M a day.',
+      'Seven years, one firm, three Apple engagements. 1M → 15M users at 100% uptime, 60s → 2s page load, $1M → $5M a day at Chick-fil-A, then two years solo on an Apple internal product.',
     url: '/career',
     type: 'profile'
   }
@@ -55,8 +61,9 @@ const personJsonLd = {
   image: `${profile.site}/profile_pic.jpg`,
   worksFor: {
     '@type': 'Organization',
-    name: profile.firm,
-    url: 'https://bignerdranch.com'
+    name: 'Stellar Elements',
+    alternateName: 'Big Nerd Ranch',
+    parentOrganization: { '@type': 'Organization', name: 'Amdocs' }
   },
   address: {
     '@type': 'PostalAddress',
@@ -73,6 +80,10 @@ const personJsonLd = {
   ],
   sameAs: [profile.linkedin, profile.github, profile.site],
   knowsAbout: [
+    'Product engineering',
+    'Full-stack web development',
+    'Internal developer platforms',
+    'Developer experience',
     'Backend engineering',
     'High-traffic consumer platforms',
     'Third-party API integrations',
@@ -126,7 +137,7 @@ export default function CareerPage() {
             <p className={styles.eyebrow}>Career record &mdash; 001</p>
             <h1 id="career-title">{profile.name}</h1>
             <p className={styles.role}>
-              {profile.role}, {profile.firm} &middot; {profile.location}
+              {profile.role} &middot; {profile.firm} &middot; {profile.location}
             </p>
             <p className={styles.lede}>{profile.summary}</p>
 
@@ -217,10 +228,12 @@ export default function CareerPage() {
             title="The work record"
             note={
               <>
-                One firm since 2018, two long client engagements, both of them
-                high-traffic consumer platforms under active growth. Listed the
-                way an engineer would want to read it: what it was, what
-                shipped, and what made it hard. Most recent first.
+                Seven years at one firm, and a relationship with Apple that has
+                run in three separate eras since 2018 &mdash; backend, then a
+                two-year solo product, now the internal developer platform.
+                Chick-fil-A sits in the middle. Listed the way an engineer would
+                want to read it: what it was, what shipped, and what made it
+                hard. Most recent first.
               </>
             }
           />
@@ -230,8 +243,16 @@ export default function CareerPage() {
               <span className={styles.employerIndex}>Employer</span>
             </div>
             <div className={styles.employerBody}>
-              <h3>Big Nerd Ranch</h3>
+              <h3>Stellar Elements</h3>
               <dl className={styles.employerMeta}>
+                <div>
+                  <dt>Formerly</dt>
+                  <dd>Big Nerd Ranch &middot; an Amdocs company</dd>
+                </div>
+                <div>
+                  <dt>Since</dt>
+                  <dd>July 2018 &mdash; 7 years, still here</dd>
+                </div>
                 <div>
                   <dt>Title</dt>
                   <dd>
@@ -239,28 +260,21 @@ export default function CareerPage() {
                     <Todo>confirm current title</Todo>
                   </dd>
                 </div>
-                <div>
-                  <dt>Since</dt>
-                  <dd>July 2018</dd>
-                </div>
               </dl>
               <p>
-                One employer, placed inside client engineering teams for years
-                at a time rather than weeks. That is why the record below is two
-                deep engagements instead of a list of logos &mdash; and why both
-                of them include the unglamorous part, where you own the thing
-                after launch.
+                One firm for seven years, through a rebrand and an acquisition,
+                placed inside client engineering teams for years at a time
+                rather than weeks. Four engagements, not a list of logos. The
+                scope grew each time: backend lead, then engineering lead, then
+                the only engineer on a product, then the platform other
+                engineers build on.
               </p>
             </div>
           </article>
 
           <ol className={styles.engagements}>
             {engagements.map((item, index) => (
-              <li
-                key={item.id}
-                className={`${styles.engagement} ${item.id === 'current' ? styles.engagementOpen : ''}`}
-                id={item.id}
-              >
+              <li key={item.id} className={styles.engagement} id={item.id}>
                 <div className={styles.engagementRail}>
                   <span className={styles.engagementIndex}>
                     {String(index + 1).padStart(2, '0')}

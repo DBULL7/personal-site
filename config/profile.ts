@@ -1,7 +1,8 @@
 export const profile = {
   name: 'Devon Bull',
-  role: 'Solutions Architect',
-  firm: 'Big Nerd Ranch',
+  role: 'Product engineer — full-stack',
+  firm: 'Stellar Elements, an Amdocs company',
+  firmFormerly: 'Big Nerd Ranch',
   location: 'Raleigh, North Carolina',
   timezone: 'US Eastern',
   email: 'devjbull@gmail.com',
@@ -11,11 +12,11 @@ export const profile = {
   // TODO(devon): drop the PDF at public/resume.pdf (or repoint this href).
   resume: '/resume.pdf',
   availability: {
-    state: 'Open to senior, staff, and lead engineering roles',
+    state: 'Open to product engineer, senior, and staff roles',
     detail: 'Remote or Raleigh–Durham. Contract-to-hire considered.'
   },
   summary:
-    'Solutions Architect at Big Nerd Ranch since 2018. Backend lead on Apple’s chatbot platform while it went from 1M to 15M users at 100% uptime. Project engineering lead on Chick-fil-A’s third-party delivery integrations through Covid, from under $1M a day to $5M a day. Economics degree, a startup, a bootcamp — then seven years of high-traffic consumer platforms.'
+    'Seven years at one firm, most of it building for Apple. Backend lead on Apple’s chatbot while it went from 1M to 15M users at 100% uptime. Engineering lead on Chick-fil-A’s delivery integrations through Covid, from under $1M a day to $5M a day. Then two years as the sole engineer on an Apple internal product, and now Apple’s internal cloud site as it grows into a full developer portal. Economics degree, a startup, a bootcamp — then the hard thing, repeatedly.'
 } as const
 
 export type Profile = typeof profile

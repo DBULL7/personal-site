@@ -10,8 +10,36 @@ export type Scenario = {
 
 export const scenarios: Scenario[] = [
   {
-    id: 'slow-legacy',
+    id: 'solo-surface',
     index: '01',
+    situation:
+      'A product surface needs one person to own it end to end, and there is no team to hide behind.',
+    moves: [
+      <>
+        Cut scope in public, with a reason. When you are the only engineer, an
+        unspoken tradeoff becomes a missed expectation two weeks later.
+      </>,
+      <>
+        Stop writing clever code. Nobody is reviewing it, the bus factor is one,
+        and the version a stranger can read is the version that survives.
+      </>,
+      <>
+        Talk to the users directly. Removing the product-manager telephone game
+        is the main advantage of being solo &mdash; use it.
+      </>
+    ],
+    evidence: (
+      <>
+        Two years as the <strong>sole engineer</strong> on Apple&rsquo;s
+        third-party cloud resource UI &mdash; React and TypeScript, design
+        through support. Now on Apple&rsquo;s internal cloud site as it becomes
+        a full developer portal.
+      </>
+    )
+  },
+  {
+    id: 'slow-legacy',
+    index: '02',
     situation:
       'A page takes a minute to load, the cause is six years of accumulated decisions, and you are not allowed to stop shipping.',
     moves: [
@@ -38,7 +66,7 @@ export const scenarios: Scenario[] = [
   },
   {
     id: 'scale-surge',
-    index: '02',
+    index: '03',
     situation:
       'Traffic is about to multiply and nobody can say which part gives first.',
     moves: [
@@ -65,7 +93,7 @@ export const scenarios: Scenario[] = [
   },
   {
     id: 'partner-apis',
-    index: '03',
+    index: '04',
     situation:
       'Your product depends on three partner APIs you do not control, and each one fails differently.',
     moves: [
@@ -93,7 +121,7 @@ export const scenarios: Scenario[] = [
   },
   {
     id: 'runtime-debt',
-    index: '04',
+    index: '05',
     situation:
       'The runtime is seven major versions behind and the upgrade has been deferred four times.',
     moves: [
@@ -122,7 +150,7 @@ export const scenarios: Scenario[] = [
   },
   {
     id: 'blind-production',
-    index: '05',
+    index: '06',
     situation:
       'Production is degraded, several teams are on the call, and nobody can say which layer is lying.',
     moves: [
@@ -309,6 +337,43 @@ export const decisions: Decision[] = [
     )
   },
   {
+    id: 'dec-06',
+    code: 'DEC-06',
+    title: 'As the only engineer, ship the boring version and keep shipping',
+    context: (
+      <>
+        Two years as the sole engineer on Apple&rsquo;s third-party cloud
+        resource UI. No reviewer, no second opinion, and a bus factor of one.
+      </>
+    ),
+    options: [
+      'Build the flexible, abstracted version that anticipates future needs',
+      'Ship the smallest correct thing and iterate against real usage',
+      'Wait for headcount before committing to an architecture'
+    ],
+    call: (
+      <>
+        Ship the boring version. With no reviewer, cleverness is a liability
+        rather than a flex, and every hour spent on an abstraction nobody asked
+        for is an hour not spent on the thing a user did ask for. Scope was cut
+        openly, with the reason attached.
+      </>
+    ),
+    consequence: (
+      <>
+        Some duplication that a shared abstraction would have removed, and a few
+        features deferred visibly rather than quietly. In exchange, two years of
+        continuous delivery on a product with one engineer on it.
+      </>
+    ),
+    again: (
+      <>
+        Yes. Solo work is the strongest argument I know for writing code a
+        stranger can read.
+      </>
+    )
+  },
+  {
     id: 'dec-05',
     code: 'DEC-05',
     title: 'Buy observability, own the alert taxonomy',
@@ -456,12 +521,14 @@ export const stackGroups: StackGroup[] = [
         )
       },
       {
-        name: 'React / Redux',
+        name: 'React + TypeScript',
         depth: 'Primary',
         usedFor: (
           <>
-            Product work, freelance builds (U-Hoops: WordPress &rarr;
-            React/Redux + Express + MongoDB), and this site.
+            Four years and counting at Apple &mdash; two of them as the sole
+            engineer on the third-party cloud resource UI, now the internal
+            cloud site and developer portal. Also U-Hoops (WordPress &rarr;
+            React/Redux + Express + MongoDB) and this site.
           </>
         ),
         opinion: (
@@ -469,6 +536,25 @@ export const stackGroups: StackGroup[] = [
             Most &ldquo;we need a state library&rdquo; problems are &ldquo;we
             fetch in the wrong place&rdquo; problems. Server components and
             plain state first.
+          </>
+        )
+      },
+      {
+        name: 'Developer-facing product design',
+        depth: 'Primary',
+        usedFor: (
+          <>
+            Apple&rsquo;s internal cloud site and developer portal &mdash;
+            unifying Apple-internal infrastructure and third-party cloud
+            providers behind one interface.
+          </>
+        ),
+        opinion: (
+          <>
+            Engineers route around a bad interface instantly, which makes them
+            the most honest usability feedback loop available. If the UI is
+            slower than the CLI, you have not shipped a tool, you have shipped a
+            web page.
           </>
         )
       },
@@ -694,17 +780,28 @@ export const seniority: Array<{
 }> = [
   {
     index: '01',
-    label: 'Named ownership',
+    label: 'Escalating scope, one firm',
     body: (
       <>
-        Backend lead on the Apple chatbot platform. Project engineering lead on
-        Chick-fil-A third-party delivery. Both were the role, not a description
-        of the vibe.
+        Seven years at Stellar Elements (formerly Big Nerd Ranch): backend lead,
+        then engineering lead, then sole product owner, then developer platform
+        work. Handed the hard thing, repeatedly, and kept.
       </>
     )
   },
   {
     index: '02',
+    label: 'Solo end-to-end ownership',
+    body: (
+      <>
+        Two years as the only engineer on an Apple internal product &mdash;
+        requirements, architecture, implementation, release, support. No team to
+        hide behind and no reviewer to catch you.
+      </>
+    )
+  },
+  {
+    index: '03',
     label: 'Scale under pressure',
     body: (
       <>
@@ -714,7 +811,7 @@ export const seniority: Array<{
     )
   },
   {
-    index: '03',
+    index: '04',
     label: 'Working across org boundaries',
     body: (
       <>
@@ -725,7 +822,7 @@ export const seniority: Array<{
     )
   },
   {
-    index: '04',
+    index: '05',
     label: 'Modernisation without downtime',
     body: (
       <>
@@ -736,18 +833,19 @@ export const seniority: Array<{
     )
   },
   {
-    index: '05',
+    index: '06',
     label: 'Mentorship',
     body: (
       <>
         Consulting is teaching by default: you leave, and the client team keeps
-        the code.{' '}
+        the code. Solo work is the same lesson at a different angle &mdash; the
+        code has to read like documentation.{' '}
         <Todo>engineers you have onboarded, mentored, or promoted</Todo>
       </>
     )
   },
   {
-    index: '06',
+    index: '07',
     label: 'Business fluency',
     body: (
       <>
