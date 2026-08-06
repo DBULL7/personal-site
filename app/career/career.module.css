@@ -18,11 +18,7 @@
     clamp(2rem, 4vw, 3rem);
   border-bottom: 1px solid var(--d-rule);
   background:
-    linear-gradient(
-      to bottom,
-      var(--d-accent-soft),
-      transparent 60%
-    ),
+    linear-gradient(to bottom, var(--d-accent-soft), transparent 60%),
     var(--d-bg-alt);
 }
 
@@ -376,11 +372,7 @@
   width: 1px;
   flex: 1;
   min-height: 2rem;
-  background: linear-gradient(
-    to bottom,
-    var(--d-rule-strong),
-    transparent 90%
-  );
+  background: linear-gradient(to bottom, var(--d-rule-strong), transparent 90%);
 }
 
 .engagementKind {

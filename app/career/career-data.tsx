@@ -104,9 +104,12 @@ export const engagements: Engagement[] = [
     client: '2022 → present',
     kind: 'Current work',
     period: '2022 → now',
-    role: <Todo>current title, and whether you are still at Big Nerd Ranch</Todo>,
+    role: (
+      <Todo>current title, and whether you are still at Big Nerd Ranch</Todo>
+    ),
     team: <Todo>team size and reporting line</Todo>,
-    domain: 'The most important entry on this page, and the one I cannot write for you',
+    domain:
+      'The most important entry on this page, and the one I cannot write for you',
     headline: 'Unwritten',
     shipped: [
       <Todo key="n1">
@@ -133,7 +136,9 @@ export const engagements: Engagement[] = [
       </>
     ),
     stack: <Todo>what you have actually been writing since 2022</Todo>,
-    taught: <Todo>one honest sentence about what the last four years taught you</Todo>
+    taught: (
+      <Todo>one honest sentence about what the last four years taught you</Todo>
+    )
   },
   {
     id: 'chick-fil-a',
@@ -142,7 +147,8 @@ export const engagements: Engagement[] = [
     period: '2020 → 2022',
     role: 'Project engineering lead — Third Party Delivery Integrations',
     team: <Todo>team size, and who you reported to</Todo>,
-    domain: 'DoorDash, UberEats, and Grubhub inside a national restaurant platform',
+    domain:
+      'DoorDash, UberEats, and Grubhub inside a national restaurant platform',
     headline: '$1M → $5M per day',
     shipped: [
       <>

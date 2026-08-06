@@ -239,7 +239,14 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .cta {
+    min-height: 0;
+    gap: 0.4rem;
+    padding: 0.95rem 1rem;
+  }
+
   .ctaPrimary {
     grid-column: span 1;
+    min-height: 0;
   }
 }

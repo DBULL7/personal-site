@@ -224,9 +224,9 @@ export const decisions: Decision[] = [
     ),
     consequence: (
       <>
-        More upfront modelling, and a translation layer to maintain. In exchange,
-        combo meals on UberEats shipped as a feature rather than a special case
-        &mdash; and it lifted average revenue per order roughly{' '}
+        More upfront modelling, and a translation layer to maintain. In
+        exchange, combo meals on UberEats shipped as a feature rather than a
+        special case &mdash; and it lifted average revenue per order roughly{' '}
         <strong>10%</strong>.
       </>
     ),
@@ -240,7 +240,8 @@ export const decisions: Decision[] = [
   {
     id: 'dec-03',
     code: 'DEC-03',
-    title: 'Move infrastructure to CloudFormation during the growth surge, not after',
+    title:
+      'Move infrastructure to CloudFormation during the growth surge, not after',
     context: (
       <>
         Chick-fil-A delivery revenue was heading from under $1M a day toward $5M
@@ -255,9 +256,9 @@ export const decisions: Decision[] = [
     ],
     call: (
       <>
-        Migrate during. Waiting for a calm quarter is a plan that never executes,
-        and the cost of an unreproducible environment goes up with every extra
-        dollar of daily revenue behind it.
+        Migrate during. Waiting for a calm quarter is a plan that never
+        executes, and the cost of an unreproducible environment goes up with
+        every extra dollar of daily revenue behind it.
       </>
     ),
     consequence: (
@@ -272,7 +273,8 @@ export const decisions: Decision[] = [
   {
     id: 'dec-04',
     code: 'DEC-04',
-    title: 'Upgrade the runtime in steps, tied to work the business already wanted',
+    title:
+      'Upgrade the runtime in steps, tied to work the business already wanted',
     context: (
       <>
         Node 5 in production with a large surface area of dependencies, and a
@@ -390,7 +392,8 @@ export const stackGroups: StackGroup[] = [
           <>
             Strict mode from the first commit, including{' '}
             <code>noUncheckedIndexedAccess</code>. Retrofitting strictness onto
-            a mature codebase is a week nobody plans for &mdash; I have spent it.
+            a mature codebase is a week nobody plans for &mdash; I have spent
+            it.
           </>
         )
       },
@@ -415,8 +418,8 @@ export const stackGroups: StackGroup[] = [
         depth: 'Working',
         usedFor: (
           <Todo>
-            which project the Go work was on &mdash; it is on your r&eacute;sum&eacute;
-            but not attached to an engagement
+            which project the Go work was on &mdash; it is on your
+            r&eacute;sum&eacute; but not attached to an engagement
           </Todo>
         ),
         opinion: (
@@ -491,7 +494,8 @@ export const stackGroups: StackGroup[] = [
   {
     id: 'data',
     label: 'Data',
-    blurb: 'State that has to survive a deploy, a partner outage, and a rewrite.',
+    blurb:
+      'State that has to survive a deploy, a partner outage, and a rewrite.',
     rows: [
       {
         name: 'MongoDB / Mongoose',
@@ -510,8 +514,8 @@ export const stackGroups: StackGroup[] = [
         usedFor: <>AWS-native services with known access patterns.</>,
         opinion: (
           <>
-            Great when the query list is settled. Every &ldquo;can we also filter
-            by&hellip;&rdquo; is a new index and a backfill.
+            Great when the query list is settled. Every &ldquo;can we also
+            filter by&hellip;&rdquo; is a new index and a backfill.
           </>
         )
       },
@@ -532,7 +536,8 @@ export const stackGroups: StackGroup[] = [
   {
     id: 'runtime',
     label: 'Runtime & delivery',
-    blurb: 'Getting it out, keeping it up, and being able to rebuild it on purpose.',
+    blurb:
+      'Getting it out, keeping it up, and being able to rebuild it on purpose.',
     rows: [
       {
         name: 'AWS + CloudFormation',
@@ -554,7 +559,9 @@ export const stackGroups: StackGroup[] = [
       {
         name: 'Docker',
         depth: 'Working',
-        usedFor: <>Service packaging and local parity with deployed environments.</>,
+        usedFor: (
+          <>Service packaging and local parity with deployed environments.</>
+        ),
         opinion: (
           <>
             The value is a build that behaves the same on a laptop and in CI. If
@@ -576,11 +583,13 @@ export const stackGroups: StackGroup[] = [
       {
         name: 'GitHub Actions / CI-CD',
         depth: 'Primary',
-        usedFor: <>Build, test, release, and environment promotion pipelines.</>,
+        usedFor: (
+          <>Build, test, release, and environment promotion pipelines.</>
+        ),
         opinion: (
           <>
-            The pipeline is a product and the team is its user. Past ten minutes,
-            people stop reading the output and start re-running it.
+            The pipeline is a product and the team is its user. Past ten
+            minutes, people stop reading the output and start re-running it.
           </>
         )
       }
@@ -623,7 +632,9 @@ export const stackGroups: StackGroup[] = [
       {
         name: 'OpsGenie / on-call',
         depth: 'Working',
-        usedFor: <>Alert routing and rotation on a revenue-critical platform.</>,
+        usedFor: (
+          <>Alert routing and rotation on a revenue-critical platform.</>
+        ),
         opinion: (
           <>
             Every page maps to a symptom a customer would feel. Everything else

@@ -452,7 +452,9 @@ export default function CareerPage() {
             id="fit-title"
             title="What I want next"
             note={
-              <>Stated plainly, so we can both save a call if it is not a match.</>
+              <>
+                Stated plainly, so we can both save a call if it is not a match.
+              </>
             }
           />
           <div className={styles.fitGrid}>

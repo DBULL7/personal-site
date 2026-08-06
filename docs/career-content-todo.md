@@ -89,7 +89,7 @@ Four of the five now cite real, sourced evidence. One gap:
 
 ## 8. Systems — decision log — `systems-data.tsx` → `decisions`
 
-Each entry is anchored to real work from the record, but the *framing* is written in your voice
+Each entry is anchored to real work from the record, but the _framing_ is written in your voice
 and asserted as your call.
 
 - [ ] **Read all five and confirm they are accurate.** If any is not a call you actually made or

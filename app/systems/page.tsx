@@ -235,7 +235,11 @@ export default function SystemsPage() {
         </div>
       </section>
 
-      <section id="stack" className={styles.stack} aria-labelledby="stack-title">
+      <section
+        id="stack"
+        className={styles.stack}
+        aria-labelledby="stack-title"
+      >
         <div className={styles.shell}>
           <SectionHead
             index="03"
@@ -243,9 +247,9 @@ export default function SystemsPage() {
             title="The stack, annotated"
             note={
               <>
-                Each tool appears exactly once, with an honest depth rating, what
-                I used it for, and what I would do differently. The third column
-                is the only one worth reading.
+                Each tool appears exactly once, with an honest depth rating,
+                what I used it for, and what I would do differently. The third
+                column is the only one worth reading.
               </>
             }
           />
@@ -314,8 +318,8 @@ export default function SystemsPage() {
             title="Seniority signals"
             note={
               <>
-                The things that separate a senior engineer from a productive one.
-                Ask about any of them.
+                The things that separate a senior engineer from a productive
+                one. Ask about any of them.
               </>
             }
           />
