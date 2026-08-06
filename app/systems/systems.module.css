@@ -576,6 +576,15 @@
   background: var(--d-inv-bg);
 }
 
+/* Odd final card fills the row instead of leaving an empty cell. */
+.signalList li:last-child {
+  grid-column: 1 / -1;
+}
+
+.signalList li:last-child p {
+  max-width: 68ch;
+}
+
 .signalIndex {
   display: block;
   margin-bottom: 0.75rem;
