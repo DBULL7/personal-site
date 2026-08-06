@@ -203,14 +203,14 @@ export function SystemsExperience() {
           <ul className={styles.statusStack} aria-label="Machine status">
             <li>
               <i
-                className={running ? styles.ledOk : styles.ledAmber}
+                className={running && live ? styles.ledOk : styles.ledAmber}
                 aria-hidden="true"
               />
-              {running ? 'RUNNING' : 'HELD'}
+              {!live ? 'STATIC' : running ? 'RUNNING' : 'HELD'}
             </li>
             <li>
               <i className={styles.ledSignal} aria-hidden="true" />
-              {SPEEDS[speedIndex]}× RATE
+              {live ? `${SPEEDS[speedIndex]}× RATE` : 'REDUCED MOTION'}
             </li>
             <li>
               <i
