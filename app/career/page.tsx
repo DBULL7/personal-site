@@ -4,7 +4,7 @@ import { CareerExperience } from './career-experience'
 export const metadata: Metadata = {
   title: 'Career | Devon Bull',
   description:
-    'Devon Bull — Solutions Architect at Big Nerd Ranch. Backend lead on Apple’s chatbot (1M → 15M users) and engineering lead on Chick-fil-A’s third-party delivery integrations ($1M → $5M a day).',
+    'Devon Bull — product engineer in Raleigh, NC. Seven years at one firm (Stellar Elements, formerly Big Nerd Ranch), most of it inside Apple: backend lead on the chatbot at 1M → 15M users, solo owner of a cloud-resource UI, now Apple’s internal cloud site and developer portal. Plus Chick-fil-A delivery integrations at $5M a day.',
   alternates: { canonical: '/career' }
 }
 

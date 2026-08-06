@@ -341,39 +341,6 @@
   line-height: 1.66;
 }
 
-.legend {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 0.8rem;
-  padding: 1.6rem 1.5rem 1.8rem;
-  background: color-mix(in srgb, var(--sig-band) 55%, transparent);
-  backdrop-filter: blur(8px);
-}
-
-.legendTitle {
-  margin: 0;
-  color: var(--sig-signal);
-  font:
-    600 0.6rem/1 ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    monospace;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-}
-
-.legend p {
-  margin: 0;
-  color: var(--sig-ink-3);
-  font:
-    500 0.74rem/1.7 ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    monospace;
-  letter-spacing: 0.02em;
-}
-
 /* ---------------- pushback ---------------- */
 
 .pushback {

@@ -376,6 +376,11 @@
   line-height: 1.7;
 }
 
+.contactBody strong {
+  color: var(--sig-ink);
+  font-weight: 600;
+}
+
 .contactLinks {
   display: flex;
   flex-wrap: wrap;

@@ -87,7 +87,7 @@ uniform float uReveal;
 uniform float uEnergy;
 uniform float uSeed;
 uniform int   uAttrCount;
-uniform vec3  uAttr[8];
+uniform vec3  uAttr[10];
 
 ${NOISE}
 
@@ -110,7 +110,7 @@ void main() {
   vec2 flow = curl(p + uSeed, uTime) * (0.030 + 0.105 * chaos + 0.07 * uEnergy);
   flow += vec2(0.008 + 0.026 * chaos, -0.004);
 
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < 10; i++) {
     if (i >= uAttrCount) break;
     vec3 a = uAttr[i];
     vec2 ap = (a.xy - 0.5) * vec2(uAspect, 1.0);
@@ -140,7 +140,7 @@ void main() {
   hue = mix(hue, 0.0, min(emit * 6.0, 0.9));
 
   /* attractor emission */
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < 10; i++) {
     if (i >= uAttrCount) break;
     vec3 a = uAttr[i];
     vec2 ap = (a.xy - 0.5) * vec2(uAspect, 1.0);
@@ -403,7 +403,7 @@ export default function SignalField({
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1)
     const geometry = new THREE.PlaneGeometry(2, 2)
 
-    const attrs = Array.from({ length: 8 }, () => new THREE.Vector3())
+    const attrs = Array.from({ length: 10 }, () => new THREE.Vector3())
 
     const simMaterial = new THREE.ShaderMaterial({
       vertexShader: VERT,
@@ -560,7 +560,7 @@ export default function SignalField({
       simMaterial.uniforms.uEnergy.value = smoothEnergy
 
       const list = state.attractors
-      const count = Math.min(list.length, 8)
+      const count = Math.min(list.length, 10)
       for (let i = 0; i < count; i++) {
         attrs[i].set(list[i].x, 1 - list[i].y, list[i].strength)
       }

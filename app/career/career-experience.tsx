@@ -21,8 +21,8 @@ type Transmission = {
   readout: { k: string; v: string }[]
 }
 
-// TODO(devon): the résumé on file ends in 2022. Confirm current title and any
-// client work since the Chick-fil-A engagement, then add a sixth transmission.
+// TODO(devon): exact start/end months for the two most recent Apple eras, and
+// the current title (the résumé on file says Solutions Architect, 2022).
 const transmissions: Transmission[] = [
   {
     id: 'haller',
@@ -43,29 +43,11 @@ const transmissions: Transmission[] = [
     ]
   },
   {
-    id: 'firm',
+    id: 'apple-chatbot',
     index: '01',
-    word: 'BIG NERD RANCH',
-    caption: 'transmission 01',
-    kicker: 'The arc · since 2018',
-    title: 'One firm since 2018. Big Nerd Ranch, Solutions Architect.',
-    body: [
-      'My whole engineering career has been with a single consulting firm, which means an unusual number of first days. You land in a codebase you did not write, beside a team that already made its decisions, against a deadline that predates you. Being useful in week one and trusted by week four is the actual skill — the languages are the easy part.',
-      'It also means my work gets scored in somebody else’s numbers: their uptime, their revenue per order, their page load. That turns out to be a very honest way to keep score.'
-    ],
-    readout: [
-      { k: 'Employer', v: 'Big Nerd Ranch' },
-      { k: 'Since', v: 'July 2018' },
-      { k: 'Title', v: 'Solutions Architect' },
-      { k: 'Mode', v: 'Placed inside client engineering teams' }
-    ]
-  },
-  {
-    id: 'apple',
-    index: '02',
     word: 'APPLE',
-    caption: 'transmission 02',
-    kicker: 'Client engagement · 2018–2020',
+    caption: 'chatbot · 2018–2020',
+    kicker: 'Apple, era one · 2018–2020',
     title:
       'Backend lead on Apple’s chatbot, from one million users to fifteen.',
     body: [
@@ -84,14 +66,14 @@ const transmissions: Transmission[] = [
   },
   {
     id: 'chickfila',
-    index: '03',
+    index: '02',
     word: 'CHICK-FIL-A',
-    caption: 'transmission 03',
-    kicker: 'Client engagement · 2020–2022',
+    caption: 'delivery · 2020–2022',
+    kicker: 'Chick-fil-A · 2020–2022',
     title:
       'Project engineering lead for third-party delivery, straight through the pandemic.',
     body: [
-      'Two years leading Chick-fil-A’s third-party delivery integrations. DoorDash, UberEats and Grubhub arrive as three different opinions about what an order is, and have to resolve into one system that a restaurant can actually run on. I held that work through the steepest growth curve any of us had seen: under $1M a day when I started, $5M a day by 2022.',
+      'Two years leading Chick-fil-A’s third-party delivery integrations. DoorDash, UberEats and Grubhub arrive as three different opinions about what an order is, and have to resolve into one system a restaurant can actually run on. I held that work through the steepest growth curve any of us had seen: under $1M a day when I started, $5M a day by 2022.',
       'Specifics, because they are the point. Combo meals on UberEats, worth roughly ten percent more average revenue per order. Checkout with DoorDash inside the Chick-fil-A iOS app, coordinated directly with DoorDash’s engineers. A migration of the project’s infrastructure onto AWS CloudFormation. And a long, unglamorous push on logging, monitoring and observability — because at that volume the question is never “is something broken”, it is “whose”.'
     ],
     readout: [
@@ -105,22 +87,82 @@ const transmissions: Transmission[] = [
     ]
   },
   {
-    id: 'range',
-    index: '04',
-    word: 'RANGE',
-    caption: 'transmission 04',
-    kicker: 'The stack behind the numbers',
-    title: 'What I actually build with.',
+    id: 'apple-solo',
+    index: '03',
+    word: 'SOLO',
+    caption: 'apple · two years, one engineer',
+    kicker: 'Apple, era two · ~2022–2024',
+    title: 'Two years as the only engineer on the product.',
     body: [
-      'JavaScript, TypeScript and Go. Node and Express on the server, Vue and React on the surface. State in MongoDB, DynamoDB or Postgres, chosen from the access pattern rather than from habit. AWS, Docker, Kubernetes and GitHub Actions underneath. Datadog, Splunk and OpsGenie for the part of the job that happens at three in the morning.',
-      'Before the client work there was a freelance rewrite of a WordPress site onto React, Redux, Express and MongoDB — accounts, tour management, a message board — which is where I first owned an entire system end to end. Lately I spend real hours on applied AI, treated exactly like a delivery partner: a component with wide error bars, wrapped in a fallback path.'
+      'Apple asked for me back, and this time the team was one person. For roughly two years I was the sole engineer on Apple’s interface for managing third-party cloud resources — React and TypeScript, owned end to end. Design conversations, architecture, implementation, release, support, the bug someone found on a Sunday. There is no team to hide behind in that arrangement, and no one to absorb a bad decision for you.',
+      'It is the work that turned me from an engineer who ships features into one who owns a product. You learn very quickly which complexity you will still be paying for in a year, and you stop adding it.'
     ],
     readout: [
-      { k: 'Languages', v: 'JavaScript · TypeScript · Go' },
-      { k: 'Server', v: 'Node · Express' },
-      { k: 'Interface', v: 'Vue · React' },
+      { k: 'Client', v: 'Apple' },
+      { k: 'Role', v: 'Sole engineer, end to end' },
+      { k: 'Duration', v: '~2 years' },
+      { k: 'Stack', v: 'React · TypeScript' },
+      { k: 'Product', v: 'Third-party cloud resource management UI' },
+      { k: 'Owned', v: 'Design → build → ship → support' }
+    ]
+  },
+  {
+    id: 'apple-portal',
+    index: '04',
+    word: 'PORTAL',
+    caption: 'apple · current work',
+    kicker: 'Apple, era three · ~2024–present',
+    title:
+      'Now: the front door to Apple’s clouds, becoming a developer portal.',
+    body: [
+      'Current work. I build Apple’s internal cloud website — where engineers inside Apple manage their resources across Apple-internal infrastructure and third-party cloud providers from one place. React and TypeScript again, but the problem has changed shape: this is developer-platform product work, where your users are engineers and every rough edge in your interface is multiplied by everyone who has to use it to do their job.',
+      'It is now expanding into a complete Developer Portal experience. Seven years after I first walked into an Apple engagement as a backend lead, the same relationship has become the place I get to design a platform.'
+    ],
+    readout: [
+      { k: 'Client', v: 'Apple' },
+      { k: 'Since', v: '~2024 – present' },
+      { k: 'Stack', v: 'React · TypeScript' },
+      { k: 'Surface', v: 'Internal cloud management website' },
+      { k: 'Scope', v: 'Apple-internal + third-party cloud providers' },
+      { k: 'Next', v: 'Expanding into a full Developer Portal' }
+    ]
+  },
+  {
+    id: 'firm',
+    index: '05',
+    word: 'SEVEN YEARS',
+    caption: 'one firm · 2018 – present',
+    kicker: 'The through-line · since July 2018',
+    title: 'One firm since 2018. They keep handing me the hard thing.',
+    body: [
+      'Stellar Elements — formerly Big Nerd Ranch, now an Amdocs company — has been my only engineering employer since July 2018. Seven years, one firm, through a rebrand and an acquisition, and an unusual number of first days inside other companies’ codebases.',
+      'The shape of those seven years is the part I would point at. Backend lead at fifteen million users. Engineering lead through a hypergrowth integration crisis. Then sole owner of a product for two years. Now platform and developer-experience work. Nobody plans a career in that order; you get there by being handed something difficult and not needing to be rescued.'
+    ],
+    readout: [
+      { k: 'Employer', v: 'Stellar Elements (formerly Big Nerd Ranch)' },
+      { k: 'Group', v: 'An Amdocs company' },
+      { k: 'Tenure', v: 'July 2018 – present · 7+ years' },
+      { k: 'Clients', v: 'Apple · Chick-fil-A' },
+      { k: 'Arc', v: 'Backend lead → project lead → solo owner → platform' }
+    ]
+  },
+  {
+    id: 'range',
+    index: '06',
+    word: 'RANGE',
+    caption: 'the stack behind it',
+    kicker: 'What I build with',
+    title: 'Product engineer, in the literal sense.',
+    body: [
+      'React, TypeScript and Vue on the surface; Node, Express and Go behind it. State in MongoDB, DynamoDB or Postgres, chosen from the access pattern rather than from habit. AWS, CloudFormation, Docker, Kubernetes and GitHub Actions underneath. Datadog, Splunk and OpsGenie for the part of the job that happens at three in the morning.',
+      'I want the whole line: the interface a person actually touches, the service behind it, and the number that says whether it worked. Lately I spend real hours on applied AI, treated exactly like a delivery partner — a component with wide error bars, wrapped in a fallback path.'
+    ],
+    readout: [
+      { k: 'Interface', v: 'React · TypeScript · Vue' },
+      { k: 'Server', v: 'Node · Express · Go' },
       { k: 'State', v: 'MongoDB · DynamoDB · Postgres' },
-      { k: 'Cloud', v: 'AWS · Docker · Kubernetes · GitHub Actions' },
+      { k: 'Cloud', v: 'AWS · CloudFormation · Docker · Kubernetes' },
+      { k: 'Delivery', v: 'GitHub Actions · CI/CD' },
       { k: 'Signal', v: 'Datadog · Splunk · OpsGenie' }
     ]
   }
@@ -296,15 +338,17 @@ export function CareerExperience() {
             <DecodeText text="signal." duration={0.8} delay={0.25} />
           </h1>
           <p className={styles.heroLede}>
-            I am Devon Bull — a software engineer and Solutions Architect in
-            Raleigh, North Carolina. Economics degree, a startup I helped run, a
-            prototype I taught myself to build, then a bootcamp. Since 2018 I
-            have worked for one consulting firm, <strong>Big Nerd Ranch</strong>
-            , leading backend and platform work inside two of the largest
-            consumer brands in America: <strong>Apple</strong>’s chatbot as it
-            went from one million to fifteen million users, and{' '}
-            <strong>Chick-fil-A</strong>’s third-party delivery integrations as
-            they went from under $1M to $5M a day.
+            I am Devon Bull — a product engineer in Raleigh, North Carolina. An
+            economics degree, a startup I helped run, a prototype I taught
+            myself to build, then a bootcamp. Since 2018 I have been at one
+            firm, <strong>Stellar Elements</strong> (formerly Big Nerd Ranch, an
+            Amdocs company), and most of those seven years have been spent
+            inside <strong>Apple</strong>: backend lead on the chatbot as it
+            grew from one million users to fifteen million, then two years as
+            the only engineer on Apple’s cloud-resource UI, and now the internal
+            cloud site that is becoming Apple’s developer portal. In between I
+            led <strong>Chick-fil-A</strong>’s third-party delivery integrations
+            from under $1M to $5M a day.
           </p>
           <p className={styles.heroNote}>
             Scroll and each section resolves out of the noise. Or don’t — every
@@ -314,8 +358,8 @@ export function CareerExperience() {
 
           <dl className={styles.readoutStrip}>
             {[
-              { k: 'Firm', v: 'Big Nerd Ranch · since 2018' },
-              { k: 'Role', v: 'Solutions Architect' },
+              { k: 'Firm', v: 'Stellar Elements · since 2018' },
+              { k: 'Apple', v: '7 years · three eras' },
               { k: 'Scale', v: '1M → 15M users' },
               { k: 'Throughput', v: '$1M → $5M per day' }
             ].map((item) => (
@@ -387,9 +431,11 @@ export function CareerExperience() {
             <DecodeText text="Currently listening." duration={1} />
           </h2>
           <p className={styles.contactBody}>
-            The work I want has real traffic on it, integrations that fight
-            back, and a team that would rather be correct than comfortable. If
-            that is the room you are standing in, say something.
+            I am looking for <strong>product engineer</strong> work — the whole
+            line, from the interface somebody actually touches to the service
+            and the number behind it. Real traffic on it, integrations that
+            fight back, and a team that would rather be correct than
+            comfortable. If that is the room you are standing in, say something.
           </p>
           <div className={styles.contactLinks}>
             <a href="mailto:devjbull@gmail.com">
