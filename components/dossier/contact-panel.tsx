@@ -96,9 +96,8 @@ export function ContactPanel({
             </a>
           </div>
           <p className={styles.ctaFoot}>
-            TODO(devon): confirm the public email address, and add
-            public/resume.pdf. Both are wired and will work the moment they are
-            real.
+            TODO(devon): add public/resume.pdf &mdash; the link is already
+            wired and works the moment the file is real.
           </p>
         </div>
       </div>

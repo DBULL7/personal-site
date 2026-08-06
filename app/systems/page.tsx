@@ -154,8 +154,10 @@ export default function SystemsPage() {
                     ))}
                   </ul>
                   <p className={styles.scenarioEvidence}>
-                    <span>Evidence</span>
-                    {item.evidence}
+                    <span className={styles.scenarioEvidenceLabel}>
+                      Evidence
+                    </span>
+                    <span>{item.evidence}</span>
                   </p>
                 </div>
               </article>

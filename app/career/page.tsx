@@ -166,6 +166,16 @@ export default function CareerPage() {
               <span className={styles.dot} aria-hidden="true" />
               {profile.availability.state}. {profile.availability.detail}
             </p>
+
+            <ol className={styles.proofList} aria-label="Results at a glance">
+              {proofPoints.map((point) => (
+                <li key={point.value}>
+                  <strong>{point.value}</strong>
+                  <span className={styles.proofLabel}>{point.label}</span>
+                  <span className={styles.proofSource}>{point.source}</span>
+                </li>
+              ))}
+            </ol>
           </div>
 
           <div className={styles.factSheet}>
@@ -181,18 +191,6 @@ export default function CareerPage() {
           </div>
         </div>
       </header>
-
-      <section className={styles.proofStrip} aria-label="Results at a glance">
-        <ol className={styles.proofList}>
-          {proofPoints.map((point) => (
-            <li key={point.value}>
-              <strong>{point.value}</strong>
-              <span className={styles.proofLabel}>{point.label}</span>
-              <span className={styles.proofSource}>{point.source}</span>
-            </li>
-          ))}
-        </ol>
-      </section>
 
       <nav className={styles.jump} aria-label="Sections of this page">
         <ul>
@@ -320,8 +318,8 @@ export default function CareerPage() {
                   </div>
 
                   <p className={styles.taught}>
-                    <span>Took away</span>
-                    {item.taught}
+                    <span className={styles.taughtLabel}>Took away</span>
+                    <span>{item.taught}</span>
                   </p>
                 </div>
               </li>
@@ -404,6 +402,9 @@ export default function CareerPage() {
                   </li>
                 ))}
               </ul>
+              <Link className={styles.evidenceMore} href="/blog">
+                All field notes <span aria-hidden="true">&rarr;</span>
+              </Link>
               <p className={styles.evidenceNote}>
                 <Todo>
                   the voice-cloning write-up is still a draft in /posts &mdash;
