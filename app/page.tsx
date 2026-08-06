@@ -5,7 +5,7 @@ import styles from './home.module.css'
 export const metadata: Metadata = {
   title: 'Devon Bull | Senior Software Engineer',
   description:
-    'Devon Bull is a senior software engineer in Raleigh working across embedded systems, cloud platforms, and the web.',
+    'Devon Bull is a senior software engineer in Raleigh working on high-traffic consumer platforms, third-party integrations, and legacy modernisation.',
   alternates: { canonical: '/' }
 }
 
@@ -14,7 +14,7 @@ const routes = [
     index: '01',
     label: 'Start here',
     title: 'Career',
-    text: 'A concise account of the client work, engineering range, and calm leadership behind the résumé.',
+    text: 'The work record: Apple, Chick-fil-A, the numbers behind each engagement, and how I got here.',
     detail: 'Experience & approach',
     href: '/career'
   },
@@ -37,7 +37,7 @@ const routes = [
 ] as const
 
 const signals = [
-  ['Work', 'Embedded systems · platforms · web'],
+  ['Work', 'Consumer platforms · integrations · web'],
   ['Client context', 'Apple · Chick-fil-A'],
   ['Perspective', 'Former founder · consultant · engineering leader'],
   ['Location', 'Raleigh, North Carolina']
@@ -58,9 +58,9 @@ export default function Home() {
               <em>products meet the real world.</em>
             </h1>
             <p className={styles.lede}>
-              I work across embedded systems, cloud platforms, and the
-              web—bringing structure to ambiguous problems and helping
-              thoughtful teams turn ambitious ideas into reliable products.
+              I work on high-traffic consumer platforms, third-party
+              integrations, and the kind of legacy modernisation that has to
+              happen without ever taking the product down.
             </p>
             <div className={styles.actions}>
               <Link className={styles.primaryAction} href="/career">

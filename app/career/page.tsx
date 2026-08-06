@@ -7,28 +7,38 @@ import { profile } from '@/config/profile'
 import { ContactPanel } from '@/components/dossier/contact-panel'
 import { SectionHead } from '@/components/dossier/section-head'
 import { Todo } from '@/components/dossier/todo'
-import { engagements, factSheet, founder, lookingFor } from './career-data'
+import {
+  engagements,
+  factSheet,
+  lookingFor,
+  path,
+  proofPoints,
+  sideProjects
+} from './career-data'
 import styles from './career.module.css'
 
 export const metadata: Metadata = {
-  title: 'Career | Devon Bull — Senior Software Engineer',
+  title: 'Career | Devon Bull — Solutions Architect, Big Nerd Ranch',
   description:
-    'Work history for Devon Bull: senior software engineer in Raleigh, NC. Embedded engineering for Apple and Chick-fil-A through one consulting firm, plus full-stack and platform work. Former founder. Open to senior and staff roles.',
+    'Work record for Devon Bull, Raleigh NC. Backend lead on Apple’s chatbot platform (1M → 15M users, 100% uptime, 60s → 2s page load). Project engineering lead on Chick-fil-A third-party delivery (DoorDash, UberEats, Grubhub) from $1M to $5M a day. Open to senior and lead roles.',
   keywords: [
     'senior software engineer',
-    'embedded engineer',
+    'solutions architect',
+    'Big Nerd Ranch',
     'Raleigh NC',
     'Apple',
     'Chick-fil-A',
+    'Node.js',
     'TypeScript',
     'Go',
-    'Kubernetes'
+    'AWS',
+    'third-party integrations'
   ],
   alternates: { canonical: '/career' },
   openGraph: {
-    title: 'Career | Devon Bull — Senior Software Engineer',
+    title: 'Career | Devon Bull — Solutions Architect',
     description:
-      'Embedded engineering for Apple and Chick-fil-A, full-stack platform work, and a founder chapter. The record, with dates and scope.',
+      'Apple chatbot backend lead: 1M → 15M users at 100% uptime, 60s → 2s page load. Chick-fil-A delivery integrations: $1M → $5M a day.',
     url: '/career',
     type: 'profile'
   }
@@ -43,40 +53,55 @@ const personJsonLd = {
   url: `${profile.site}/career`,
   email: `mailto:${profile.email}`,
   image: `${profile.site}/profile_pic.jpg`,
+  worksFor: {
+    '@type': 'Organization',
+    name: profile.firm,
+    url: 'https://bignerdranch.com'
+  },
   address: {
     '@type': 'PostalAddress',
     addressLocality: 'Raleigh',
     addressRegion: 'NC',
     addressCountry: 'US'
   },
+  alumniOf: [
+    {
+      '@type': 'EducationalOrganization',
+      name: 'Turing School of Software & Design'
+    },
+    { '@type': 'CollegeOrUniversity', name: 'University of Kansas' }
+  ],
   sameAs: [profile.linkedin, profile.github, profile.site],
   knowsAbout: [
-    'Embedded systems engineering',
-    'Firmware and device software',
-    'TypeScript',
-    'React',
+    'Backend engineering',
+    'High-traffic consumer platforms',
+    'Third-party API integrations',
+    'Legacy modernisation',
     'Node.js',
+    'TypeScript',
+    'JavaScript',
     'Go',
-    'PostgreSQL',
-    'DynamoDB',
+    'Vue.js',
+    'React',
+    'Express',
     'MongoDB',
+    'DynamoDB',
+    'PostgreSQL',
     'Amazon Web Services',
-    'Google Cloud Platform',
+    'AWS CloudFormation',
+    'Docker',
     'Kubernetes',
-    'CI/CD',
-    'Observability and Datadog',
-    'Applied AI tooling'
+    'Datadog',
+    'Splunk',
+    'Observability'
   ],
-  seeks: {
-    '@type': 'Demand',
-    name: profile.availability.state
-  }
+  seeks: { '@type': 'Demand', name: profile.availability.state }
 }
 
 const jumpLinks = [
   ['Work record', '#record'],
-  ['Founder chapter', '#founder'],
-  ['Written proof', '#evidence'],
+  ['How I got here', '#path'],
+  ['Proof of work', '#evidence'],
   ['What I want next', '#fit'],
   ['Contact', '#contact']
 ] as const
@@ -101,7 +126,7 @@ export default function CareerPage() {
             <p className={styles.eyebrow}>Career record &mdash; 001</p>
             <h1 id="career-title">{profile.name}</h1>
             <p className={styles.role}>
-              {profile.role} &middot; {profile.location}
+              {profile.role}, {profile.firm} &middot; {profile.location}
             </p>
             <p className={styles.lede}>{profile.summary}</p>
 
@@ -157,6 +182,18 @@ export default function CareerPage() {
         </div>
       </header>
 
+      <section className={styles.proofStrip} aria-label="Results at a glance">
+        <ol className={styles.proofList}>
+          {proofPoints.map((point) => (
+            <li key={point.value}>
+              <strong>{point.value}</strong>
+              <span className={styles.proofLabel}>{point.label}</span>
+              <span className={styles.proofSource}>{point.source}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       <nav className={styles.jump} aria-label="Sections of this page">
         <ul>
           {jumpLinks.map(([label, href]) => (
@@ -182,11 +219,10 @@ export default function CareerPage() {
             title="The work record"
             note={
               <>
-                One employer, several clients. Consulting firms rotate you
-                through other people&rsquo;s hardest quarters, which is a strange
-                way to build range and a very good one. Each engagement below is
-                listed the way an engineer would want to read it: what it was,
-                what shipped, and what made it hard.
+                One firm since 2018, two long client engagements, both of them
+                high-traffic consumer platforms under active growth. Listed the
+                way an engineer would want to read it: what it was, what
+                shipped, and what made it hard. Most recent first.
               </>
             }
           />
@@ -196,35 +232,37 @@ export default function CareerPage() {
               <span className={styles.employerIndex}>Employer</span>
             </div>
             <div className={styles.employerBody}>
-              <h3>One firm, several clients</h3>
+              <h3>Big Nerd Ranch</h3>
               <dl className={styles.employerMeta}>
                 <div>
-                  <dt>Firm</dt>
+                  <dt>Title</dt>
                   <dd>
-                    <Todo>consulting firm name</Todo>
+                    Solutions Architect &middot;{' '}
+                    <Todo>confirm current title</Todo>
                   </dd>
                 </div>
                 <div>
-                  <dt>Titles</dt>
-                  <dd>
-                    <Todo>title progression and promotion dates</Todo>
-                  </dd>
+                  <dt>Since</dt>
+                  <dd>July 2018</dd>
                 </div>
               </dl>
               <p>
-                Every engagement on this page was delivered under one firm. The
-                client changed, the domain changed, the codebase changed; the
-                standard did not. Consulting is the fastest available training
-                in walking into a system you did not build, finding the
-                load-bearing parts, and being useful before anyone has time to
-                onboard you.
+                One employer, placed inside client engineering teams for years
+                at a time rather than weeks. That is why the record below is two
+                deep engagements instead of a list of logos &mdash; and why both
+                of them include the unglamorous part, where you own the thing
+                after launch.
               </p>
             </div>
           </article>
 
           <ol className={styles.engagements}>
             {engagements.map((item, index) => (
-              <li key={item.id} className={styles.engagement} id={item.id}>
+              <li
+                key={item.id}
+                className={`${styles.engagement} ${item.id === 'current' ? styles.engagementOpen : ''}`}
+                id={item.id}
+              >
                 <div className={styles.engagementRail}>
                   <span className={styles.engagementIndex}>
                     {String(index + 1).padStart(2, '0')}
@@ -234,9 +272,17 @@ export default function CareerPage() {
 
                 <div className={styles.engagementBody}>
                   <div className={styles.engagementHead}>
-                    <p className={styles.engagementKind}>{item.kind}</p>
+                    <p className={styles.engagementKind}>
+                      {item.kind} <span aria-hidden="true">&middot;</span>{' '}
+                      {item.period}
+                    </p>
                     <h3>{item.client}</h3>
                     <p className={styles.engagementDomain}>{item.domain}</p>
+                    {item.headline ? (
+                      <p className={styles.engagementHeadline}>
+                        {item.headline}
+                      </p>
+                    ) : null}
                   </div>
 
                   <dl className={styles.specs}>
@@ -284,70 +330,38 @@ export default function CareerPage() {
         </div>
       </section>
 
-      <section
-        id="founder"
-        className={styles.founder}
-        aria-labelledby="founder-title"
-      >
+      <section id="path" className={styles.path} aria-labelledby="path-title">
         <div className={styles.shell}>
           <SectionHead
             index="02"
-            id="founder-title"
-            title="Before the firm: I ran the company"
+            id="path-title"
+            title="Economics, a startup, a bootcamp, then backend lead at Apple"
             note={
               <>
-                Most senior engineers have never had to make the call that costs
-                money. I have. That is the part of this page that is hardest to
-                hire for and easiest to verify in an interview &mdash; ask me
-                about the decisions I got wrong.
+                No computer science degree. I ran properties, then wrote a
+                business plan, got a company into an accelerator, and taught
+                myself Sketch and Swift to build the prototype because nobody
+                else was going to. The engineering came after the operating
+                experience, not before it.
               </>
             }
           />
 
-          <div className={styles.founderGrid}>
-            <dl className={styles.founderSpecs}>
-              <div>
-                <dt>Venture</dt>
-                <dd>{founder.title}</dd>
-              </div>
-              <div>
-                <dt>Years</dt>
-                <dd>{founder.period}</dd>
-              </div>
-              <div>
-                <dt>Product</dt>
-                <dd>{founder.what}</dd>
-              </div>
-              <div>
-                <dt>Scope</dt>
-                <dd>{founder.scope}</dd>
-              </div>
-              <div>
-                <dt>Outcome</dt>
-                <dd>{founder.outcome}</dd>
-              </div>
-            </dl>
+          <ol className={styles.pathList}>
+            {path.map((step) => (
+              <li key={`${step.year}-${step.title}`}>
+                <span className={styles.pathYear}>{step.year}</span>
+                <strong>{step.title}</strong>
+                <p>{step.detail}</p>
+              </li>
+            ))}
+          </ol>
 
-            <div className={styles.founderProse}>
-              <p>
-                Running a company taught me the part of engineering that is not
-                engineering. What a deadline actually costs. Why a customer
-                stops answering. When &ldquo;good enough, ship it&rdquo; is the
-                correct technical answer and when it is the expensive one.
-              </p>
-              <p>
-                It also taught me to be honest about scope in public. A founder
-                who over-promises loses a customer; an engineer who
-                over-promises loses a quarter. Same reflex, different blast
-                radius.
-              </p>
-              <p className={styles.founderPull}>
-                I do not put &ldquo;entrepreneurial mindset&rdquo; on a
-                r&eacute;sum&eacute;. I put the outcome on it, including the
-                parts that did not work.
-              </p>
-            </div>
-          </div>
+          <p className={styles.pathPull}>
+            The useful part is not the story. It is that I have been the person
+            who has to decide what a delay actually costs &mdash; and that
+            changes which technical argument you make.
+          </p>
         </div>
       </section>
 
@@ -360,19 +374,18 @@ export default function CareerPage() {
           <SectionHead
             index="03"
             id="evidence-title"
-            title="Written proof"
+            title="Proof of work"
             note={
               <>
-                Client work is mostly under NDA. Writing is not. These are
-                published, dated, and mine &mdash; the closest thing to a work
-                sample I can hand you before we talk.
+                Client work sits behind client agreements. These do not &mdash;
+                published, dated, and mine.
               </>
             }
           />
 
           <div className={styles.evidenceGrid}>
             <div>
-              <h3 className={styles.evidenceLabel}>Published</h3>
+              <h3 className={styles.evidenceLabel}>Written</h3>
               <ul className={styles.postList}>
                 {posts.map((post) => (
                   <li key={post.url}>
@@ -393,15 +406,14 @@ export default function CareerPage() {
               </ul>
               <p className={styles.evidenceNote}>
                 <Todo>
-                  there are unpublished drafts sitting in /posts, including the
-                  voice-cloning one &mdash; ship them, they are the strongest
-                  applied-AI evidence you have
+                  the voice-cloning write-up is still a draft in /posts &mdash;
+                  publish it, it is the strongest applied-AI evidence you have
                 </Todo>
               </p>
             </div>
 
             <aside className={styles.artifactCard}>
-              <h3 className={styles.evidenceLabel}>Code &amp; artifacts</h3>
+              <h3 className={styles.evidenceLabel}>Built</h3>
               <a
                 className={styles.artifactLink}
                 href={profile.github}
@@ -417,17 +429,16 @@ export default function CareerPage() {
               <a className={styles.artifactLink} href="/orbital">
                 <strong>/orbital</strong>
                 <span>
-                  A WebGL experience built on this site &mdash; three.js, custom
-                  shaders, disposal and reduced-motion handling
+                  A WebGL piece built on this site &mdash; three.js, custom
+                  shaders, reduced-motion and disposal handled properly
                 </span>
               </a>
-              <p className={styles.evidenceNote}>
-                <Todo>
-                  two or three more public artifacts: an open-source
-                  contribution, a talk, a patent, a shipped device anyone can
-                  buy
-                </Todo>
-              </p>
+              {sideProjects.map((item) => (
+                <div className={styles.artifactLink} key={item.name}>
+                  <strong>{item.name}</strong>
+                  <span>{item.detail}</span>
+                </div>
+              ))}
             </aside>
           </div>
         </div>
@@ -440,9 +451,7 @@ export default function CareerPage() {
             id="fit-title"
             title="What I want next"
             note={
-              <>
-                Stated plainly so we can both save a call if it is not a match.
-              </>
+              <>Stated plainly, so we can both save a call if it is not a match.</>
             }
           />
           <div className={styles.fitGrid}>
@@ -455,9 +464,9 @@ export default function CareerPage() {
             ))}
           </div>
           <p className={styles.fitCross}>
-            The technical version of this &mdash; decision logs, stack
-            annotations, the problems I am actually good at &mdash; is on{' '}
-            <Link href="/systems">the systems page</Link>.
+            The technical version of this &mdash; a decision log, the stack
+            annotated tool by tool, and the problems I am actually good at
+            &mdash; is on <Link href="/systems">the systems page</Link>.
           </p>
         </div>
       </section>

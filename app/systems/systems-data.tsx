@@ -10,139 +10,140 @@ export type Scenario = {
 
 export const scenarios: Scenario[] = [
   {
-    id: 'hardware-cloud-seam',
+    id: 'slow-legacy',
     index: '01',
     situation:
-      'The firmware team and the cloud team have different ideas about the contract, and nobody notices until integration week.',
+      'A page takes a minute to load, the cause is six years of accumulated decisions, and you are not allowed to stop shipping.',
     moves: [
       <>
-        Write the interface down first &mdash; payload, units, error cases,
-        what happens when the device has been offline for three days &mdash; and
-        make both sides review it before either writes code.
+        Measure before touching anything. A sixty-second load is never one bad
+        query, and the thing everyone blames is usually third on the list.
       </>,
       <>
-        Build the fake early: a device simulator for the cloud team, a stub
-        service for the firmware team. Integration stops being an event.
+        Fix the measured hot path first and bank the win. Users feel that in
+        days; a rewrite would have taken quarters.
       </>,
       <>
-        Version the contract from day one. Devices in the field update on their
-        own schedule; the server has to speak to every version still out there.
+        Only then migrate the framework, behind a stable interface, one surface
+        at a time, with the old one still serving traffic.
       </>
     ],
     evidence: (
-      <Todo>
-        the engagement where you did this, and what integration week looked like
-        as a result
-      </Todo>
+      <>
+        Apple chatbot platform: page load <strong>60s &rarr; 2s</strong>, and a
+        separate, slower AngularJS &rarr; Vue migration that never took the
+        product down.
+      </>
     )
   },
   {
-    id: 'field-failure',
+    id: 'scale-surge',
     index: '02',
     situation:
-      'It works on the bench and fails in the field, and the only report you get is “it stopped working.”',
+      'Traffic is about to multiply and nobody can say which part gives first.',
     moves: [
       <>
-        Assume you will never reproduce it. Instrument first: persist enough
-        local state and event history that the device can explain its own last
-        hour when it reconnects.
+        Find the ceiling on purpose &mdash; load test the path that carries
+        money, not the endpoint that is easy to test.
       </>,
       <>
-        Design for the environment you actually have &mdash; brownouts, a
-        network that disappears, a person who unplugs it. Local-first state,
-        idempotent retries, safe restart.
+        Make the failure modes graceful before the surge: backpressure, queues,
+        idempotent retries, and a degraded mode that still takes orders.
       </>,
       <>
-        Give the failure a human-recoverable path. If a shift lead can fix it by
-        power-cycling one thing, you have removed a truck roll.
+        Watch the business metric next to the system metric. A dashboard that
+        shows revenue per minute gets looked at; a CPU graph does not.
       </>
     ],
     evidence: (
-      <Todo>
-        the specific field failure you chased down, and how you finally caught
-        it
-      </Todo>
+      <>
+        Chick-fil-A third-party delivery through Covid: under{' '}
+        <strong>$1M/day to $5M/day</strong>. Apple chatbot:{' '}
+        <strong>1M to 15M users at 100% uptime</strong>.
+      </>
+    )
+  },
+  {
+    id: 'partner-apis',
+    index: '03',
+    situation:
+      'Your product depends on three partner APIs you do not control, and each one fails differently.',
+    moves: [
+      <>
+        Define one internal contract for the domain &mdash; an order is an order
+        &mdash; and make every partner adapter translate into it. Never let a
+        vendor schema leak into the core.
+      </>,
+      <>
+        Assume each partner is independently degradable. One integration being
+        down must not be an outage for the other two.
+      </>,
+      <>
+        Get into the partner&rsquo;s engineering room. Some problems are only
+        solvable on a shared call, not through a support portal.
+      </>
+    ],
+    evidence: (
+      <>
+        DoorDash, UberEats, and Grubhub integrations at Chick-fil-A, including
+        coordinating directly with DoorDash engineering to support DoorDash
+        checkout inside the Chick-fil-A iOS app.
+      </>
+    )
+  },
+  {
+    id: 'runtime-debt',
+    index: '04',
+    situation:
+      'The runtime is seven major versions behind and the upgrade has been deferred four times.',
+    moves: [
+      <>
+        Do it in steps with a real safety net. Node 5 to 12 is not one upgrade,
+        it is seven, and each one has its own breakage profile.
+      </>,
+      <>
+        Modernise the language in the same motion where it is cheap &mdash; ES5
+        to ES6 in the services you are already touching, not as a separate
+        campaign.
+      </>,
+      <>
+        Tie it to something the business wants. &ldquo;Upgrade Node&rdquo; never
+        gets prioritised; &ldquo;this is what unblocks the performance
+        work&rdquo; does.
+      </>
+    ],
+    evidence: (
+      <>
+        Apple: Node.js <strong>5 &rarr; 12</strong>, a critical service
+        refactored ES5 &rarr; ES6, and the Apple Card integration shipped in the
+        same period.
+      </>
     )
   },
   {
     id: 'blind-production',
-    index: '03',
-    situation:
-      'Production is degraded, three teams are on the call, and nobody can say which layer is lying.',
-    moves: [
-      <>
-        Start from the symptom the user feels, not the dashboard that is red.
-        Most resource alerts are noise; latency and error rate at the edge are
-        not.
-      </>,
-      <>
-        Trace one real request end to end. Missing spans are themselves the
-        finding &mdash; you have just located the part of the system nobody
-        owns.
-      </>,
-      <>
-        Write the post-mortem with the boring detail in it, then delete the
-        monitors that did not help. An alert nobody acts on is worse than no
-        alert.
-      </>
-    ],
-    evidence: (
-      <Todo>
-        an incident you led or were on point for &mdash; detection time,
-        resolution, what changed afterwards
-      </Todo>
-    )
-  },
-  {
-    id: 'slow-delivery',
-    index: '04',
-    situation:
-      'The team ships slowly and every explanation is a different one.',
-    moves: [
-      <>
-        Measure the loop, not the people: commit to green build, green build to
-        deployed, deployed to observed. The bottleneck is almost always one of
-        those three and it is almost never the one people name.
-      </>,
-      <>
-        Make the paved road faster than the workaround. Nobody follows a process
-        that costs them twenty minutes.
-      </>,
-      <>
-        Delete tests that only fail for flaky reasons and replace them with ones
-        that would have caught the last real bug.
-      </>
-    ],
-    evidence: (
-      <Todo>
-        the before/after numbers on a pipeline or release process you fixed
-      </Todo>
-    )
-  },
-  {
-    id: 'ai-reality-check',
     index: '05',
     situation:
-      'Someone wants AI in the product and there is no way to tell whether it would actually help.',
+      'Production is degraded, several teams are on the call, and nobody can say which layer is lying.',
     moves: [
       <>
-        Find the workflow first. A model is a component with a failure rate; it
-        only earns a place if the workflow can absorb being wrong sometimes.
+        Start from the symptom a customer feels. Most resource alerts are noise;
+        error rate and latency at the edge are not.
       </>,
       <>
-        Build the smallest honest prototype and evaluate it against a fixed set
-        of real inputs. Vibes are not an evaluation.
+        Fix the observability gap the incident just revealed &mdash; a missing
+        log line or trace is itself the finding.
       </>,
       <>
-        Decide the fallback before shipping. What the user sees when the model
-        is unavailable, slow, or confidently wrong is the actual product
-        decision.
+        Delete the monitors that did not help. An alert nobody acts on is worse
+        than no alert.
       </>
     ],
     evidence: (
       <>
-        Applied experiments in public &mdash; voice cloning, generative
-        toolchains &mdash; written up in the field notes.
+        Logging, monitoring, and observability work at Chick-fil-A across
+        Datadog, Splunk, and OpsGenie.{' '}
+        <Todo>one incident you led, with detection and resolution time</Todo>
       </>
     )
   }
@@ -163,147 +164,147 @@ export const decisions: Decision[] = [
   {
     id: 'dec-01',
     code: 'DEC-01',
-    title: 'Postgres by default; DynamoDB only when the access pattern is settled',
+    title: 'Profile the slow page before rewriting the frontend',
     context: (
       <>
-        A service with an unknown growth curve and a product team still changing
-        its mind about the domain model every sprint.{' '}
-        <Todo>which engagement this was, and the traffic shape</Todo>
+        Apple chatbot platform, roughly 2018&ndash;2019. Page load was around
+        sixty seconds. The obvious narrative was &ldquo;AngularJS is old,
+        rewrite it&rdquo;.
       </>
     ),
     options: [
-      'Postgres and accept operating a relational database',
-      'DynamoDB for scale headroom and no capacity planning',
-      'Mongo because the payloads were already documents'
+      'Rewrite the frontend first and hope the performance follows',
+      'Profile the real request path and fix what is measurably slow',
+      'Add caching in front and defer the diagnosis'
     ],
     call: (
       <>
-        Postgres, unless someone can write the access patterns on a whiteboard
-        and defend them. DynamoDB is an excellent key-value store and a
-        punishing place to change your mind &mdash; a new query pattern means a
-        new index, a backfill, and a migration you did not plan.
+        Measure first. Frameworks are rarely the reason a page takes a minute;
+        accumulated request patterns, payload size, and blocking work usually
+        are. The performance fix and the framework migration were kept as two
+        separate projects with two separate risk profiles.
       </>
     ),
     consequence: (
       <>
-        Slower ceiling, far cheaper iteration. Two ad-hoc reporting requests
-        that would have been multi-day work in a key-value store were answered
-        with SQL the same afternoon.
+        <strong>60s &rarr; 2s</strong> shipped far sooner than a rewrite could
+        have, and the AngularJS &rarr; Vue migration afterwards was allowed to
+        be slow and boring instead of urgent.
       </>
     ),
     again: (
       <>
-        Yes. I would flip the default only for a workload that is genuinely
-        write-heavy, uniform, and known &mdash; telemetry ingest, session state,
-        device shadows.
+        Yes. Coupling a performance emergency to a framework migration is how
+        both of them fail.
       </>
     )
   },
   {
     id: 'dec-02',
     code: 'DEC-02',
-    title: 'Go for services the client’s team has to maintain after I leave',
+    title: 'One internal order contract, one adapter per delivery partner',
     context: (
       <>
-        Consulting hands the code back. The question is not what I write fastest
-        &mdash; it is what a stranger can read at 3am eighteen months from now.
+        Chick-fil-A third-party delivery. DoorDash, UberEats, and Grubhub each
+        model menus, modifiers, and order lifecycle differently, and all three
+        change without asking.
       </>
     ),
     options: [
-      'Node/TypeScript to match the frontend and share types',
-      'Go for one binary, one obvious way to do things',
-      'Whatever the existing team already knew'
+      'Integrate each partner directly against the existing services',
+      'One canonical internal order model with a thin adapter per partner',
+      'A third-party aggregation vendor in the middle'
     ],
     call: (
       <>
-        The existing team&rsquo;s language wins if they have one. If it is a
-        green field, Go: a single static binary, a standard library that covers
-        most of what a service needs, and very little room for a clever
-        abstraction that only the author understands.
+        Canonical model, thin adapters. The core system speaks one language;
+        each partner&rsquo;s quirks stay inside its own boundary, where they can
+        be tested and degraded independently.
       </>
     ),
     consequence: (
       <>
-        Less shared code with the frontend and some duplicated types. Worth it
-        &mdash; a handoff that needs me to explain the framework is a failed
-        handoff.
+        More upfront modelling, and a translation layer to maintain. In exchange,
+        combo meals on UberEats shipped as a feature rather than a special case
+        &mdash; and it lifted average revenue per order roughly{' '}
+        <strong>10%</strong>.
       </>
     ),
     again: (
       <>
-        Yes for services. No for anything where sharing a type with the browser
-        is the whole point &mdash; that is TypeScript on both ends.
+        Yes. The alternative is three partner schemas leaking into every service
+        you own.
       </>
     )
   },
   {
     id: 'dec-03',
     code: 'DEC-03',
-    title: 'Local-first on the device; the cloud is not the source of truth',
+    title: 'Move infrastructure to CloudFormation during the growth surge, not after',
     context: (
       <>
-        Embedded systems in an operational environment where the network is
-        unreliable and the business does not stop when it drops.{' '}
-        <Todo>the deployment this describes, and the offline duration you designed for</Todo>
+        Chick-fil-A delivery revenue was heading from under $1M a day toward $5M
+        a day. Manually-shaped infrastructure was becoming the riskiest thing in
+        the system.
       </>
     ),
     options: [
-      'Cloud-authoritative with a thin device',
-      'Local-first with reconciliation on reconnect',
-      'Local-only with manual export'
+      'Freeze infrastructure work until the surge passes',
+      'Migrate to AWS CloudFormation incrementally, during the growth',
+      'Hand-manage and document it instead'
     ],
     call: (
       <>
-        Local-first. The device keeps working when the link is gone, buffers
-        what it must, and reconciles on reconnect with idempotent writes so a
-        replay is harmless.
+        Migrate during. Waiting for a calm quarter is a plan that never executes,
+        and the cost of an unreproducible environment goes up with every extra
+        dollar of daily revenue behind it.
       </>
     ),
     consequence: (
       <>
-        Real complexity moves onto the device: clock skew, storage limits,
-        conflict rules. That complexity is worth paying because the alternative
-        failure is visible to a customer standing at a counter.
+        Real engineering time spent on something no customer sees, and pressure
+        to defer it every sprint. What it bought was environments that could be
+        rebuilt on purpose instead of remembered.
       </>
     ),
-    again: (
-      <>
-        Yes, and earlier. The retrofit from cloud-authoritative to local-first
-        is one of the most expensive changes you can make to a fleet.
-      </>
-    )
+    again: <>Yes, and I would start it earlier.</>
   },
   {
     id: 'dec-04',
     code: 'DEC-04',
-    title: 'No Kubernetes without someone whose job is Kubernetes',
+    title: 'Upgrade the runtime in steps, tied to work the business already wanted',
     context: (
       <>
-        Small teams keep reaching for the platform that large teams needed.{' '}
-        <Todo>the engagement where this came up, and which way the client went</Todo>
+        Node 5 in production with a large surface area of dependencies, and a
+        performance mandate that needed a modern runtime to land.
       </>
     ),
     options: [
-      'Managed Kubernetes (EKS/GKE) for portability',
-      'Managed container runtime — ECS/Fargate, Cloud Run',
-      'Plain VMs with a deploy script'
+      'Big-bang upgrade to the current LTS',
+      'Stepwise upgrade with tests hardened at each hop',
+      'Leave it and work around the constraints'
     ],
     call: (
       <>
-        Kubernetes when there is a platform owner and more than a handful of
-        services that genuinely need scheduling. Otherwise the managed container
-        runtime, every time. I operate Kubernetes fine; I just do not think it
-        is free.
+        Stepwise, and attached to the performance work rather than proposed on
+        its own. &ldquo;Upgrade Node&rdquo; loses every prioritisation
+        conversation; &ldquo;this is what unblocks the thing you already
+        approved&rdquo; wins it.
       </>
     ),
     consequence: (
       <>
-        Less portability on paper. In practice, a team that can deploy without
-        asking anyone, and an on-call rotation that is not debugging the
-        scheduler.
+        Slower calendar time and several boring intermediate releases. No
+        rollback event, and <strong>Node 5 &rarr; 12</strong> landed on a
+        platform that was not allowed to go down.
       </>
     ),
-    again: <>Yes. This is the recommendation I have changed my mind about least.</>
+    again: (
+      <>
+        Yes. Big-bang runtime upgrades work right up until the one that does
+        not.
+      </>
+    )
   },
   {
     id: 'dec-05',
@@ -311,31 +312,30 @@ export const decisions: Decision[] = [
     title: 'Buy observability, own the alert taxonomy',
     context: (
       <>
-        Every team wants dashboards. Very few want to be paged, and the two are
-        not the same problem.
+        Multiple tools already in play &mdash; Datadog, Splunk, OpsGenie &mdash;
+        and an on-call rotation being paged by things that did not matter.
       </>
     ),
     options: [
-      'Self-hosted Prometheus + Grafana + Loki',
-      'Datadog and pay for it',
+      'Self-host Prometheus, Grafana, and log storage',
+      'Standardise on the vendor tooling and spend the time on alert design',
       'Cloud-native tooling only'
     ],
     call: (
       <>
-        Buy the platform &mdash; Datadog &mdash; and spend the saved time on the
-        part no vendor can do for you: deciding what actually wakes a person up.
-        Every paging monitor maps to a symptom a user would notice. Everything
-        else is a dashboard.
+        Buy the platform. Spend the saved time on the part no vendor can do for
+        you: every monitor that pages a human maps to a symptom a customer would
+        actually feel. Everything else is a dashboard.
       </>
     ),
     consequence: (
       <>
-        A real bill, and a rule that ingest volume gets reviewed. In exchange,
-        alerts people trust, which is the only kind that gets acted on.{' '}
-        <Todo>alert volume before/after, if you have the numbers</Todo>
+        A real bill and a standing need to review ingest volume. In exchange,
+        alerts people trust &mdash; the only kind that gets acted on.{' '}
+        <Todo>alert volume before and after, if you kept the numbers</Todo>
       </>
     ),
-    again: <>Yes, for any team under roughly thirty engineers.</>
+    again: <>Yes, for any team that does not have a dedicated platform group.</>
   }
 ]
 
@@ -355,57 +355,75 @@ export type StackGroup = {
 
 export const stackGroups: StackGroup[] = [
   {
-    id: 'devices',
-    label: 'Devices & firmware',
+    id: 'services',
+    label: 'Services & integrations',
     blurb:
-      'Where the software has to be right the first time, because you cannot hotfix a board in someone else’s building.',
+      'Where most of my work has been: backend systems carrying consumer traffic, and the partner APIs hanging off them.',
     rows: [
       {
-        name: 'Embedded C / C++',
+        name: 'Node.js / Express',
         depth: 'Primary',
         usedFor: (
-          <Todo>
-            confirm the exact languages, RTOS or embedded Linux, and years on
-            each
-          </Todo>
+          <>
+            Backend lead work on the Apple chatbot platform and the Chick-fil-A
+            delivery integrations. Node 5 &rarr; 12 upgrade included.
+          </>
         ),
         opinion: (
           <>
-            Keep the hardware assumptions behind one thin abstraction layer.
-            Every time I have skipped that, a board revision has cost a week.
+            Excellent for I/O-shaped work, which is what an integration platform
+            is. I would not choose it again for anything CPU-bound, and I would
+            pin and audit dependencies far earlier than most teams do.
           </>
         )
       },
       {
-        name: 'Device ↔ cloud protocols',
+        name: 'JavaScript / TypeScript',
         depth: 'Primary',
         usedFor: (
-          <Todo>
-            which protocols you actually shipped: BLE, MQTT, serial, gRPC, plain
-            HTTPS
-          </Todo>
+          <>
+            Seven years of production services and product surfaces, including
+            an ES5 &rarr; ES6 refactor of a critical service.
+          </>
         ),
         opinion: (
           <>
-            Version the payload before the first device ships. Retrofitting a
-            schema version onto a deployed fleet is a migration you run with no
-            rollback.
+            Strict mode from the first commit, including{' '}
+            <code>noUncheckedIndexedAccess</code>. Retrofitting strictness onto
+            a mature codebase is a week nobody plans for &mdash; I have spent it.
           </>
         )
       },
       {
-        name: 'Hardware-in-the-loop testing',
+        name: 'Third-party API integration',
+        depth: 'Primary',
+        usedFor: (
+          <>
+            DoorDash, UberEats, Grubhub; Apple Card integration on the chatbot
+            platform.
+          </>
+        ),
+        opinion: (
+          <>
+            One canonical internal model, one thin adapter per partner, and each
+            partner independently degradable. See DEC-02.
+          </>
+        )
+      },
+      {
+        name: 'Go',
         depth: 'Working',
         usedFor: (
           <Todo>
-            the test rig you used or built, and what it caught that a unit test
-            would not
+            which project the Go work was on &mdash; it is on your r&eacute;sum&eacute;
+            but not attached to an engagement
           </Todo>
         ),
         opinion: (
           <>
-            The rig is the deliverable nobody budgets for and everybody uses.
-            Build it in week two, not month six.
+            One binary, one obvious way to do a thing, readable by a stranger at
+            3am. The lack of expressiveness is the feature when the code is
+            being handed to a client team.
           </>
         )
       }
@@ -415,35 +433,39 @@ export const stackGroups: StackGroup[] = [
     id: 'product',
     label: 'Product surface',
     blurb:
-      'The part a person touches, and the part that reveals whether the model underneath makes sense.',
+      'The part a customer touches, and the part that reveals whether the model underneath makes sense.',
     rows: [
       {
-        name: 'TypeScript',
-        depth: 'Primary',
+        name: 'Vue',
+        depth: 'Working',
         usedFor: (
           <>
-            Product applications and the services around them; shared types
-            across the network boundary.
+            Helped move the Apple chatbot frontend from AngularJS to Vue while
+            it stayed live.
           </>
         ),
         opinion: (
           <>
-            Strict mode on the first commit, including{' '}
-            <code>noUncheckedIndexedAccess</code>. Retrofitting strictness onto
-            a mature codebase is a week nobody plans for.
+            Migrate surface by surface behind a stable interface. A framework
+            migration announced as a rewrite is a framework migration that gets
+            cancelled at 60%.
           </>
         )
       },
       {
-        name: 'React',
+        name: 'React / Redux',
         depth: 'Primary',
-        usedFor: <>Client applications, design-system work, this site.</>,
+        usedFor: (
+          <>
+            Product work, freelance builds (U-Hoops: WordPress &rarr;
+            React/Redux + Express + MongoDB), and this site.
+          </>
+        ),
         opinion: (
           <>
-            Most &ldquo;we need a state library&rdquo; problems are
-            &ldquo;we fetch in the wrong place&rdquo; problems. Server
-            components and plain state first; reach for the library when you can
-            name the state that actually needs to be global.
+            Most &ldquo;we need a state library&rdquo; problems are &ldquo;we
+            fetch in the wrong place&rdquo; problems. Server components and
+            plain state first.
           </>
         )
       },
@@ -452,78 +474,56 @@ export const stackGroups: StackGroup[] = [
         depth: 'Working',
         usedFor: (
           <>
-            Keyboard operability, focus management, reduced-motion paths on
+            Keyboard operability, focus management, and reduced-motion paths on
             interactive work.
           </>
         ),
         opinion: (
           <>
-            It is cheaper as a constraint than as a remediation project, and it
-            makes the markup better anyway. This page has no client-side
-            JavaScript for a reason.
+            Cheaper as a constraint than as a remediation project, and it makes
+            the markup better anyway. This page ships zero client-side
+            JavaScript for exactly that reason.
           </>
         )
       }
     ]
   },
   {
-    id: 'services',
-    label: 'Services & data',
-    blurb:
-      'Boundaries, contracts, and the state that has to survive a deploy.',
+    id: 'data',
+    label: 'Data',
+    blurb: 'State that has to survive a deploy, a partner outage, and a rewrite.',
     rows: [
       {
-        name: 'Node.js',
+        name: 'MongoDB / Mongoose',
         depth: 'Primary',
-        usedFor: <>APIs, integrations, background jobs, tooling.</>,
+        usedFor: <>Production services and freelance product work.</>,
         opinion: (
           <>
-            Excellent for I/O-shaped work and for keeping one language across
-            the stack. I would not choose it again for anything CPU-bound.
-          </>
-        )
-      },
-      {
-        name: 'Go',
-        depth: 'Working',
-        usedFor: <>Services meant to be handed to a client team and operated.</>,
-        opinion: (
-          <>
-            One binary, one obvious way to do a thing, readable by a stranger.
-            The lack of expressiveness is the feature.
-          </>
-        )
-      },
-      {
-        name: 'PostgreSQL',
-        depth: 'Primary',
-        usedFor: <>Default store for anything with relationships or reporting.</>,
-        opinion: (
-          <>
-            Start here. Teams that pick a document store to avoid writing a
-            migration usually pay for that choice for the next two years.
+            Fine when the document really is the unit of work. The moment you
+            are joining in application code, the model was wrong.
           </>
         )
       },
       {
         name: 'DynamoDB',
         depth: 'Working',
-        usedFor: <>Known access patterns, high write volume, device state.</>,
+        usedFor: <>AWS-native services with known access patterns.</>,
         opinion: (
           <>
-            Great when the query list is settled. Every &ldquo;can we also
-            filter by…&rdquo; is a new index and a backfill.
+            Great when the query list is settled. Every &ldquo;can we also filter
+            by&hellip;&rdquo; is a new index and a backfill.
           </>
         )
       },
       {
-        name: 'MongoDB',
+        name: 'PostgreSQL',
         depth: 'Working',
-        usedFor: <>Document-shaped domains, existing client systems.</>,
+        usedFor: <>Relational domains and reporting-shaped problems.</>,
         opinion: (
           <>
-            Fine when the document really is the unit of work. The moment you
-            are joining in application code, the model was wrong.
+            My default recommendation for a green field. Teams that pick a
+            document store to avoid writing a migration usually pay for it for
+            two years.
           </>
         )
       }
@@ -532,38 +532,44 @@ export const stackGroups: StackGroup[] = [
   {
     id: 'runtime',
     label: 'Runtime & delivery',
-    blurb: 'Getting it out, keeping it up, knowing when it is not.',
+    blurb: 'Getting it out, keeping it up, and being able to rebuild it on purpose.',
     rows: [
       {
-        name: 'AWS',
+        name: 'AWS + CloudFormation',
         depth: 'Primary',
-        usedFor: <>Primary cloud: compute, queues, managed data, IAM.</>,
+        usedFor: (
+          <>
+            Oversaw and helped implement the Chick-fil-A project infrastructure
+            migration to CloudFormation.
+          </>
+        ),
         opinion: (
           <>
-            Boring services first. The exciting one usually has a rough edge
-            that becomes your problem at 2am.
+            Boring services first. And do the infrastructure-as-code migration
+            during the growth, not after it &mdash; the calm quarter never
+            arrives.
           </>
         )
       },
       {
-        name: 'Google Cloud',
+        name: 'Docker',
         depth: 'Working',
-        usedFor: <>Client environments already standardised on GCP.</>,
+        usedFor: <>Service packaging and local parity with deployed environments.</>,
         opinion: (
           <>
-            Cloud Run is the most underrated way to run a container if you do
-            not need a scheduler.
+            The value is a build that behaves the same on a laptop and in CI. If
+            it does not, the container is decoration.
           </>
         )
       },
       {
         name: 'Kubernetes',
         depth: 'Working',
-        usedFor: <>Multi-service platforms with a dedicated platform owner.</>,
+        usedFor: <Todo>which engagement the Kubernetes work came from</Todo>,
         opinion: (
           <>
-            Powerful and expensive in attention. See DEC-04 &mdash; I ask who
-            owns it before I recommend it.
+            I ask who owns it before I recommend it. Without a platform owner, a
+            managed container runtime beats a cluster every time.
           </>
         )
       },
@@ -573,19 +579,56 @@ export const stackGroups: StackGroup[] = [
         usedFor: <>Build, test, release, and environment promotion pipelines.</>,
         opinion: (
           <>
-            The pipeline is a product and the team is its user. Past about ten
-            minutes, people stop reading the output and start re-running it.
+            The pipeline is a product and the team is its user. Past ten minutes,
+            people stop reading the output and start re-running it.
+          </>
+        )
+      }
+    ]
+  },
+  {
+    id: 'operate',
+    label: 'Operate',
+    blurb:
+      'The difference between shipping something and being responsible for it.',
+    rows: [
+      {
+        name: 'Datadog',
+        depth: 'Primary',
+        usedFor: (
+          <>
+            Metrics, dashboards, and monitors on the Chick-fil-A delivery
+            platform.
+          </>
+        ),
+        opinion: (
+          <>
+            Put the business metric next to the system metric. A dashboard
+            showing revenue per minute gets watched; a CPU graph does not.
           </>
         )
       },
       {
-        name: 'Datadog',
+        name: 'Splunk',
         depth: 'Working',
-        usedFor: <>Metrics, traces, logs, SLO-shaped monitors, on-call.</>,
+        usedFor: <>Log search and investigation during and after incidents.</>,
         opinion: (
           <>
-            Buy the platform, own the taxonomy. If a monitor pages a human it
-            must map to something a user would feel.
+            Logging is a design decision, not an afterthought. If you cannot
+            reconstruct one order&rsquo;s journey from the logs, you will not
+            debug it at 2am.
+          </>
+        )
+      },
+      {
+        name: 'OpsGenie / on-call',
+        depth: 'Working',
+        usedFor: <>Alert routing and rotation on a revenue-critical platform.</>,
+        opinion: (
+          <>
+            Every page maps to a symptom a customer would feel. Everything else
+            is a dashboard, and treating it otherwise is how teams learn to
+            ignore alerts.
           </>
         )
       }
@@ -595,14 +638,14 @@ export const stackGroups: StackGroup[] = [
     id: 'applied-ai',
     label: 'Applied AI',
     blurb:
-      'Explored deliberately and in public, with the same standard as everything else: does it make the work measurably better?',
+      'Explored deliberately and in public, held to the same standard as everything else.',
     rows: [
       {
         name: 'LLM & agent tooling',
         depth: 'Exploring',
         usedFor: (
           <>
-            Development workflows, prototyping, and evaluating where a model
+            Development workflows, prototyping, and working out where a model
             genuinely beats a deterministic approach.
           </>
         ),
@@ -618,14 +661,14 @@ export const stackGroups: StackGroup[] = [
         depth: 'Exploring',
         usedFor: (
           <>
-            Hands-on experiments &mdash; voice cloning, generated show control
-            &mdash; documented in the field notes.
+            Hands-on experiments &mdash; voice cloning from short samples,
+            generative show control on real hardware.
           </>
         ),
         opinion: (
           <>
-            The interesting constraint is latency and consent, not model
-            quality. Both are product problems.
+            The hard constraints are latency and consent, not model quality.
+            Both are product problems before they are ML problems.
           </>
         )
       }
@@ -640,57 +683,66 @@ export const seniority: Array<{
 }> = [
   {
     index: '01',
-    label: 'Ownership',
+    label: 'Named ownership',
     body: (
       <>
-        I take systems end to end &mdash; the code, the deploy path, the
-        dashboards, the pager.{' '}
-        <Todo>the largest system you have been the named owner of</Todo>
+        Backend lead on the Apple chatbot platform. Project engineering lead on
+        Chick-fil-A third-party delivery. Both were the role, not a description
+        of the vibe.
       </>
     )
   },
   {
     index: '02',
-    label: 'Mentorship',
+    label: 'Scale under pressure',
     body: (
       <>
-        Code review as teaching, not gatekeeping; pairing on the hard part
-        rather than taking it.{' '}
-        <Todo>engineers you have onboarded, mentored, or promoted</Todo>
+        1M &rarr; 15M users at 100% uptime. Under $1M/day &rarr; $5M/day in
+        delivery revenue through Covid. Neither was a planned, comfortable ramp.
       </>
     )
   },
   {
     index: '03',
-    label: 'Incident response',
+    label: 'Working across org boundaries',
     body: (
       <>
-        Calm on the call, blameless afterwards, and the post-mortem actually
-        gets written.{' '}
-        <Todo>an incident you led, with detection and resolution time</Todo>
+        Coordinated directly with DoorDash engineering to ship checkout inside
+        the Chick-fil-A iOS app, and coordinated the Apple Card integration
+        launch.
       </>
     )
   },
   {
     index: '04',
-    label: 'Architecture calls',
+    label: 'Modernisation without downtime',
     body: (
       <>
-        Written down before they are built, with the rejected options and the
-        reason attached &mdash; the decision log above is how I work, not a
-        page format.{' '}
-        <Todo>a design doc or ADR you can share or paraphrase</Todo>
+        AngularJS &rarr; Vue, ES5 &rarr; ES6, Node 5 &rarr; 12, and an
+        infrastructure move to CloudFormation &mdash; all on systems that were
+        not allowed to stop.
       </>
     )
   },
   {
     index: '05',
-    label: 'Client-facing',
+    label: 'Mentorship',
     body: (
       <>
-        I have delivered under NDA to organisations that do not tolerate
-        surprises, and I can explain a tradeoff to a stakeholder who does not
-        write code.
+        Consulting is teaching by default: you leave, and the client team keeps
+        the code.{' '}
+        <Todo>engineers you have onboarded, mentored, or promoted</Todo>
+      </>
+    )
+  },
+  {
+    index: '06',
+    label: 'Business fluency',
+    body: (
+      <>
+        Economics degree, four years managing property, and a stint as COO who
+        wrote the business plan and built the prototype. I can explain a
+        tradeoff to someone who does not write code.
       </>
     )
   }

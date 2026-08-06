@@ -519,9 +519,9 @@
   line-height: 2.1;
 }
 
-/* ── Founder (inverted band) ─────────────────────────────────────── */
+/* ── Path (inverted band) ───────────────────────────────────────── */
 
-.founder {
+.path {
   padding: clamp(2.75rem, 6vw, 4.5rem) clamp(1.15rem, 5vw, 4rem);
   color: var(--d-inv-text);
   background: var(--d-inv-bg);
@@ -539,59 +539,72 @@
   --d-todo-rule: var(--d-todo-rule-inv);
 }
 
-.founderGrid {
+.pathList {
   display: grid;
-  margin-top: clamp(2rem, 4vw, 3rem);
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-  gap: clamp(1.75rem, 4vw, 3.5rem);
-  align-items: start;
+  margin: clamp(1.75rem, 3.5vw, 2.5rem) 0 0;
+  padding: 0;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1px;
+  border: 1px solid var(--d-inv-rule);
+  background: var(--d-inv-rule);
+  list-style: none;
+  counter-reset: path;
 }
 
-.founderSpecs {
-  margin: 0;
-  border-top: 1px solid var(--d-inv-rule);
+.pathList li {
+  position: relative;
+  padding: 1.15rem 1.15rem 1.35rem;
+  background: var(--d-inv-bg);
 }
 
-.founderSpecs > div {
-  display: grid;
-  padding: 0.75rem 0;
-  grid-template-columns: 7rem minmax(0, 1fr);
-  gap: 0.3rem 1rem;
-  border-bottom: 1px solid var(--d-inv-rule);
+.pathList li::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2rem;
+  height: 2px;
+  content: '';
+  background: var(--d-inv-accent);
 }
 
-.founderSpecs dt {
-  color: var(--d-inv-muted);
+.pathYear {
+  display: block;
+  margin-bottom: 0.7rem;
+  color: var(--d-inv-accent);
   font-family: var(--d-mono);
-  font-size: 0.64rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  line-height: 1.9;
+  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
 }
 
-.founderSpecs dd {
+.pathList strong {
+  display: block;
+  margin-bottom: 0.55rem;
+  color: var(--d-inv-text);
+  font-family: var(--d-serif);
+  font-size: 1.18rem;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.pathList p {
   margin: 0;
-  font-size: 0.88rem;
+  color: var(--d-inv-muted);
+  font-size: 0.86rem;
   line-height: 1.6;
 }
 
-.founderProse p {
-  margin: 0 0 1.1rem;
-  max-width: 56ch;
-  color: var(--d-inv-muted);
-  font-size: 0.97rem;
-  line-height: 1.7;
-}
-
-.founderPull {
-  margin: 1.5rem 0 0 !important;
+.pathPull {
+  margin: clamp(1.75rem, 3vw, 2.25rem) 0 0;
   padding-left: 1.1rem;
+  max-width: 62ch;
   border-left: 2px solid var(--d-inv-accent);
-  color: var(--d-inv-text) !important;
+  color: var(--d-inv-text);
   font-family: var(--d-serif);
-  font-size: clamp(1.05rem, 1.9vw, 1.35rem) !important;
-  line-height: 1.45 !important;
+  font-size: clamp(1.1rem, 2vw, 1.45rem);
+  line-height: 1.4;
 }
 
 /* ── Evidence ────────────────────────────────────────────────────── */
@@ -725,7 +738,7 @@
 
 @media (max-width: 1024px) {
   .mastheadShell,
-  .founderGrid {
+  .evidenceGrid {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -755,8 +768,7 @@
     margin-left: 0;
   }
 
-  .factRow,
-  .founderSpecs > div {
+  .factRow {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -811,4 +823,182 @@
   .postLink {
     transition: none;
   }
+}
+
+/* ── Proof strip ─────────────────────────────────────────────────── */
+
+.proofStrip {
+  padding: 0 clamp(1.15rem, 5vw, 4rem);
+  border-bottom: 1px solid var(--d-rule);
+  background: var(--d-bg);
+}
+
+.proofList {
+  display: grid;
+  width: var(--d-shell);
+  margin: 0 auto;
+  padding: 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--d-rule);
+  list-style: none;
+}
+
+.proofList li {
+  display: flex;
+  padding: 1.15rem 1.15rem 1.25rem;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: var(--d-bg);
+}
+
+.proofList strong {
+  color: var(--d-text-strong);
+  font-family: var(--d-serif);
+  font-size: clamp(1.6rem, 2.9vw, 2.35rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+}
+
+.proofLabel {
+  color: var(--d-muted);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.proofSource {
+  margin-top: auto;
+  padding-top: 0.35rem;
+  color: var(--d-accent);
+  font-family: var(--d-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ── Engagement extras ───────────────────────────────────────────── */
+
+.engagementHeadline {
+  display: inline-block;
+  margin: 0.85rem 0 0;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--d-accent);
+  color: var(--d-accent);
+  background: var(--d-accent-soft);
+  font-family: var(--d-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.engagementOpen .engagementHeadline {
+  border-color: var(--d-todo-rule);
+  color: var(--d-todo);
+  background: var(--d-todo-bg);
+}
+
+.engagementOpen .engagementIndex {
+  color: var(--d-todo);
+}
+
+.engagementOpen .engagementHead h3 {
+  color: var(--d-muted);
+}
+
+.shipped strong {
+  color: var(--d-text-strong);
+  font-weight: 600;
+}
+
+/* ── Evidence layout ─────────────────────────────────────────────── */
+
+.evidenceGrid {
+  display: grid;
+  margin-top: clamp(1.75rem, 3.5vw, 2.5rem);
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: clamp(1.75rem, 4vw, 3.5rem);
+  align-items: start;
+}
+
+.evidenceLabel {
+  margin: 0 0 0.9rem;
+  color: var(--d-faint);
+  font-family: var(--d-mono);
+  font-size: 0.63rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.evidenceNote {
+  margin: 1rem 0 0;
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.artifactCard {
+  border: 1px solid var(--d-rule);
+  padding: 1.15rem 1.25rem 1.3rem;
+  background: var(--d-bg);
+}
+
+.artifactLink {
+  display: block;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--d-rule-soft);
+}
+
+.artifactLink strong {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--d-text-strong);
+  font-family: var(--d-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+a.artifactLink:hover strong {
+  color: var(--d-accent);
+}
+
+.artifactLink span {
+  display: block;
+  color: var(--d-muted);
+  font-size: 0.83rem;
+  line-height: 1.55;
+}
+
+.artifactLink code {
+  padding: 0.05rem 0.3rem;
+  border-radius: 0.15rem;
+  background: var(--d-accent-soft);
+  color: var(--d-accent);
+  font-family: var(--d-mono);
+  font-size: 0.85em;
+}
+
+@media (max-width: 900px) {
+  .proofList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .proofList {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Anchor targets clear the sticky header + jump nav. */
+.record,
+.path,
+.evidence,
+.fit,
+.engagement {
+  scroll-margin-top: 7.5rem;
 }

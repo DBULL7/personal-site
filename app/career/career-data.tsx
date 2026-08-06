@@ -4,56 +4,95 @@ export type Engagement = {
   id: string
   client: string
   kind: string
-  period: React.ReactNode
+  period: string
   role: React.ReactNode
   team: React.ReactNode
   domain: string
+  headline?: string
   shipped: React.ReactNode[]
   hard: React.ReactNode
   stack: React.ReactNode
   taught: React.ReactNode
 }
 
+/** The four numbers that answer "should we talk to this person" in ten seconds. */
+export const proofPoints: Array<{
+  value: string
+  label: string
+  source: string
+}> = [
+  {
+    value: '60s → 2s',
+    label: 'Page load on Apple’s chatbot platform',
+    source: 'Apple · 2018–2020'
+  },
+  {
+    value: '1M → 15M',
+    label: 'Users carried at 100% uptime',
+    source: 'Apple · 2018–2020'
+  },
+  {
+    value: '$1M → $5M',
+    label: 'Delivery revenue per day, held through Covid',
+    source: 'Chick-fil-A · 2020–2022'
+  },
+  {
+    value: '+10%',
+    label: 'Average order value from combo meals on UberEats',
+    source: 'Chick-fil-A · 2020–2022'
+  }
+]
+
 export const factSheet: Array<[string, React.ReactNode]> = [
   [
-    'Employer',
+    'Firm',
     <>
-      One consulting firm since day one —{' '}
-      <Todo>name of the firm, and whether you can name it publicly</Todo>
-    </>
-  ],
-  [
-    'Tenure',
-    <>
-      <Todo>start month/year</Todo> &rarr; present
+      Big Nerd Ranch &mdash; Solutions Architect, July 2018 &rarr; present.{' '}
+      <Todo>confirm current title and level</Todo>
     </>
   ],
   [
     'Clients',
     <>
-      Apple &middot; Chick-fil-A &middot;{' '}
-      <Todo>any other client you are contractually allowed to name</Todo>
-    </>
-  ],
-  ['Discipline', <>Embedded engineering, plus full-stack and platform work</>],
-  [
-    'Ships in',
-    <>
-      <Todo>embedded language + toolchain: C, C++, Rust, Embedded Linux, RTOS?</Todo>{' '}
-      &middot; TypeScript &middot; React &middot; Node &middot; Go
+      Apple (2018&ndash;2020) &middot; Chick-fil-A (2020&ndash;2022) &middot;{' '}
+      <Todo>what you have been building since 2022</Todo>
     </>
   ],
   [
-    'Operates',
+    'Works on',
     <>
-      Postgres &middot; DynamoDB &middot; MongoDB &middot; AWS &middot; GCP
-      &middot; Kubernetes &middot; GitHub Actions &middot; Datadog
+      High-traffic consumer platforms, third-party integrations, and legacy
+      modernisation that has to happen without downtime
     </>
   ],
+  [
+    'Builds with',
+    <>
+      JavaScript &middot; TypeScript &middot; Node &middot; Express &middot; Go
+      &middot; Vue &middot; React
+    </>
+  ],
+  ['Stores in', <>MongoDB &middot; DynamoDB &middot; Postgres</>],
+  [
+    'Runs on',
+    <>
+      AWS &middot; CloudFormation &middot; Docker &middot; Kubernetes &middot;
+      GitHub Actions
+    </>
+  ],
+  ['Watches with', <>Datadog &middot; Splunk &middot; OpsGenie</>],
   [
     'Before engineering',
     <>
-      Founder &mdash; <Todo>company name and what it sold</Todo>
+      COO of Haller (2015) &middot; freelance developer, U-Hoops &middot;
+      property manager, JDB Capital
+    </>
+  ],
+  [
+    'Education',
+    <>
+      Turing School of Software &amp; Design, 2017 &middot; B.A. Economics,
+      University of Kansas, 2015
     </>
   ],
   ['Based', <>Raleigh, North Carolina &middot; US Eastern</>]
@@ -61,168 +100,226 @@ export const factSheet: Array<[string, React.ReactNode]> = [
 
 export const engagements: Engagement[] = [
   {
-    id: 'apple',
-    client: 'Apple',
-    kind: 'Client engagement',
-    period: <Todo>start &rarr; end, month and year</Todo>,
-    role: <Todo>your title on this engagement, and IC vs. lead</Todo>,
-    team: <Todo>team size, and who you reported to</Todo>,
-    domain: 'Embedded engineering',
+    id: 'current',
+    client: '2022 → present',
+    kind: 'Current work',
+    period: '2022 → now',
+    role: <Todo>current title, and whether you are still at Big Nerd Ranch</Todo>,
+    team: <Todo>team size and reporting line</Todo>,
+    domain: 'The most important entry on this page, and the one I cannot write for you',
+    headline: 'Unwritten',
     shipped: [
-      <Todo key="a1">
-        the deliverable in one sentence, at whatever level of detail the NDA
-        allows &mdash; &ldquo;firmware for X&rdquo;, &ldquo;test harness for
-        Y&rdquo;
+      <Todo key="n1">
+        the client or product you have been on since the Chick-fil-A engagement
+        ended
       </Todo>,
-      <Todo key="a2">
-        one number: devices covered, tests added, build time cut, defects
-        caught, latency moved
+      <Todo key="n2">
+        what shipped, and the number that proves it &mdash; same shape as the
+        two records below
       </Todo>,
-      <Todo key="a3">
-        anything that outlived the engagement &mdash; a tool, a doc, a process
-        the team kept using after you left
+      <Todo key="n3">
+        anything that changed about how you work: scope, ownership, people
       </Todo>
     ],
     hard: (
       <>
-        On embedded work at this scale the hardware and the software are being
-        finished at the same time. You are writing against a spec that still
-        moves, on a board that is still changing, with a test rig you often have
-        to build yourself. The engineering judgement is deciding which
-        assumptions you are allowed to bake in and which ones have to stay
-        behind an interface &mdash; because the wrong call there is discovered
-        late and costs a re-spin.{' '}
+        Four years is the freshest and most scrutinised part of any
+        r&eacute;sum&eacute;, and right now it is the only part of this page
+        with nothing in it. Everything else here is verified from the record.{' '}
         <Todo>
-          the specific tradeoff you remember arguing about, and which way it
-          went
+          fill this record first &mdash; it is worth more than every other
+          placeholder combined
         </Todo>
       </>
     ),
-    stack: (
-      <Todo>
-        languages, RTOS/OS, build system, debugger, CI, hardware-in-the-loop
-        setup
-      </Todo>
-    ),
-    taught: (
-      <>
-        A consultant&rsquo;s first job is to become useful before anyone has
-        time to onboard them. Read the code, read the bug tracker, ship
-        something small in week one.
-      </>
-    )
+    stack: <Todo>what you have actually been writing since 2022</Todo>,
+    taught: <Todo>one honest sentence about what the last four years taught you</Todo>
   },
   {
     id: 'chick-fil-a',
     client: 'Chick-fil-A',
-    kind: 'Client engagement',
-    period: <Todo>start &rarr; end, month and year</Todo>,
-    role: <Todo>your title on this engagement, and IC vs. lead</Todo>,
+    kind: 'Client engagement · Big Nerd Ranch',
+    period: '2020 → 2022',
+    role: 'Project engineering lead — Third Party Delivery Integrations',
     team: <Todo>team size, and who you reported to</Todo>,
-    domain: 'Embedded systems in a live operational environment',
+    domain: 'DoorDash, UberEats, and Grubhub inside a national restaurant platform',
+    headline: '$1M → $5M per day',
     shipped: [
-      <Todo key="c1">
-        what the system actually did in a restaurant, in one sentence a
-        non-engineer would understand
-      </Todo>,
-      <Todo key="c2">
-        scale: how many locations, devices, or transactions it touched
-      </Todo>,
-      <Todo key="c3">
-        the operational win &mdash; downtime avoided, manual steps removed,
-        support tickets reduced
-      </Todo>
+      <>
+        Led the third-party delivery integrations &mdash; DoorDash, UberEats,
+        Grubhub &mdash; through the Covid surge, from under{' '}
+        <strong>$1M a day</strong> in delivery revenue to{' '}
+        <strong>$5M a day</strong> by 2022.
+      </>,
+      <>
+        Shipped combo meals on UberEats, which raised average revenue per order
+        roughly <strong>10%</strong>.
+      </>,
+      <>
+        Coordinated directly with DoorDash engineering to support checking out
+        with DoorDash from inside the Chick-fil-A iOS app.
+      </>,
+      <>
+        Oversaw and helped implement the migration of project infrastructure to
+        AWS CloudFormation.
+      </>,
+      <>
+        Improved logging, monitoring, and overall observability; shipped
+        delivery-efficiency work that cut several minutes off the average
+        delivery.
+      </>
     ],
     hard: (
       <>
-        Restaurant hardware lives in a room where nobody is paid to care about
-        your software. It has to survive power cuts, an unreliable network, and
-        staff turnover, and when it does fail it has to fail in a way a
-        nineteen-year-old shift lead can recover from without calling anyone.
-        That pushes the design toward local-first state, aggressive retries, and
-        a physical UI you can read across a hot kitchen.{' '}
-        <Todo>
-          the failure mode you designed for, and how you proved it worked
-        </Todo>
+        Three partners, three APIs, three sets of failure semantics, and none of
+        them under our control &mdash; against one menu, one order lifecycle,
+        and one customer who does not care whose fault it was. Covid then
+        multiplied the volume by five in months, so every rough edge that used
+        to be a rounding error turned into a support queue. The work was
+        building an internal order contract the partners had to translate into,
+        rather than letting three vendor APIs leak all the way through the
+        platform.
       </>
     ),
     stack: (
-      <Todo>
-        device platform, protocol (BLE/MQTT/serial/HTTP), backend services,
-        deployment and OTA update path
-      </Todo>
+      <>
+        Node.js, JavaScript/TypeScript, AWS with CloudFormation, Datadog,
+        Splunk, OpsGenie.{' '}
+        <Todo>confirm the datastore and whether Go was in this codebase</Todo>
+      </>
     ),
     taught: (
       <>
-        Reliability is a product feature with a dollar value attached. In an
-        operational environment you can put a number on an outage, which makes
-        the argument for doing it properly much easier to win.
+        When revenue is measured per day, reliability stops being an engineering
+        preference and becomes a number you can put in a sentence. That makes
+        every argument for doing it properly much easier to win.
       </>
     )
   },
   {
-    id: 'platform',
-    client: 'Platform & product engagements',
-    kind: 'Client engagements',
-    period: <Todo>rough date range for the non-embedded work</Todo>,
-    role: <Todo>title(s), and whether you owned architecture on any of them</Todo>,
-    team: <Todo>typical team shape: engineers, PM, designer, client stakeholders</Todo>,
-    domain: 'Full-stack product, services, cloud, delivery',
+    id: 'apple',
+    client: 'Apple',
+    kind: 'Client engagement · Big Nerd Ranch',
+    period: '2018 → 2020',
+    role: 'Backend lead — Apple chatbot platform',
+    team: <Todo>team size, and who you reported to</Todo>,
+    domain: 'Conversational commerce and support at consumer scale',
+    headline: '1M → 15M users, 100% uptime',
     shipped: [
       <>
-        Product surfaces in TypeScript and React, backed by Node and Go
-        services.
+        Backend lead on Apple&rsquo;s chatbot platform. Implemented the{' '}
+        <strong>Apple Card integration</strong> and helped coordinate its
+        launch.
       </>,
       <>
-        Persistence chosen per problem &mdash; Postgres where the relationships
-        matter, DynamoDB where the access pattern is known and the scale is not,
-        Mongo where the document is the unit of work.
+        Took page load from <strong>60 seconds to 2 seconds</strong>.
       </>,
       <>
-        Delivery on AWS and GCP with Kubernetes, GitHub Actions pipelines, and
-        Datadog dashboards and monitors that someone other than me could read.
+        Helped hold <strong>100% uptime</strong> while the platform grew from{' '}
+        <strong>1M to 15M users</strong>.
       </>,
-      <Todo key="p1">
-        one named system you can point at, plus the number that proved it worked
-      </Todo>
+      <>
+        Helped rewrite the frontend from AngularJS to Vue, refactored a critical
+        service from ES5 to ES6, and helped upgrade Node.js from 5 to 12.
+      </>
     ],
     hard: (
       <>
-        Consulting means inheriting other people&rsquo;s decisions. You rarely
-        get a green field; you get a system with a history, a team with opinions
-        about it, and a deadline that predates you. The work is figuring out
-        which parts of the existing design are load-bearing and which are just
-        old &mdash; and then changing the second kind without touching the
-        first.
+        None of it could stop. A sixty-second page load is not one bad query
+        &mdash; it is years of accumulated decisions, and you cannot fix it with
+        a rewrite when millions of people are using the thing every day. Node 5
+        to 12 skips seven majors of breaking changes; AngularJS to Vue is a
+        framework migration with a live product on top of it. The judgement
+        being tested is sequencing: what you measure first, what you replace
+        behind a stable interface, and what you leave alone because it is
+        load-bearing and boring.
       </>
     ),
     stack: (
       <>
-        TypeScript, React, Node.js, Go, Postgres, DynamoDB, MongoDB, AWS, Google
-        Cloud, Kubernetes, GitHub Actions, Datadog
+        Node.js (5 &rarr; 12), JavaScript ES5 &rarr; ES6, AngularJS &rarr; Vue,
+        Express.{' '}
+        <Todo>confirm datastore, hosting, and CI on this engagement</Todo>
       </>
     ),
     taught: (
       <>
-        The fastest way to earn architectural authority on a client team is to
-        fix their worst piece of operational pain first, then propose the bigger
-        change.
+        Measure before you rewrite. The 60-to-2 result came from finding what
+        was actually slow, not from a new framework &mdash; the framework
+        migration was a separate, slower, deliberately boring project.
       </>
     )
   }
 ]
 
-export const founder = {
-  title: <Todo>company name</Todo>,
-  period: <Todo>founded &rarr; exit or wind-down, years</Todo>,
-  what: (
-    <Todo>
-      what the product was, who paid for it, and the one metric you watched
-    </Todo>
-  ),
-  outcome: <Todo>how it ended: acquired, wound down, still running, sold</Todo>,
-  scope: <Todo>headcount at peak, and what you personally owned</Todo>
-}
+/** The path here was not a computer science degree. That is the interesting part. */
+export const path: Array<{
+  year: string
+  title: string
+  detail: React.ReactNode
+}> = [
+  {
+    year: '2010–13',
+    title: 'Project manager, JDB Capital',
+    detail: (
+      <>
+        Ran four properties: contractor selection and oversight, tenant
+        screening, collections. First job where being wrong cost money.
+      </>
+    )
+  },
+  {
+    year: '2015',
+    title: 'B.A. Economics, University of Kansas',
+    detail: (
+      <>
+        Not a CS degree. It is where the habit of asking what a decision costs
+        before asking whether it is elegant came from.
+      </>
+    )
+  },
+  {
+    year: '2015',
+    title: 'COO, Haller',
+    detail: (
+      <>
+        Wrote the business plan and got the company accepted into a business
+        accelerator. Then taught myself Sketch and enough Swift to build the
+        prototype myself, because there was nobody else to build it.
+      </>
+    )
+  },
+  {
+    year: '2017',
+    title: 'Turing School of Software & Design',
+    detail: (
+      <>
+        Front-end web development, full time. Third place in the Turing
+        hackathon with Unavee, a people-search and networking tool.
+      </>
+    )
+  },
+  {
+    year: '2017–18',
+    title: 'Freelance developer, U-Hoops',
+    detail: (
+      <>
+        Rewrote a WordPress site into React/Redux, Express, and MongoDB, and
+        added accounts, tour management, and a message board.
+      </>
+    )
+  },
+  {
+    year: '2018',
+    title: 'Big Nerd Ranch',
+    detail: (
+      <>
+        Hired as an engineer, ended up leading backend work for Apple within the
+        first engagement.
+      </>
+    )
+  }
+]
 
 export const lookingFor: Array<{
   index: string
@@ -231,34 +328,70 @@ export const lookingFor: Array<{
 }> = [
   {
     index: '01',
-    title: 'Hard constraints, real users',
+    title: 'Scale that is already real',
     body: (
       <>
-        Products where the environment fights back: devices, latency budgets,
-        flaky networks, physical failure modes. Embedded, edge, robotics,
-        hardware-adjacent platforms.
+        I am most useful on products with live traffic and something to lose.
+        The two engagements above were both &ldquo;this is growing fast and
+        cannot go down&rdquo; problems, and that is the work I want more of.
       </>
     )
   },
   {
     index: '02',
-    title: 'Ownership over a system, not a ticket queue',
+    title: 'Ownership of a system, not a ticket queue',
     body: (
       <>
-        A domain I can hold end to end &mdash; the firmware or the service, the
-        deploy path, the dashboards, the on-call. I do my best work when I am
-        accountable for whether it stays up.
+        Backend lead and project engineering lead are the roles I have actually
+        held. I want the domain end to end &mdash; the services, the deploy
+        path, the dashboards, the pager.
       </>
     )
   },
   {
     index: '03',
-    title: 'A team that writes things down',
+    title: 'Legacy worth modernising',
     body: (
       <>
-        Design docs, post-mortems, ADRs, code review with actual disagreement in
-        it. I came from consulting; I know what a team looks like when the
-        knowledge only lives in three people&rsquo;s heads.
+        Framework migrations, runtime upgrades, and performance work on systems
+        that cannot stop serving traffic. Most engineers avoid this. It is the
+        thing I have the most evidence for.
+      </>
+    )
+  }
+]
+
+export const sideProjects: Array<{
+  name: string
+  href?: string
+  detail: React.ReactNode
+}> = [
+  {
+    name: 'EnzoJS',
+    href: 'https://www.npmjs.com/package/enzojs',
+    detail: (
+      <>
+        Open-source npm tool that automates JavaScript project setup, in the
+        spirit of <code>rails new</code>.{' '}
+        <Todo>confirm the link and whether it is still worth featuring</Todo>
+      </>
+    )
+  },
+  {
+    name: 'Unavee',
+    detail: (
+      <>
+        People-search and networking tool with personality insights. Third place
+        at the Turing hackathon.
+      </>
+    )
+  },
+  {
+    name: 'U-Hoops',
+    detail: (
+      <>
+        Network for basketball professionals to connect and apply for overseas
+        tours. React/Redux, Express, MongoDB.
       </>
     )
   }

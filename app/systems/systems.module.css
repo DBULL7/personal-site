@@ -721,3 +721,11 @@
     transition: none;
   }
 }
+
+/* Anchor targets clear the sticky header + jump nav. */
+.problems,
+.decisions,
+.stack,
+.signals {
+  scroll-margin-top: 7.5rem;
+}

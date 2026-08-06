@@ -11,17 +11,20 @@ import styles from './systems.module.css'
 export const metadata: Metadata = {
   title: 'Systems | Devon Bull — Technical Depth',
   description:
-    'How Devon Bull actually builds: the problems he is good at, a real decision log with the tradeoffs and their consequences, an annotated stack (TypeScript, Go, Postgres, DynamoDB, AWS, Kubernetes, Datadog, embedded), and explicit seniority signals.',
+    'How Devon Bull actually builds: the problems he is good at, a decision log with the tradeoffs and what they cost, an annotated stack (Node, TypeScript, Go, Vue, React, MongoDB, DynamoDB, Postgres, AWS, Kubernetes, Datadog), and explicit seniority signals.',
   keywords: [
-    'embedded systems',
-    'firmware',
+    'Node.js',
     'TypeScript',
     'Go',
-    'PostgreSQL',
+    'Vue',
+    'React',
+    'MongoDB',
     'DynamoDB',
-    'AWS',
+    'PostgreSQL',
+    'AWS CloudFormation',
     'Kubernetes',
     'Datadog',
+    'third-party integrations',
     'architecture decision record'
   ],
   alternates: { canonical: '/systems' },
@@ -76,9 +79,9 @@ export default function SystemsPage() {
               A list of technologies proves nothing. Here is the thinking.
             </h1>
             <p className={styles.lede}>
-              Everybody&rsquo;s portfolio says AWS, Kubernetes, Postgres. This
-              page is the part that is harder to fake: the problems I am good
-              at, the calls I have made and what they cost, and where each tool
+              Everybody&rsquo;s portfolio says AWS, Node, Postgres. This page is
+              the part that is harder to fake: the problems I am good at, the
+              calls I have made and what they cost, and where each tool actually
               sits in my hands. Companion to the{' '}
               <Link href="/career">work record</Link>.
             </p>
@@ -99,9 +102,9 @@ export default function SystemsPage() {
             <div>
               <dt>Page build</dt>
               <dd>
-                Statically rendered. Zero client-side JavaScript on this route,
-                no WebGL, no animation. The fastest page on this site is the one
-                asking you to hire me.
+                Statically rendered, zero client-side JavaScript, no WebGL, no
+                animation. The fastest page on this site is the one asking you
+                to hire me.
               </dd>
             </div>
           </dl>
