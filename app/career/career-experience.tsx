@@ -129,7 +129,7 @@ const transmissions: Transmission[] = [
 const HERO_MASK: SignalMask = {
   text: 'DEVON BULL',
   caption: 'senior engineer',
-  oy: 0.33,
+  oy: 0.4,
   ox: 0.14,
   scale: 0.86
 }
