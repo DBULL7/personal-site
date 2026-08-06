@@ -113,3 +113,64 @@
     scroll-behavior: auto;
   }
 }
+
+/* ── Dossier system ─────────────────────────────────────────────────────────
+   Shared tokens for the /career + /systems record pages ("The Proof").
+   Light values are the default; dark values apply under html.dark. */
+
+.dossier {
+  --d-serif: Georgia, 'Times New Roman', serif;
+  --d-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --d-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+
+  --d-bg: #f4f2ec;
+  --d-bg-alt: #fbfaf6;
+  --d-text: #15191c;
+  --d-text-strong: #05090c;
+  --d-muted: #4f5a58;
+  --d-faint: #77817e;
+  --d-rule: rgba(18, 32, 30, 0.17);
+  --d-rule-soft: rgba(18, 32, 30, 0.09);
+  --d-rule-strong: rgba(18, 32, 30, 0.42);
+  --d-accent: #0d6a60;
+  --d-accent-soft: rgba(13, 106, 96, 0.09);
+  --d-todo: #7a4f00;
+  --d-todo-bg: rgba(214, 158, 74, 0.2);
+  --d-todo-rule: rgba(122, 79, 0, 0.42);
+  --d-todo-inv: #edbe7c;
+  --d-todo-bg-inv: rgba(232, 184, 113, 0.16);
+  --d-todo-rule-inv: rgba(232, 184, 113, 0.45);
+  --d-inv-bg: #0a0e11;
+  --d-inv-text: #eef3f0;
+  --d-inv-muted: rgba(238, 243, 240, 0.64);
+  --d-inv-rule: rgba(238, 243, 240, 0.2);
+  --d-inv-accent: #86dcc8;
+  --d-shell: min(100%, 78rem);
+}
+
+.dark .dossier {
+  --d-bg: #06090b;
+  --d-bg-alt: #0b1013;
+  --d-text: #dde6e3;
+  --d-text-strong: #f3f7f4;
+  --d-muted: #93a19d;
+  --d-faint: #6f7c79;
+  --d-rule: rgba(178, 214, 207, 0.17);
+  --d-rule-soft: rgba(178, 214, 207, 0.08);
+  --d-rule-strong: rgba(178, 214, 207, 0.4);
+  --d-accent: #7fd8c4;
+  --d-accent-soft: rgba(127, 216, 196, 0.1);
+  --d-todo: #edbe7c;
+  --d-todo-bg: rgba(232, 184, 113, 0.12);
+  --d-todo-rule: rgba(232, 184, 113, 0.4);
+  --d-todo-inv: #7a4f00;
+  --d-todo-bg-inv: rgba(214, 158, 74, 0.2);
+  --d-todo-rule-inv: rgba(122, 79, 0, 0.42);
+  --d-inv-bg: #f2f0e9;
+  --d-inv-text: #0d1215;
+  --d-inv-muted: rgba(13, 18, 21, 0.66);
+  --d-inv-rule: rgba(13, 18, 21, 0.16);
+  --d-inv-accent: #0d6a60;
+}
