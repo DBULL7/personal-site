@@ -1,0 +1,27 @@
+.host {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      120% 80% at 50% 8%,
+      color-mix(in srgb, var(--sig-signal) 12%, transparent) 0%,
+      transparent 62%
+    ),
+    radial-gradient(
+      90% 70% at 82% 92%,
+      color-mix(in srgb, var(--sig-signal-2) 12%, transparent) 0%,
+      transparent 60%
+    );
+}
+
+.host[data-ready='true'] {
+  background: none;
+}
+
+.canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}

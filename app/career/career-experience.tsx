@@ -1,311 +1,396 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+
+import { DecodeText } from '@/components/signal/decode-text'
+import { SignalFieldMount } from '@/components/signal/signal-field-mount'
+import { createSignalState } from '@/components/signal/signal-types'
+import type { SignalMask } from '@/components/signal/signal-types'
+
 import styles from './career.module.css'
 
-const SpaceScene = dynamic(
-  () =>
-    import('@/components/space/space-scene').then(
-      (module) => module.SpaceScene
-    ),
-  {
-    ssr: false,
-    loading: () => <div className={styles.sceneFallback} aria-hidden="true" />
-  }
-)
+type Transmission = {
+  id: string
+  index: string
+  word: string
+  caption: string
+  kicker: string
+  title: string
+  body: string[]
+  readout: { k: string; v: string }[]
+}
 
-const chapters = {
-  origin: {
-    number: '00',
-    nav: 'Profile',
-    eyebrow: 'Current trajectory',
-    title: 'Devon Bull',
-    meta: 'Senior software engineer · Raleigh, NC',
-    text: 'Former tech entrepreneur turned engineer. I build dependable software, learn new domains quickly, and translate between product ambition and technical reality.'
+const transmissions: Transmission[] = [
+  {
+    id: 'founder',
+    index: '00',
+    word: 'FOUNDER',
+    caption: 'transmission 00',
+    kicker: 'Origin',
+    title: 'Founder first. Engineer second. In that order, on purpose.',
+    body: [
+      'I started a tech company before anyone paid me to write software. I wrote the code, sold the thing, and did the arithmetic that decides whether a company still exists in ninety days. That is the part of engineering no tutorial covers: every technical decision is a bet with a due date attached.',
+      'It left me with a habit I have never dropped. Before I ask what a system costs to build, I ask what it costs to own — on a Tuesday, eighteen months from now, when the person maintaining it has never met me.'
+    ],
+    readout: [
+      { k: 'Role', v: 'Founder' },
+      { k: 'Scope', v: 'Product · sales · code' },
+      { k: 'Residue', v: 'Architecture is a budget' }
+    ]
   },
-  consulting: {
-    number: '01',
-    nav: 'Consulting',
-    eyebrow: 'Primary arc',
-    title: 'Consulting engineer',
-    meta: 'One firm · many problem spaces',
-    text: 'Consulting taught me to arrive curious, earn context quickly, and create momentum inside established teams. The craft is making strong engineering fit the client and the operating environment.'
+  {
+    id: 'consulting',
+    index: '01',
+    word: 'ONE FIRM',
+    caption: 'transmission 01',
+    kicker: 'The arc',
+    title: 'One consulting firm. A long run of other people’s hardest rooms.',
+    body: [
+      'My whole engineering career has been with a single contracting and consulting firm, which means I have had an unusual number of first days. You land inside a codebase you did not write, beside a team that already made its decisions, against a deadline that predates you.',
+      'The work is to be useful in week one and trusted by week four. Read the system before rewriting it. Find the load-bearing assumptions nobody documented. Ship something small and correct that proves you actually understood the thing — then earn the bigger swing.'
+    ],
+    readout: [
+      { k: 'Employer', v: 'One firm, whole career' },
+      { k: 'Mode', v: 'Embedded consultant' },
+      { k: 'Cadence', v: 'New domain · new team · repeat' },
+      { k: 'Core skill', v: 'Acquiring context fast' }
+    ]
   },
-  apple: {
-    number: '02',
-    nav: 'Apple',
-    eyebrow: 'Client system / 01',
-    title: 'Apple',
-    meta: 'Embedded engineering engagement',
-    text: 'Contributed to embedded work where hardware and software had to behave as a single, reliable product. The constraints rewarded precision, disciplined collaboration, and an eye for performance.'
+  {
+    id: 'apple',
+    index: '02',
+    word: 'APPLE',
+    caption: 'transmission 02',
+    kicker: 'Client engagement',
+    title: 'Embedded engineering at Apple, where there is no hotfix on Friday.',
+    body: [
+      'An embedded engagement inside Apple: the seam where hardware and software have to behave as one product. What ships is what lives in somebody’s hand, and the review standard matches that.',
+      'It rewires your defaults. You instrument before you theorise. You respect the timing budget as a hard wall, not a target. You write the failure path first, because the failure path is the product for everyone unlucky enough to find it.'
+    ],
+    readout: [
+      { k: 'Client', v: 'Apple' },
+      { k: 'Domain', v: 'Embedded engineering' },
+      { k: 'Constraint', v: 'Ship-once semantics' },
+      { k: 'Discipline', v: 'Measure, then assert' }
+    ]
   },
-  chickfila: {
-    number: '03',
-    nav: 'Chick-fil-A',
-    eyebrow: 'Client system / 02',
-    title: 'Chick-fil-A',
-    meta: 'Embedded operational systems',
-    text: 'Worked on embedded solutions in an operational environment—connecting physical systems, production software, and the people who rely on both every day.'
+  {
+    id: 'chickfila',
+    index: '03',
+    word: 'CHICK-FIL-A',
+    caption: 'transmission 03',
+    kicker: 'Client engagement',
+    title: 'Embedded systems for a working kitchen, at national scale.',
+    body: [
+      'A second embedded engagement, for Chick-fil-A, in an environment that is nothing like a lab: heat, noise, grease, staff turnover, thousands of locations, and no engineer within a hundred miles of almost any of them.',
+      'Software here is graded on what it does at 12:15 on a Saturday. Recover without being asked. Fail loudly, to the one person who can act. Never require somebody mid-rush to understand your architecture in order to sell a sandwich.'
+    ],
+    readout: [
+      { k: 'Client', v: 'Chick-fil-A' },
+      { k: 'Domain', v: 'Embedded · operations' },
+      { k: 'Constraint', v: 'Unattended, at scale' },
+      { k: 'Discipline', v: 'Design for the worst hour' }
+    ]
   },
-  platforms: {
-    number: '04',
-    nav: 'Range',
-    eyebrow: 'Extended range',
-    title: 'Full-stack platforms',
-    meta: 'Web · cloud · data · delivery',
-    text: 'Beyond embedded systems, I work across TypeScript, React, Node, Go, cloud services, databases, CI/CD, and observability. I like understanding the whole path from interface to infrastructure.'
-  },
-  leadership: {
-    number: '05',
-    nav: 'Leadership',
-    eyebrow: 'How I operate',
-    title: 'Calm, curious leadership',
-    meta: 'Teams · clients · systems',
-    text: 'I do my best work where the problem is ambiguous and the stakes are real: asking useful questions, bringing structure to uncertainty, and helping a team move without unnecessary drama.'
-  },
-  future: {
-    number: '06',
-    nav: 'Next',
-    eyebrow: 'Unresolved signal',
-    title: 'The next hard thing',
-    meta: 'Status · open to contact',
-    text: 'I am most interested in ambitious products, thoughtful teams, and work that expands what people believe software can do. If that sounds familiar, I would love to compare notes.'
+  {
+    id: 'range',
+    index: '04',
+    word: 'RANGE',
+    caption: 'transmission 04',
+    kicker: 'Beyond the device',
+    title: 'Deep on devices. Not confined to them.',
+    body: [
+      'Embedded is where I go deep; it is not the edge of the map. I build product interfaces in TypeScript and React, services in Node and Go, and state in Postgres, DynamoDB or MongoDB — chosen from the access pattern, not from habit.',
+      'Those run on AWS and Google Cloud, usually through Kubernetes, behind a CI/CD path I would be comfortable handing to someone on their second week. Datadog closes the loop. And I spend real hours on applied AI: agents, voice, and tooling treated as components with error bars rather than as magic.'
+    ],
+    readout: [
+      { k: 'Interface', v: 'TypeScript · React' },
+      { k: 'Services', v: 'Node.js · Go' },
+      { k: 'State', v: 'Postgres · DynamoDB · MongoDB' },
+      { k: 'Runtime', v: 'AWS · Google Cloud · Kubernetes' },
+      { k: 'Feedback', v: 'CI/CD · Datadog' },
+      { k: 'Exploring', v: 'Applied AI · agents · voice' }
+    ]
   }
-} as const
+]
 
-type ChapterId = keyof typeof chapters
+const HERO_MASK: SignalMask = {
+  text: 'DEVON BULL',
+  caption: 'senior engineer',
+  oy: 0.27,
+  ox: 0.15
+}
 
-const principles = [
-  {
-    number: '01',
-    title: 'Earn context',
-    text: 'Arrive curious, learn the operating environment, and understand the constraints before prescribing a solution.'
-  },
-  {
-    number: '02',
-    title: 'Connect the system',
-    text: 'Treat product goals, hardware, software, delivery, and the people using the system as one engineering problem.'
-  },
-  {
-    number: '03',
-    title: 'Create calm momentum',
-    text: 'Bring useful questions and enough structure to move an ambiguous problem forward without adding drama.'
-  }
-] as const
+const easeOut = (t: number) => 1 - Math.pow(1 - t, 2.2)
 
 export function CareerExperience() {
-  const [active, setActive] = useState<ChapterId>('origin')
-  const select = useCallback((id: string) => {
-    if (id in chapters) setActive(id as ChapterId)
+  const stateRef = useRef(createSignalState())
+  const rootRef = useRef<HTMLElement | null>(null)
+  const snrRef = useRef<HTMLSpanElement | null>(null)
+  const barRef = useRef<HTMLSpanElement | null>(null)
+  const stationRef = useRef<HTMLSpanElement | null>(null)
+  const [activeId, setActiveId] = useState('hero')
+  const [locked, setLocked] = useState(false)
+  const lockedRef = useRef(false)
+
+  lockedRef.current = locked
+
+  const mask = useMemo<SignalMask>(() => {
+    if (activeId === 'hero') return HERO_MASK
+    if (activeId === 'contact')
+      return { text: 'OPEN', caption: 'signal outbound', ox: 0.16, oy: 0.08 }
+    const t = transmissions.find((item) => item.id === activeId)
+    return t
+      ? { text: t.word, caption: t.caption, ox: 0.17, oy: -0.16 }
+      : HERO_MASK
+  }, [activeId])
+
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+    const sections = Array.from(
+      root.querySelectorAll<HTMLElement>('[data-signal-section]')
+    )
+    if (!sections.length) return
+
+    let raf = 0
+    let current = ''
+
+    const measure = () => {
+      raf = 0
+      const mid = window.innerHeight * 0.46
+      let best: HTMLElement | null = null
+      let bestDistance = Infinity
+      for (const section of sections) {
+        const rect = section.getBoundingClientRect()
+        const center = rect.top + rect.height / 2
+        const distance = Math.abs(center - mid)
+        if (distance < bestDistance) {
+          bestDistance = distance
+          best = section
+        }
+      }
+      if (!best) return
+      const span = Math.max(window.innerHeight * 0.52, 260)
+      const proximity = easeOut(
+        Math.max(0, Math.min(1, 1 - bestDistance / span))
+      )
+      const reveal = lockedRef.current ? 1 : proximity
+      stateRef.current.reveal = reveal
+      stateRef.current.energy = lockedRef.current ? 0.1 : (1 - proximity) * 0.7
+
+      const id = best.dataset.signalSection ?? ''
+      if (id !== current) {
+        current = id
+        setActiveId(id)
+        if (stationRef.current) {
+          stationRef.current.textContent = (
+            best.dataset.signalLabel ?? id
+          ).toUpperCase()
+        }
+      }
+      if (snrRef.current) snrRef.current.textContent = reveal.toFixed(2)
+      if (barRef.current) {
+        const filled = Math.round(reveal * 10)
+        barRef.current.textContent = `${'\u2588'.repeat(filled)}${'\u2591'.repeat(
+          10 - filled
+        )}`
+      }
+    }
+
+    const onScroll = () => {
+      if (raf) return
+      raf = requestAnimationFrame(measure)
+    }
+
+    measure()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      if (raf) cancelAnimationFrame(raf)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
   }, [])
-  const chapter = chapters[active]
+
+  const toggleLock = useCallback(() => {
+    setLocked((value) => {
+      const next = !value
+      lockedRef.current = next
+      if (next) {
+        stateRef.current.reveal = 1
+        stateRef.current.energy = 0.1
+      }
+      return next
+    })
+  }, [])
 
   return (
-    <main className={styles.page}>
-      <section className={styles.hero} aria-labelledby="career-title">
-        <SpaceScene mode="career" onNodeSelect={select} />
-        <div className={styles.heroShade} aria-hidden="true" />
+    <main
+      ref={rootRef}
+      data-signal=""
+      data-locked={locked ? 'true' : undefined}
+      className={styles.page}
+    >
+      <div className={styles.fieldLayer}>
+        <SignalFieldMount
+          stateRef={stateRef}
+          mask={mask}
+          gain={activeId === 'hero' ? 1 : 0.86}
+        />
+      </div>
+      <div className={styles.veil} aria-hidden="true" />
+      <div className={styles.grain} aria-hidden="true" />
 
-        <div className={styles.heroHeading}>
-          <p className={styles.eyebrow}>Career constellation · 002</p>
-          <h1 id="career-title">One career. Many systems.</h1>
-          <p>
-            A former tech entrepreneur turned senior software engineer, working
-            from embedded systems to cloud platforms—and translating between
-            ambitious products and the realities that make them dependable.
-          </p>
-          <a className={styles.readLink} href="#career-narrative">
-            Read the complete narrative <span aria-hidden="true">↓</span>
-          </a>
-        </div>
+      <aside className={styles.hud} aria-hidden="true">
+        <span className={styles.hudLabel}>Carrier</span>
+        <span ref={stationRef} className={styles.hudStation}>
+          DEVON BULL
+        </span>
+        <span ref={barRef} className={styles.hudBar}>
+          ░░░░░░░░░░
+        </span>
+        <span className={styles.hudSnr}>
+          lock <span ref={snrRef}>0.00</span>
+        </span>
+      </aside>
 
-        <div className={styles.explorer}>
-          <nav className={styles.chapterNav} aria-label="Career chapters">
-            {Object.entries(chapters).map(([id, item]) => (
-              <button
-                key={id}
-                type="button"
-                className={
-                  active === id
-                    ? styles.chapterButtonActive
-                    : styles.chapterButton
-                }
-                onClick={() => setActive(id as ChapterId)}
-                aria-pressed={active === id}
-              >
-                <span>{item.number}</span>
-                {item.nav}
-              </button>
-            ))}
-          </nav>
-
-          <article
-            className={styles.activeChapter}
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            <p className={styles.panelEyebrow}>{chapter.eyebrow}</p>
-            <div className={styles.chapterTitleRow}>
-              <span>{chapter.number}</span>
-              <h2>{chapter.title}</h2>
-            </div>
-            <p className={styles.chapterMeta}>{chapter.meta}</p>
-            <p className={styles.chapterText}>{chapter.text}</p>
-          </article>
-        </div>
-
-        <p className={styles.visualNote}>
-          Spatial map is optional. Every chapter appears in plain text below.
-        </p>
-      </section>
-
-      <section
-        id="career-narrative"
-        className={styles.narrative}
-        aria-labelledby="narrative-title"
-      >
-        <div className={styles.sectionIntro}>
-          <div>
-            <p className={styles.eyebrow}>Career · in plain text</p>
-            <h2 id="narrative-title">The legible version.</h2>
-          </div>
-          <p>
-            I have worked for one contracting firm across different client and
-            technical contexts. That path built range without losing the
-            through-line: understand the whole system, then make it more
-            dependable.
-          </p>
-        </div>
-
-        <div className={styles.evidenceGrid}>
-          <article
-            className={`${styles.evidenceCard} ${styles.evidenceCardPrimary}`}
-          >
-            <div className={styles.cardTopline}>
-              <span>Foundation</span>
-              <span>Former tech entrepreneur</span>
-            </div>
-            <div>
-              <h3>Product ambition with engineering discipline.</h3>
-              <p>
-                Entrepreneurship shaped how I frame problems and weigh
-                tradeoffs. Engineering became the way I turn that product
-                perspective into reliable systems a team can operate and
-                improve.
-              </p>
-            </div>
-          </article>
-
-          <article className={styles.evidenceCard}>
-            <div className={styles.cardTopline}>
-              <span>Client engagement</span>
-              <span>Embedded</span>
-            </div>
-            <div>
-              <h3>Apple</h3>
-              <p>{chapters.apple.text}</p>
-            </div>
-          </article>
-
-          <article className={styles.evidenceCard}>
-            <div className={styles.cardTopline}>
-              <span>Client engagement</span>
-              <span>Embedded operations</span>
-            </div>
-            <div>
-              <h3>Chick-fil-A</h3>
-              <p>{chapters.chickfila.text}</p>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section className={styles.range} aria-labelledby="range-title">
-        <div className={styles.rangeHeading}>
-          <div>
-            <p className={styles.eyebrow}>Engineering range</p>
-            <h2 id="range-title">
-              From device constraints to delivery systems.
-            </h2>
-          </div>
-          <p>
-            Embedded work is a defining part of the story, not the boundary. I
-            also work across application, platform, cloud, data, delivery, and
-            observability concerns.
-          </p>
-        </div>
-        <div
-          className={styles.rangeBands}
-          aria-label="Areas of engineering experience"
+      <div className={styles.content}>
+        <section
+          className={styles.hero}
+          data-signal-section="hero"
+          data-signal-label="Devon Bull"
+          aria-labelledby="career-title"
         >
-          <div>
-            <span>01</span>
-            <strong>Embedded systems</strong>
-            <small>Hardware + software</small>
-          </div>
-          <div>
-            <span>02</span>
-            <strong>Product applications</strong>
-            <small>TypeScript + React + Node</small>
-          </div>
-          <div>
-            <span>03</span>
-            <strong>Services & data</strong>
-            <small>Go + databases</small>
-          </div>
-          <div>
-            <span>04</span>
-            <strong>Platforms</strong>
-            <small>Cloud + CI/CD + observability</small>
-          </div>
-        </div>
-      </section>
+          <p className={styles.eyebrow}>
+            <span>Signal</span>
+            <span aria-hidden="true">·</span>
+            <span>35.7796° N, 78.6382° W</span>
+            <span aria-hidden="true">·</span>
+            <span>Raleigh, North Carolina</span>
+          </p>
+          <h1 id="career-title" className={styles.heroTitle}>
+            <DecodeText text="A résumé is a" duration={0.7} />{' '}
+            <em>
+              <DecodeText text="compressed" duration={1.1} delay={0.12} />
+            </em>{' '}
+            <DecodeText text="signal." duration={0.8} delay={0.25} />
+          </h1>
+          <p className={styles.heroLede}>
+            I am Devon Bull — a senior software engineer in Raleigh, North
+            Carolina. I ran a tech company before I ran a build pipeline. Now I
+            work for one consulting firm and land inside other people’s systems:
+            embedded engineering for <strong>Apple</strong> and{' '}
+            <strong>Chick-fil-A</strong>, plus the full-stack and cloud work
+            that surrounds a device once it starts talking.
+          </p>
+          <p className={styles.heroNote}>
+            Scroll and each section resolves out of the noise. Or don’t — every
+            word below is ordinary text, in order, whether or not the field is
+            running.
+          </p>
 
-      <section className={styles.principles} aria-labelledby="principles-title">
-        <div className={styles.principlesHeading}>
-          <p className={styles.eyebrow}>Operating principles</p>
-          <h2 id="principles-title">
-            How I work when the answer is not obvious.
-          </h2>
-        </div>
-        <div className={styles.principleGrid}>
-          {principles.map((principle) => (
-            <article key={principle.number}>
-              <span>{principle.number}</span>
-              <h3>{principle.title}</h3>
-              <p>{principle.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+          <dl className={styles.readoutStrip}>
+            {[
+              { k: 'Firms', v: 'One' },
+              { k: 'Clients', v: 'Apple · Chick-fil-A' },
+              { k: 'Depth', v: 'Firmware → Kubernetes' },
+              { k: 'Base', v: 'Raleigh, NC' }
+            ].map((item) => (
+              <div key={item.k}>
+                <dt>{item.k}</dt>
+                <dd>{item.v}</dd>
+              </div>
+            ))}
+          </dl>
 
-      <section className={styles.nextSignal} aria-labelledby="next-title">
-        <div>
-          <p className={styles.eyebrow}>Next signal</p>
-          <h2 id="next-title">
-            Ambitious products. Thoughtful teams. Hard systems.
+          <div className={styles.heroActions}>
+            <a className={styles.primaryAction} href="#transmission-founder">
+              Begin decoding <span aria-hidden="true">↓</span>
+            </a>
+            <button
+              type="button"
+              className={styles.ghostAction}
+              onClick={toggleLock}
+              aria-pressed={locked}
+            >
+              {locked ? 'Field: locked' : 'Field: free-running'}
+            </button>
+          </div>
+        </section>
+
+        {transmissions.map((item) => (
+          <section
+            key={item.id}
+            id={`transmission-${item.id}`}
+            className={styles.transmission}
+            data-signal-section={item.id}
+            data-signal-label={item.word}
+            aria-labelledby={`heading-${item.id}`}
+          >
+            <div className={styles.rail}>
+              <span className={styles.railIndex} aria-hidden="true">
+                {item.index}
+              </span>
+              <span className={styles.railKicker}>{item.kicker}</span>
+              <dl className={styles.railReadout}>
+                {item.readout.map((row) => (
+                  <div key={row.k}>
+                    <dt>{row.k}</dt>
+                    <dd>{row.v}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+            <div className={styles.body}>
+              <h2 id={`heading-${item.id}`} className={styles.bodyTitle}>
+                <DecodeText text={item.title} duration={1.15} />
+              </h2>
+              {item.body.map((paragraph) => (
+                <p key={paragraph.slice(0, 24)}>{paragraph}</p>
+              ))}
+            </div>
+          </section>
+        ))}
+
+        <section
+          id="transmission-contact"
+          className={styles.contact}
+          data-signal-section="contact"
+          data-signal-label="Open"
+          aria-labelledby="contact-heading"
+        >
+          <p className={styles.railKicker}>Signal outbound</p>
+          <h2 id="contact-heading" className={styles.contactTitle}>
+            <DecodeText text="Currently listening." duration={1} />
           </h2>
-        </div>
-        <div className={styles.nextCopy}>
-          <p>{chapters.future.text}</p>
-          <div className={styles.nextLinks}>
-            <Link href="/systems">
-              Explore technical range <span aria-hidden="true">→</span>
-            </Link>
+          <p className={styles.contactBody}>
+            The work I want has hardware, software and operations all holding a
+            vote, and a team that would rather be correct than comfortable. If
+            that is the room you are standing in, say something.
+          </p>
+          <div className={styles.contactLinks}>
             <a
               href="https://www.linkedin.com/in/bulldevon"
               target="_blank"
               rel="noreferrer"
             >
-              Connect on LinkedIn{' '}
-              <span className="sr-only">(opens in a new tab)</span>
-              <span aria-hidden="true">↗</span>
+              LinkedIn <span aria-hidden="true">↗</span>
             </a>
+            <a
+              href="https://github.com/DBULL7"
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub <span aria-hidden="true">↗</span>
+            </a>
+            <Link href="/systems">
+              The stack as a field <span aria-hidden="true">→</span>
+            </Link>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </main>
   )
 }

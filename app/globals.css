@@ -113,3 +113,39 @@
     scroll-behavior: auto;
   }
 }
+
+/* ---- Signal direction tokens (career + systems) ---------------------- */
+[data-signal] {
+  --sig-bg: #06080e;
+  --sig-bg-2: #0a0e17;
+  --sig-band: #0d1220;
+  --sig-ink: #eef2f8;
+  --sig-ink-2: #9aa7bd;
+  --sig-ink-3: #66748d;
+  --sig-line: rgba(154, 174, 214, 0.18);
+  --sig-line-soft: rgba(154, 174, 214, 0.09);
+  --sig-signal: #64e3d0;
+  --sig-signal-2: #8b86ff;
+  --sig-accent: #f2b45f;
+  --sig-glass: rgba(12, 17, 28, 0.66);
+  --sig-shadow: 0 24px 60px -32px rgba(0, 0, 0, 0.9);
+  color-scheme: dark;
+}
+
+html:not(.dark) [data-signal],
+[data-signal].sig-light {
+  --sig-bg: #f3f0e9;
+  --sig-bg-2: #ebe6dc;
+  --sig-band: #e4ddd0;
+  --sig-ink: #13161c;
+  --sig-ink-2: #4c5361;
+  --sig-ink-3: #767d8b;
+  --sig-line: rgba(19, 22, 28, 0.16);
+  --sig-line-soft: rgba(19, 22, 28, 0.08);
+  --sig-signal: #0d7263;
+  --sig-signal-2: #3a37a4;
+  --sig-accent: #ab4514;
+  --sig-glass: rgba(247, 245, 239, 0.72);
+  --sig-shadow: 0 24px 60px -34px rgba(40, 34, 24, 0.45);
+  color-scheme: light;
+}

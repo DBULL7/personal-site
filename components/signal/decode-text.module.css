@@ -1,0 +1,25 @@
+.root {
+  display: inline-block;
+  position: relative;
+}
+
+.visual {
+  font-variant-ligatures: none;
+  font-kerning: none;
+}
+
+.root[data-resolving='true'] .visual {
+  color: color-mix(in srgb, currentColor 62%, var(--sig-signal) 38%);
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
