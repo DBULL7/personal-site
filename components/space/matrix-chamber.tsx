@@ -456,14 +456,7 @@ export function MatrixChamber({
     }
 
     const particles: GlyphParticle[] = []
-    const particleCount =
-      glyphSet === 'toolkit'
-        ? window.innerWidth < 700
-          ? 96
-          : 190
-        : window.innerWidth < 700
-          ? 78
-          : 148
+    const particleCount = window.innerWidth < 700 ? 78 : 148
     for (let index = 0; index < particleCount; index += 1) {
       const glyphCanvas = document.createElement('canvas')
       glyphCanvas.width = 96
@@ -490,12 +483,7 @@ export function MatrixChamber({
         blending: THREE.AdditiveBlending
       })
       const sprite = new THREE.Sprite(material)
-      const scale =
-        glyphSet === 'toolkit'
-          ? index % 17 === 0
-            ? 0.95 + random() * 0.35
-            : 0.46 + random() * 0.44
-          : 0.48 + random() * 0.34
+      const scale = 0.48 + random() * 0.34
       sprite.scale.set(scale, scale, 1)
       const baseX = -10.5 + random() * 21
       const y = floorY + random() * (ceilingY - floorY)
