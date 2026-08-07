@@ -1,311 +1,466 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+
+import { DecodeText } from '@/components/signal/decode-text'
+import { SignalFieldMount } from '@/components/signal/signal-field-mount'
+import { createSignalState } from '@/components/signal/signal-types'
+import type { SignalMask } from '@/components/signal/signal-types'
+
 import styles from './career.module.css'
 
-const SpaceScene = dynamic(
-  () =>
-    import('@/components/space/space-scene').then(
-      (module) => module.SpaceScene
-    ),
-  {
-    ssr: false,
-    loading: () => <div className={styles.sceneFallback} aria-hidden="true" />
-  }
-)
+type Transmission = {
+  id: string
+  index: string
+  word: string
+  caption: string
+  kicker: string
+  title: string
+  body: string[]
+  readout: { k: string; v: string }[]
+}
 
-const chapters = {
-  origin: {
-    number: '00',
-    nav: 'Profile',
-    eyebrow: 'Current trajectory',
-    title: 'Devon Bull',
-    meta: 'Senior software engineer · Raleigh, NC',
-    text: 'Former tech entrepreneur turned engineer. I build dependable software, learn new domains quickly, and translate between product ambition and technical reality.'
+// TODO(devon): exact start/end months for the two most recent Apple eras, and
+// the current title (the résumé on file says Solutions Architect, 2022).
+const transmissions: Transmission[] = [
+  {
+    id: 'haller',
+    index: '00',
+    word: 'HALLER',
+    caption: 'transmission 00',
+    kicker: 'Origin · 2015',
+    title: 'I shipped the prototype before I could call myself an engineer.',
+    body: [
+      'In 2015 I was COO of Haller. I wrote the business plan, got us admitted to a business accelerator, and then — because there was nobody else to hand it to — taught myself Sketch and enough Swift to build the prototype myself. My degree is in economics, not computer science.',
+      'That year left me with the instinct I still lead with: every technical decision is a bet with a due date and a burn rate attached. Turing School followed in 2017, deliberately. I had already proven I could learn a stack under pressure; I wanted to learn one properly.'
+    ],
+    readout: [
+      { k: 'Role', v: 'COO, Haller' },
+      { k: 'Result', v: 'Accelerator admission' },
+      { k: 'Self-taught', v: 'Sketch · Swift prototype' },
+      { k: 'Education', v: 'Turing School 2017 · B.A. Economics, Kansas 2015' }
+    ]
   },
-  consulting: {
-    number: '01',
-    nav: 'Consulting',
-    eyebrow: 'Primary arc',
-    title: 'Consulting engineer',
-    meta: 'One firm · many problem spaces',
-    text: 'Consulting taught me to arrive curious, earn context quickly, and create momentum inside established teams. The craft is making strong engineering fit the client and the operating environment.'
+  {
+    id: 'apple-chatbot',
+    index: '01',
+    word: 'APPLE',
+    caption: 'chatbot · 2018–2020',
+    kicker: 'Apple, era one · 2018–2020',
+    title:
+      'Backend lead on Apple’s chatbot, from one million users to fifteen.',
+    body: [
+      'Two years as backend lead on Apple’s chatbot platform. I implemented the Apple Card integration and helped coordinate its launch, and helped carry the frontend off Angular 1 and onto Vue while the product stayed live in front of everybody.',
+      'The numbers are the argument. Page load from sixty seconds to two. A critical service refactored from ES5 to ES6. Node 5 to Node 12 under production traffic. And 100% uptime while the audience went from one million users to fifteen million. At that volume you stop guessing: instrument first, keep every change reversible, and write the failure path before the feature.'
+    ],
+    readout: [
+      { k: 'Client', v: 'Apple' },
+      { k: 'Role', v: 'Backend lead' },
+      { k: 'Years', v: '2018 – 2020' },
+      { k: 'Shipped', v: 'Apple Card integration' },
+      { k: 'Page load', v: '60s → 2s' },
+      { k: 'Scale', v: '1M → 15M users · 100% uptime' },
+      { k: 'Migrations', v: 'Angular 1 → Vue · Node 5 → 12' }
+    ]
   },
-  apple: {
-    number: '02',
-    nav: 'Apple',
-    eyebrow: 'Client system / 01',
-    title: 'Apple',
-    meta: 'Embedded engineering engagement',
-    text: 'Contributed to embedded work where hardware and software had to behave as a single, reliable product. The constraints rewarded precision, disciplined collaboration, and an eye for performance.'
+  {
+    id: 'chickfila',
+    index: '02',
+    word: 'CHICK-FIL-A',
+    caption: 'delivery · 2020–2022',
+    kicker: 'Chick-fil-A · 2020–2022',
+    title:
+      'Project engineering lead for third-party delivery, straight through the pandemic.',
+    body: [
+      'Two years leading Chick-fil-A’s third-party delivery integrations. DoorDash, UberEats and Grubhub arrive as three different opinions about what an order is, and have to resolve into one system a restaurant can actually run on. I held that work through the steepest growth curve any of us had seen: under $1M a day when I started, $5M a day by 2022.',
+      'Specifics, because they are the point. Combo meals on UberEats, worth roughly ten percent more average revenue per order. Checkout with DoorDash inside the Chick-fil-A iOS app, coordinated directly with DoorDash’s engineers. A migration of the project’s infrastructure onto AWS CloudFormation. And a long, unglamorous push on logging, monitoring and observability — because at that volume the question is never “is something broken”, it is “whose”.'
+    ],
+    readout: [
+      { k: 'Client', v: 'Chick-fil-A' },
+      { k: 'Role', v: 'Project engineering lead' },
+      { k: 'Years', v: '2020 – 2022' },
+      { k: 'Partners', v: 'DoorDash · UberEats · Grubhub' },
+      { k: 'Revenue', v: '<$1M → $5M per day' },
+      { k: 'Lift', v: '~10% higher revenue per order' },
+      { k: 'Infrastructure', v: 'Migrated to AWS CloudFormation' }
+    ]
   },
-  chickfila: {
-    number: '03',
-    nav: 'Chick-fil-A',
-    eyebrow: 'Client system / 02',
-    title: 'Chick-fil-A',
-    meta: 'Embedded operational systems',
-    text: 'Worked on embedded solutions in an operational environment—connecting physical systems, production software, and the people who rely on both every day.'
+  {
+    id: 'apple-solo',
+    index: '03',
+    word: 'SOLO',
+    caption: 'apple · two years, one engineer',
+    kicker: 'Apple, era two · ~2022–2024',
+    title: 'Two years as the only engineer on the product.',
+    body: [
+      'Apple asked for me back, and this time the team was one person. For roughly two years I was the sole engineer on Apple’s interface for managing third-party cloud resources — React and TypeScript, owned end to end. Design conversations, architecture, implementation, release, support, the bug someone found on a Sunday. There is no team to hide behind in that arrangement, and no one to absorb a bad decision for you.',
+      'It is the work that turned me from an engineer who ships features into one who owns a product. You learn very quickly which complexity you will still be paying for in a year, and you stop adding it.'
+    ],
+    readout: [
+      { k: 'Client', v: 'Apple' },
+      { k: 'Role', v: 'Sole engineer, end to end' },
+      { k: 'Duration', v: '~2 years' },
+      { k: 'Stack', v: 'React · TypeScript' },
+      { k: 'Product', v: 'Third-party cloud resource management UI' },
+      { k: 'Owned', v: 'Design → build → ship → support' }
+    ]
   },
-  platforms: {
-    number: '04',
-    nav: 'Range',
-    eyebrow: 'Extended range',
-    title: 'Full-stack platforms',
-    meta: 'Web · cloud · data · delivery',
-    text: 'Beyond embedded systems, I work across TypeScript, React, Node, Go, cloud services, databases, CI/CD, and observability. I like understanding the whole path from interface to infrastructure.'
+  {
+    id: 'apple-portal',
+    index: '04',
+    word: 'PORTAL',
+    caption: 'apple · current work',
+    kicker: 'Apple, era three · ~2024–present',
+    title:
+      'Now: the front door to Apple’s clouds, becoming a developer portal.',
+    body: [
+      'Current work. I build Apple’s internal cloud website — where engineers inside Apple manage their resources across Apple-internal infrastructure and third-party cloud providers from one place. React and TypeScript again, but the problem has changed shape: this is developer-platform product work, where your users are engineers and every rough edge in your interface is multiplied by everyone who has to use it to do their job.',
+      'It is now expanding into a complete Developer Portal experience. Seven years after I first walked into an Apple engagement as a backend lead, the same relationship has become the place I get to design a platform.'
+    ],
+    readout: [
+      { k: 'Client', v: 'Apple' },
+      { k: 'Since', v: '~2024 – present' },
+      { k: 'Stack', v: 'React · TypeScript' },
+      { k: 'Surface', v: 'Internal cloud management website' },
+      { k: 'Scope', v: 'Apple-internal + third-party cloud providers' },
+      { k: 'Next', v: 'Expanding into a full Developer Portal' }
+    ]
   },
-  leadership: {
-    number: '05',
-    nav: 'Leadership',
-    eyebrow: 'How I operate',
-    title: 'Calm, curious leadership',
-    meta: 'Teams · clients · systems',
-    text: 'I do my best work where the problem is ambiguous and the stakes are real: asking useful questions, bringing structure to uncertainty, and helping a team move without unnecessary drama.'
+  {
+    id: 'firm',
+    index: '05',
+    word: 'SEVEN YEARS',
+    caption: 'one firm · 2018 – present',
+    kicker: 'The through-line · since July 2018',
+    title: 'One firm since 2018. They keep handing me the hard thing.',
+    body: [
+      'Stellar Elements — formerly Big Nerd Ranch, now an Amdocs company — has been my only engineering employer since July 2018. Seven years, one firm, through a rebrand and an acquisition, and an unusual number of first days inside other companies’ codebases.',
+      'The shape of those seven years is the part I would point at. Backend lead at fifteen million users. Engineering lead through a hypergrowth integration crisis. Then sole owner of a product for two years. Now platform and developer-experience work. Nobody plans a career in that order; you get there by being handed something difficult and not needing to be rescued.'
+    ],
+    readout: [
+      { k: 'Employer', v: 'Stellar Elements (formerly Big Nerd Ranch)' },
+      { k: 'Group', v: 'An Amdocs company' },
+      { k: 'Tenure', v: 'July 2018 – present · 7+ years' },
+      { k: 'Clients', v: 'Apple · Chick-fil-A' },
+      { k: 'Arc', v: 'Backend lead → project lead → solo owner → platform' }
+    ]
   },
-  future: {
-    number: '06',
-    nav: 'Next',
-    eyebrow: 'Unresolved signal',
-    title: 'The next hard thing',
-    meta: 'Status · open to contact',
-    text: 'I am most interested in ambitious products, thoughtful teams, and work that expands what people believe software can do. If that sounds familiar, I would love to compare notes.'
+  {
+    id: 'range',
+    index: '06',
+    word: 'RANGE',
+    caption: 'the stack behind it',
+    kicker: 'What I build with',
+    title: 'Product engineer, in the literal sense.',
+    body: [
+      'React, TypeScript and Vue on the surface; Node, Express and Go behind it. State in MongoDB, DynamoDB or Postgres, chosen from the access pattern rather than from habit. AWS, CloudFormation, Docker, Kubernetes and GitHub Actions underneath. Datadog, Splunk and OpsGenie for the part of the job that happens at three in the morning.',
+      'I want the whole line: the interface a person actually touches, the service behind it, and the number that says whether it worked. Lately I spend real hours on applied AI, treated exactly like a delivery partner — a component with wide error bars, wrapped in a fallback path.'
+    ],
+    readout: [
+      { k: 'Interface', v: 'React · TypeScript · Vue' },
+      { k: 'Server', v: 'Node · Express · Go' },
+      { k: 'State', v: 'MongoDB · DynamoDB · Postgres' },
+      { k: 'Cloud', v: 'AWS · CloudFormation · Docker · Kubernetes' },
+      { k: 'Delivery', v: 'GitHub Actions · CI/CD' },
+      { k: 'Signal', v: 'Datadog · Splunk · OpsGenie' }
+    ]
   }
-} as const
+]
 
-type ChapterId = keyof typeof chapters
+const HERO_MASK: SignalMask = {
+  text: 'DEVON BULL',
+  caption: 'senior engineer',
+  oy: 0.4,
+  ox: 0.14,
+  scale: 0.86
+}
 
-const principles = [
-  {
-    number: '01',
-    title: 'Earn context',
-    text: 'Arrive curious, learn the operating environment, and understand the constraints before prescribing a solution.'
-  },
-  {
-    number: '02',
-    title: 'Connect the system',
-    text: 'Treat product goals, hardware, software, delivery, and the people using the system as one engineering problem.'
-  },
-  {
-    number: '03',
-    title: 'Create calm momentum',
-    text: 'Bring useful questions and enough structure to move an ambiguous problem forward without adding drama.'
-  }
-] as const
+const easeOut = (t: number) => 1 - Math.pow(1 - t, 2.2)
 
 export function CareerExperience() {
-  const [active, setActive] = useState<ChapterId>('origin')
-  const select = useCallback((id: string) => {
-    if (id in chapters) setActive(id as ChapterId)
+  const stateRef = useRef(createSignalState())
+  const rootRef = useRef<HTMLElement | null>(null)
+  const snrRef = useRef<HTMLSpanElement | null>(null)
+  const barRef = useRef<HTMLSpanElement | null>(null)
+  const stationRef = useRef<HTMLSpanElement | null>(null)
+  const [activeId, setActiveId] = useState('hero')
+  const [locked, setLocked] = useState(false)
+  const lockedRef = useRef(false)
+
+  lockedRef.current = locked
+
+  const mask = useMemo<SignalMask>(() => {
+    if (activeId === 'hero') return HERO_MASK
+    if (activeId === 'contact')
+      return { text: 'OPEN', caption: 'signal outbound', ox: 0.16, oy: 0.08 }
+    const t = transmissions.find((item) => item.id === activeId)
+    return t
+      ? {
+          text: t.word,
+          caption: t.caption,
+          ox: 0.17,
+          oy: -0.27,
+          scale: 0.88
+        }
+      : HERO_MASK
+  }, [activeId])
+
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+    const sections = Array.from(
+      root.querySelectorAll<HTMLElement>('[data-signal-section]')
+    )
+    if (!sections.length) return
+
+    let raf = 0
+    let current = ''
+
+    const measure = () => {
+      raf = 0
+      const mid = window.innerHeight * 0.46
+      let best: HTMLElement | null = null
+      let bestDistance = Infinity
+      for (const section of sections) {
+        const rect = section.getBoundingClientRect()
+        const center = rect.top + rect.height / 2
+        const distance = Math.abs(center - mid)
+        if (distance < bestDistance) {
+          bestDistance = distance
+          best = section
+        }
+      }
+      if (!best) return
+      const span = Math.max(window.innerHeight * 0.52, 260)
+      const proximity = easeOut(
+        Math.max(0, Math.min(1, 1 - bestDistance / span))
+      )
+      const reveal = lockedRef.current ? 1 : proximity
+      stateRef.current.reveal = reveal
+      stateRef.current.energy = lockedRef.current ? 0.1 : (1 - proximity) * 0.7
+
+      const id = best.dataset.signalSection ?? ''
+      if (id !== current) {
+        current = id
+        setActiveId(id)
+        if (stationRef.current) {
+          stationRef.current.textContent = (
+            best.dataset.signalLabel ?? id
+          ).toUpperCase()
+        }
+      }
+      if (snrRef.current) snrRef.current.textContent = reveal.toFixed(2)
+      if (barRef.current) {
+        const filled = Math.round(reveal * 10)
+        barRef.current.textContent = `${'\u2588'.repeat(filled)}${'\u2591'.repeat(
+          10 - filled
+        )}`
+      }
+    }
+
+    const onScroll = () => {
+      if (raf) return
+      raf = requestAnimationFrame(measure)
+    }
+
+    measure()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      if (raf) cancelAnimationFrame(raf)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
   }, [])
-  const chapter = chapters[active]
+
+  const toggleLock = useCallback(() => {
+    setLocked((value) => {
+      const next = !value
+      lockedRef.current = next
+      if (next) {
+        stateRef.current.reveal = 1
+        stateRef.current.energy = 0.1
+      }
+      return next
+    })
+  }, [])
 
   return (
-    <main className={styles.page}>
-      <section className={styles.hero} aria-labelledby="career-title">
-        <SpaceScene mode="career" onNodeSelect={select} />
-        <div className={styles.heroShade} aria-hidden="true" />
+    <main
+      ref={rootRef}
+      data-signal=""
+      data-locked={locked ? 'true' : undefined}
+      className={styles.page}
+    >
+      <div className={styles.fieldLayer}>
+        <SignalFieldMount
+          stateRef={stateRef}
+          mask={mask}
+          gain={activeId === 'hero' ? 1 : 0.74}
+        />
+      </div>
+      <div className={styles.veil} aria-hidden="true" />
+      <div className={styles.grain} aria-hidden="true" />
 
-        <div className={styles.heroHeading}>
-          <p className={styles.eyebrow}>Career constellation · 002</p>
-          <h1 id="career-title">One career. Many systems.</h1>
-          <p>
-            A former tech entrepreneur turned senior software engineer, working
-            from embedded systems to cloud platforms—and translating between
-            ambitious products and the realities that make them dependable.
-          </p>
-          <a className={styles.readLink} href="#career-narrative">
-            Read the complete narrative <span aria-hidden="true">↓</span>
-          </a>
-        </div>
+      <aside className={styles.hud} aria-hidden="true">
+        <span className={styles.hudLabel}>Carrier</span>
+        <span ref={stationRef} className={styles.hudStation}>
+          DEVON BULL
+        </span>
+        <span ref={barRef} className={styles.hudBar}>
+          ░░░░░░░░░░
+        </span>
+        <span className={styles.hudSnr}>
+          lock <span ref={snrRef}>0.00</span>
+        </span>
+      </aside>
 
-        <div className={styles.explorer}>
-          <nav className={styles.chapterNav} aria-label="Career chapters">
-            {Object.entries(chapters).map(([id, item]) => (
-              <button
-                key={id}
-                type="button"
-                className={
-                  active === id
-                    ? styles.chapterButtonActive
-                    : styles.chapterButton
-                }
-                onClick={() => setActive(id as ChapterId)}
-                aria-pressed={active === id}
-              >
-                <span>{item.number}</span>
-                {item.nav}
-              </button>
-            ))}
-          </nav>
-
-          <article
-            className={styles.activeChapter}
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            <p className={styles.panelEyebrow}>{chapter.eyebrow}</p>
-            <div className={styles.chapterTitleRow}>
-              <span>{chapter.number}</span>
-              <h2>{chapter.title}</h2>
-            </div>
-            <p className={styles.chapterMeta}>{chapter.meta}</p>
-            <p className={styles.chapterText}>{chapter.text}</p>
-          </article>
-        </div>
-
-        <p className={styles.visualNote}>
-          Spatial map is optional. Every chapter appears in plain text below.
-        </p>
-      </section>
-
-      <section
-        id="career-narrative"
-        className={styles.narrative}
-        aria-labelledby="narrative-title"
-      >
-        <div className={styles.sectionIntro}>
-          <div>
-            <p className={styles.eyebrow}>Career · in plain text</p>
-            <h2 id="narrative-title">The legible version.</h2>
-          </div>
-          <p>
-            I have worked for one contracting firm across different client and
-            technical contexts. That path built range without losing the
-            through-line: understand the whole system, then make it more
-            dependable.
-          </p>
-        </div>
-
-        <div className={styles.evidenceGrid}>
-          <article
-            className={`${styles.evidenceCard} ${styles.evidenceCardPrimary}`}
-          >
-            <div className={styles.cardTopline}>
-              <span>Foundation</span>
-              <span>Former tech entrepreneur</span>
-            </div>
-            <div>
-              <h3>Product ambition with engineering discipline.</h3>
-              <p>
-                Entrepreneurship shaped how I frame problems and weigh
-                tradeoffs. Engineering became the way I turn that product
-                perspective into reliable systems a team can operate and
-                improve.
-              </p>
-            </div>
-          </article>
-
-          <article className={styles.evidenceCard}>
-            <div className={styles.cardTopline}>
-              <span>Client engagement</span>
-              <span>Embedded</span>
-            </div>
-            <div>
-              <h3>Apple</h3>
-              <p>{chapters.apple.text}</p>
-            </div>
-          </article>
-
-          <article className={styles.evidenceCard}>
-            <div className={styles.cardTopline}>
-              <span>Client engagement</span>
-              <span>Embedded operations</span>
-            </div>
-            <div>
-              <h3>Chick-fil-A</h3>
-              <p>{chapters.chickfila.text}</p>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section className={styles.range} aria-labelledby="range-title">
-        <div className={styles.rangeHeading}>
-          <div>
-            <p className={styles.eyebrow}>Engineering range</p>
-            <h2 id="range-title">
-              From device constraints to delivery systems.
-            </h2>
-          </div>
-          <p>
-            Embedded work is a defining part of the story, not the boundary. I
-            also work across application, platform, cloud, data, delivery, and
-            observability concerns.
-          </p>
-        </div>
-        <div
-          className={styles.rangeBands}
-          aria-label="Areas of engineering experience"
+      <div className={styles.content}>
+        <section
+          className={styles.hero}
+          data-signal-section="hero"
+          data-signal-label="Devon Bull"
+          aria-labelledby="career-title"
         >
-          <div>
-            <span>01</span>
-            <strong>Embedded systems</strong>
-            <small>Hardware + software</small>
-          </div>
-          <div>
-            <span>02</span>
-            <strong>Product applications</strong>
-            <small>TypeScript + React + Node</small>
-          </div>
-          <div>
-            <span>03</span>
-            <strong>Services & data</strong>
-            <small>Go + databases</small>
-          </div>
-          <div>
-            <span>04</span>
-            <strong>Platforms</strong>
-            <small>Cloud + CI/CD + observability</small>
-          </div>
-        </div>
-      </section>
+          <p className={styles.eyebrow}>
+            <span>Signal</span>
+            <span aria-hidden="true">·</span>
+            <span>35.7796° N, 78.6382° W</span>
+            <span aria-hidden="true">·</span>
+            <span>Raleigh, North Carolina</span>
+          </p>
+          <h1 id="career-title" className={styles.heroTitle}>
+            <DecodeText text="A résumé is a" duration={0.7} />{' '}
+            <em>
+              <DecodeText text="compressed" duration={1.1} delay={0.12} />
+            </em>{' '}
+            <DecodeText text="signal." duration={0.8} delay={0.25} />
+          </h1>
+          <p className={styles.heroLede}>
+            I am Devon Bull — a product engineer in Raleigh, North Carolina. An
+            economics degree, a startup I helped run, a prototype I taught
+            myself to build, then a bootcamp. Since 2018 I have been at one
+            firm, <strong>Stellar Elements</strong> (formerly Big Nerd Ranch, an
+            Amdocs company), and most of those seven years have been spent
+            inside <strong>Apple</strong>: backend lead on the chatbot as it
+            grew from one million users to fifteen million, then two years as
+            the only engineer on Apple’s cloud-resource UI, and now the internal
+            cloud site that is becoming Apple’s developer portal. In between I
+            led <strong>Chick-fil-A</strong>’s third-party delivery integrations
+            from under $1M to $5M a day.
+          </p>
+          <p className={styles.heroNote}>
+            Scroll and each section resolves out of the noise. Or don’t — every
+            word below is ordinary text, in order, whether or not the field is
+            running.
+          </p>
 
-      <section className={styles.principles} aria-labelledby="principles-title">
-        <div className={styles.principlesHeading}>
-          <p className={styles.eyebrow}>Operating principles</p>
-          <h2 id="principles-title">
-            How I work when the answer is not obvious.
-          </h2>
-        </div>
-        <div className={styles.principleGrid}>
-          {principles.map((principle) => (
-            <article key={principle.number}>
-              <span>{principle.number}</span>
-              <h3>{principle.title}</h3>
-              <p>{principle.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+          <dl className={styles.readoutStrip}>
+            {[
+              { k: 'Firm', v: 'Stellar Elements · since 2018' },
+              { k: 'Apple', v: '7 years · three eras' },
+              { k: 'Scale', v: '1M → 15M users' },
+              { k: 'Throughput', v: '$1M → $5M per day' }
+            ].map((item) => (
+              <div key={item.k}>
+                <dt>{item.k}</dt>
+                <dd>{item.v}</dd>
+              </div>
+            ))}
+          </dl>
 
-      <section className={styles.nextSignal} aria-labelledby="next-title">
-        <div>
-          <p className={styles.eyebrow}>Next signal</p>
-          <h2 id="next-title">
-            Ambitious products. Thoughtful teams. Hard systems.
+          <div className={styles.heroActions}>
+            <a className={styles.primaryAction} href="#transmission-haller">
+              Begin decoding <span aria-hidden="true">↓</span>
+            </a>
+            <button
+              type="button"
+              className={styles.ghostAction}
+              onClick={toggleLock}
+              aria-pressed={locked}
+            >
+              {locked ? 'Field: locked' : 'Field: free-running'}
+            </button>
+          </div>
+        </section>
+
+        {transmissions.map((item) => (
+          <section
+            key={item.id}
+            id={`transmission-${item.id}`}
+            className={styles.transmission}
+            data-signal-section={item.id}
+            data-signal-label={item.word}
+            aria-labelledby={`heading-${item.id}`}
+          >
+            <div className={styles.rail}>
+              <span className={styles.railIndex} aria-hidden="true">
+                {item.index}
+              </span>
+              <span className={styles.railKicker}>{item.kicker}</span>
+              <dl className={styles.railReadout}>
+                {item.readout.map((row) => (
+                  <div key={row.k}>
+                    <dt>{row.k}</dt>
+                    <dd>{row.v}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+            <div className={styles.body}>
+              <h2 id={`heading-${item.id}`} className={styles.bodyTitle}>
+                <DecodeText text={item.title} duration={1.15} />
+              </h2>
+              {item.body.map((paragraph) => (
+                <p key={paragraph.slice(0, 24)}>{paragraph}</p>
+              ))}
+            </div>
+          </section>
+        ))}
+
+        <section
+          id="transmission-contact"
+          className={styles.contact}
+          data-signal-section="contact"
+          data-signal-label="Open"
+          aria-labelledby="contact-heading"
+        >
+          <p className={styles.railKicker}>Signal outbound</p>
+          <h2 id="contact-heading" className={styles.contactTitle}>
+            <DecodeText text="Currently listening." duration={1} />
           </h2>
-        </div>
-        <div className={styles.nextCopy}>
-          <p>{chapters.future.text}</p>
-          <div className={styles.nextLinks}>
-            <Link href="/systems">
-              Explore technical range <span aria-hidden="true">→</span>
-            </Link>
+          <p className={styles.contactBody}>
+            I am looking for <strong>product engineer</strong> work — the whole
+            line, from the interface somebody actually touches to the service
+            and the number behind it. Real traffic on it, integrations that
+            fight back, and a team that would rather be correct than
+            comfortable. If that is the room you are standing in, say something.
+          </p>
+          <div className={styles.contactLinks}>
+            <a href="mailto:devjbull@gmail.com">
+              devjbull@gmail.com <span aria-hidden="true">↗</span>
+            </a>
             <a
               href="https://www.linkedin.com/in/bulldevon"
               target="_blank"
               rel="noreferrer"
             >
-              Connect on LinkedIn{' '}
-              <span className="sr-only">(opens in a new tab)</span>
-              <span aria-hidden="true">↗</span>
+              LinkedIn <span aria-hidden="true">↗</span>
             </a>
+            <a
+              href="https://github.com/DBULL7"
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub <span aria-hidden="true">↗</span>
+            </a>
+            <Link href="/systems">
+              The stack as a field <span aria-hidden="true">→</span>
+            </Link>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </main>
   )
 }

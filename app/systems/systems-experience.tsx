@@ -1,335 +1,435 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+
+import { DecodeText } from '@/components/signal/decode-text'
+import { SignalFieldMount } from '@/components/signal/signal-field-mount'
+import { createSignalState } from '@/components/signal/signal-types'
+import type { SignalMask, SignalNode } from '@/components/signal/signal-types'
+
 import styles from './systems.module.css'
 
-const SpaceScene = dynamic(
-  () =>
-    import('@/components/space/space-scene').then(
-      (module) => module.SpaceScene
-    ),
-  {
-    ssr: false,
-    loading: () => <div className={styles.sceneFallback} aria-hidden="true" />
-  }
-)
-
-const layers = {
-  interface: {
-    number: '01',
-    short: 'Interface',
-    title: 'Product interface',
-    tools: 'TypeScript · React',
-    role: 'Turn complex product behavior into a clear, accessible interaction model.',
-    question: 'Can a person understand and trust what the system is doing?',
-    inputs: 'Product intent · user context',
-    output: 'Usable product surface'
-  },
-  services: {
-    number: '02',
-    short: 'Services',
-    title: 'Application services',
-    tools: 'Node.js · Go',
-    role: 'Shape APIs, integrations, background work, and production services for clarity and change.',
-    question: 'Can the system evolve without making every change risky?',
-    inputs: 'Requests · events · integrations',
-    output: 'Legible system behavior'
-  },
-  data: {
-    number: '03',
-    short: 'Data',
-    title: 'Data model',
-    tools: 'Postgres · DynamoDB · MongoDB',
-    role: 'Choose pragmatic relational, document, or key-value models around the shape of the problem.',
-    question:
-      'Does the model preserve the information the product actually needs?',
-    inputs: 'Domain rules · access patterns',
-    output: 'Durable system state'
-  },
-  runtime: {
-    number: '04',
-    short: 'Runtime',
-    title: 'Cloud runtime',
-    tools: 'AWS · Google Cloud · Kubernetes',
-    role: 'Create infrastructure and operating environments that support safe delivery without hiding production.',
-    question: 'Can the team understand, operate, and recover the system?',
-    inputs: 'Services · configuration · traffic',
-    output: 'Operable production system'
-  },
-  feedback: {
-    number: '05',
-    short: 'Feedback',
-    title: 'Delivery feedback',
-    tools: 'CI/CD · GitHub Actions · Datadog',
-    role: 'Build paved roads, automated checks, and production feedback loops that let teams move with confidence.',
-    question: 'Will the team know quickly when reality diverges from intent?',
-    inputs: 'Code changes · runtime signals',
-    output: 'Safer, faster iteration'
-  },
-  exploration: {
-    number: '06',
-    short: 'AI',
-    title: 'AI exploration',
-    tools: 'Voice · agents · applied tooling',
-    role: 'Explore useful AI interfaces and tools that expand creative leverage while staying grounded in a real workflow.',
-    question: 'Does the new capability make the work meaningfully better?',
-    inputs: 'Model capability · human workflow',
-    output: 'Useful creative leverage'
-  }
-} as const
-
-type LayerId = keyof typeof layers
-
-const paths = {
-  product: {
-    label: 'Ship a product',
-    description:
-      'Trace intent from the interface through services, state, runtime, and production feedback.',
-    sequence: [
-      'interface',
-      'services',
-      'data',
-      'runtime',
-      'feedback'
-    ] as LayerId[]
-  },
-  operate: {
-    label: 'Operate safely',
-    description:
-      'Start with production feedback, then follow the loop back through runtime and service behavior.',
-    sequence: ['feedback', 'runtime', 'services', 'data'] as LayerId[]
-  },
-  explore: {
-    label: 'Explore AI',
-    description:
-      'Connect a new model capability to an interface, a service boundary, useful state, and a feedback loop.',
-    sequence: [
-      'exploration',
-      'interface',
-      'services',
-      'data',
-      'feedback'
-    ] as LayerId[]
-  }
-} as const
-
-type PathId = keyof typeof paths
-
-const sceneNodeToLayer: Record<string, LayerId> = {
-  typescript: 'interface',
-  react: 'interface',
-  node: 'services',
-  go: 'services',
-  data: 'data',
-  cloud: 'runtime',
-  platform: 'feedback',
-  ai: 'exploration'
+type Capability = {
+  id: string
+  index: string
+  short: string
+  name: string
+  tools: string
+  claim: string
+  tradeoff: string
+  /** position in the field, 0..1 */
+  x: number
+  y: number
 }
 
-export function SystemsExperience() {
-  const [activeLayer, setActiveLayer] = useState<LayerId>('interface')
-  const [activePath, setActivePath] = useState<PathId>('product')
-  const layer = layers[activeLayer]
-  const path = paths[activePath]
+const capabilities: Capability[] = [
+  {
+    id: 'product-ui',
+    index: '01',
+    short: 'PRODUCT UI',
+    name: 'Product interface',
+    tools: 'React · TypeScript · design partnership',
+    claim: 'The component library is not the architecture. The state model is.',
+    tradeoff:
+      'I spent two years as the only engineer on an Apple product, which is the fastest way to learn that the first day of a UI belongs to enumerating which states are genuinely possible and making the impossible ones unrepresentable. It costs a day. It buys back the fortnight otherwise spent on defects that are really two booleans which should have been one union.',
+    x: 0.18,
+    y: 0.2
+  },
+  {
+    id: 'platform',
+    index: '02',
+    short: 'DEV PLATFORM',
+    name: 'Developer platform',
+    tools: 'Internal tooling · cloud management · developer portal',
+    claim: 'When your users are engineers, every rough edge gets multiplied.',
+    tradeoff:
+      'I build Apple’s internal cloud website, where engineers manage resources across Apple-internal infrastructure and third-party providers, and it is now growing into a full developer portal. Platform work rewards the unglamorous choice: one obvious path, named the same thing everywhere, that does not require reading the source to trust.',
+    x: 0.45,
+    y: 0.12
+  },
+  {
+    id: 'scale',
+    index: '03',
+    short: 'SCALE',
+    name: 'Traffic & scale',
+    tools: 'Node · Express · high-volume consumer platforms',
+    claim: 'At fifteen million users, every interesting failure is in a seam.',
+    tradeoff:
+      'Apple’s chatbot grew from one million users to fifteen million while I was backend lead on it, at 100% uptime. None of that was clever. It was refusing to ship anything I could not roll back, instrumenting before theorising, and treating every dependency as a thing that will eventually be down.',
+    x: 0.74,
+    y: 0.2
+  },
+  {
+    id: 'integrations',
+    index: '04',
+    short: 'INTEGRATIONS',
+    name: 'Third-party integrations',
+    tools: 'DoorDash · UberEats · Grubhub · Apple Card',
+    claim:
+      'An integration is a contract with someone who will change it without telling you.',
+    tradeoff:
+      'Three delivery platforms arrive with three different opinions about what an order is. The work is one internal model they all translate into, so no partner’s shape leaks into the domain — plus alerting specific enough to name which of them broke at 11:58 on a Friday.',
+    x: 0.87,
+    y: 0.5
+  },
+  {
+    id: 'modernization',
+    index: '05',
+    short: 'MODERNIZATION',
+    name: 'Legacy modernization',
+    tools: 'Angular 1 → Vue · ES5 → ES6 · Node 5 → 12 · 60s → 2s',
+    claim:
+      'You move a live system the way you defuse one: a wire at a time, verified.',
+    tradeoff:
+      'All of those migrations happened under production traffic, on a product people were using that afternoon, and the page load came down from sixty seconds to two along the way. That is never one fix; it is thirty, ranked by what the profile says instead of what the room suspects. A big-bang rewrite is a schedule risk wearing an engineering plan as a disguise.',
+    x: 0.76,
+    y: 0.78
+  },
+  {
+    id: 'state',
+    index: '06',
+    short: 'STATE',
+    name: 'Data & state',
+    tools: 'MongoDB · DynamoDB · Postgres',
+    claim: 'Pick the database from the access pattern, not from the résumé.',
+    tradeoff:
+      'Postgres until something proves it cannot cope. DynamoDB when the access pattern is genuinely known and the scale is genuinely real — it is a superb key-value store and a punishing query engine. The first thing I look for is a document store chosen because nobody wanted to write a migration.',
+    x: 0.5,
+    y: 0.86
+  },
+  {
+    id: 'runtime',
+    index: '07',
+    short: 'RUNTIME',
+    name: 'Cloud & delivery',
+    tools: 'AWS · CloudFormation · Docker · Kubernetes · GitHub Actions',
+    claim: 'Infrastructure you cannot recreate from a file is a rumour.',
+    tradeoff:
+      'That is why I oversaw the move of the Chick-fil-A delivery project onto AWS CloudFormation. Most teams need a boring deployment target and a rollback they trust more than they need a scheduler; when Kubernetes is the right answer, it is right for a reason somebody can say out loud.',
+    x: 0.22,
+    y: 0.78
+  },
+  {
+    id: 'observability',
+    index: '08',
+    short: 'OBSERVABILITY',
+    name: 'Observability & on-call',
+    tools: 'Datadog · Splunk · OpsGenie',
+    claim: 'An alert nobody acts on is a lie you tell yourself every night.',
+    tradeoff:
+      'At $5M a day the question is never “is something broken”, it is “whose”. Four alarms that always mean something beat forty that mean maybe, and enough logging to answer that question inside a minute is worth more than a quarter of features.',
+    x: 0.12,
+    y: 0.5
+  },
+  {
+    id: 'ai',
+    index: '09',
+    short: 'APPLIED AI',
+    name: 'Applied AI',
+    tools: 'Agents · voice interfaces · developer tooling',
+    claim:
+      'A model is a third-party integration with worse error bars. Treat it like one.',
+    tradeoff:
+      'The interesting engineering is never the prompt, it is the containment: what happens when the output is confidently wrong, how a person sees that, and what the thing is allowed to touch. I write the fallback path first — the habit came from integrations, not from hype.',
+    x: 0.5,
+    y: 0.49
+  }
+]
 
-  const selectSceneNode = useCallback((id: string) => {
-    const nextLayer = sceneNodeToLayer[id]
-    if (nextLayer) setActiveLayer(nextLayer)
+const links: [number, number][] = [
+  [0, 1],
+  [0, 8],
+  [1, 2],
+  [1, 8],
+  [2, 3],
+  [3, 4],
+  [4, 5],
+  [5, 6],
+  [6, 7],
+  [7, 0],
+  [8, 5],
+  [8, 3],
+  [6, 4]
+]
+
+const pushbacks = [
+  {
+    quote: '“Let’s just rewrite it.”',
+    answer:
+      'Nine times in ten that sentence means “I have not finished reading it.” Strangle the old system at one seam, ship, repeat. The business keeps running and you learn what the old code actually knew.'
+  },
+  {
+    quote: '“We will add observability later.”',
+    answer:
+      'Later is after the incident. A service that cannot tell you what it just did is a service you will argue about instead of fix, at an hour nobody enjoys.'
+  },
+  {
+    quote: '“The client team would not understand it.”',
+    answer:
+      'A consultant is temporary by design. If the team I leave behind cannot explain their own system without me, I did not finish the job — I just made myself load-bearing.'
+  }
+]
+
+const IDLE_WEIGHT = 0.3
+
+export function SystemsExperience() {
+  const stateRef = useRef(createSignalState())
+  const rootRef = useRef<HTMLElement | null>(null)
+  const [hovered, setHovered] = useState<string | null>(null)
+  const [pinned, setPinned] = useState<string | null>(null)
+  const activeId = hovered ?? pinned
+  const activeRef = useRef<string | null>(null)
+  activeRef.current = activeId
+
+  const mask = useMemo<SignalMask>(() => {
+    const nodes: SignalNode[] = capabilities.map((item) => ({
+      x: item.x,
+      y: item.y,
+      weight: item.id === activeId ? 1 : IDLE_WEIGHT
+    }))
+    const active = capabilities.find((item) => item.id === activeId)
+    return {
+      nodes,
+      links,
+      text: active?.short,
+      caption: active ? active.tools.split(' · ')[0] : undefined,
+      scale: 0.62,
+      oy: 0.3
+    }
+  }, [activeId])
+
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+
+    let raf = 0
+    const measure = () => {
+      raf = 0
+      const scrolled = Math.min(
+        1,
+        window.scrollY / Math.max(window.innerHeight * 0.9, 1)
+      )
+      const engaged = activeRef.current ? 1 : 0
+      stateRef.current.reveal = Math.max(
+        0.62 + scrolled * 0.22,
+        engaged ? 1 : 0
+      )
+      stateRef.current.energy = engaged ? 0.9 : 0.12
+      stateRef.current.attractors = capabilities.map((item) => ({
+        x: item.x,
+        y: item.y,
+        strength:
+          item.id === activeRef.current ? 0.85 : IDLE_WEIGHT * 0.35 + 0.04,
+        spin: 1
+      }))
+    }
+    const onScroll = () => {
+      if (raf) return
+      raf = requestAnimationFrame(measure)
+    }
+    measure()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      if (raf) cancelAnimationFrame(raf)
+      window.removeEventListener('scroll', onScroll)
+    }
   }, [])
 
-  const choosePath = (id: PathId) => {
-    setActivePath(id)
-    setActiveLayer(paths[id].sequence[0])
-  }
+  const applyField = useCallback((id: string | null) => {
+    activeRef.current = id
+    const engaged = Boolean(id)
+    stateRef.current.reveal = engaged ? 1 : 0.7
+    stateRef.current.energy = engaged ? 0.9 : 0.12
+    stateRef.current.attractors = capabilities.map((item) => ({
+      x: item.x,
+      y: item.y,
+      strength: item.id === id ? 0.85 : IDLE_WEIGHT * 0.35 + 0.04,
+      spin: 1
+    }))
+  }, [])
+
+  const perturb = useCallback(
+    (id: string | null) => {
+      setHovered(id)
+      applyField(id ?? pinned)
+    },
+    [applyField, pinned]
+  )
+
+  const togglePin = useCallback(
+    (id: string) => {
+      setPinned((current) => {
+        const next = current === id ? null : id
+        applyField(next)
+        return next
+      })
+    },
+    [applyField]
+  )
 
   return (
-    <main className={styles.page}>
-      <section className={styles.hero} aria-labelledby="systems-title">
-        <SpaceScene mode="systems" onNodeSelect={selectSceneNode} />
-        <div className={styles.heroShade} aria-hidden="true" />
-        <div className={styles.heroHeading}>
-          <p className={styles.eyebrow}>Systems atlas · 003</p>
-          <h1 id="systems-title">Breadth is useful when the parts connect.</h1>
-          <p>
-            My toolkit spans interfaces, services, data, cloud, delivery, and AI
-            exploration. This atlas shows the handoffs between them—not just the
-            names of the tools.
+    <main ref={rootRef} data-signal="" className={styles.page}>
+      <div className={styles.fieldLayer}>
+        <SignalFieldMount
+          stateRef={stateRef}
+          mask={mask}
+          gain={activeId ? 1 : 0.9}
+        />
+      </div>
+      <div className={styles.veil} aria-hidden="true" />
+      <div className={styles.grain} aria-hidden="true" />
+
+      <div className={styles.content}>
+        <section className={styles.hero} aria-labelledby="systems-title">
+          <p className={styles.eyebrow}>
+            <span>Signal</span>
+            <span aria-hidden="true">·</span>
+            <span>02 — field map</span>
+            <span aria-hidden="true">·</span>
+            <span>Nine attractors</span>
           </p>
-        </div>
-
-        <div className={styles.pathExplorer}>
-          <div className={styles.pathHeader}>
-            <div>
-              <span className={styles.pathKicker}>Select an outcome path</span>
-              <div
-                className={styles.pathTabs}
-                role="group"
-                aria-label="Engineering outcome paths"
-              >
-                {Object.entries(paths).map(([id, item]) => (
-                  <button
-                    key={id}
-                    type="button"
-                    className={
-                      activePath === id ? styles.pathTabActive : styles.pathTab
-                    }
-                    onClick={() => choosePath(id as PathId)}
-                    aria-pressed={activePath === id}
-                  >
-                    {item.label}
-                  </button>
-                ))}
+          <h1 id="systems-title" className={styles.heroTitle}>
+            <DecodeText text="The stack is not a ladder." duration={0.9} />{' '}
+            <em>
+              <DecodeText
+                text="It is a field of forces."
+                duration={1.1}
+                delay={0.2}
+              />
+            </em>
+          </h1>
+          <p className={styles.heroLede}>
+            Nine things I actually reach for, each with the tradeoff I make when
+            I reach for it — drawn from seven years inside Apple and two inside
+            Chick-fil-A’s delivery integrations. Touch one and the field
+            reorganises around it. The words do not move.
+          </p>
+          <dl className={styles.readoutStrip}>
+            {[
+              { k: 'Attractors', v: 'Nine' },
+              { k: 'Proven at', v: '15M users · $5M/day' },
+              { k: 'Firm', v: 'Stellar Elements · since 2018' },
+              { k: 'Bias', v: 'Boring until proven otherwise' }
+            ].map((item) => (
+              <div key={item.k}>
+                <dt>{item.k}</dt>
+                <dd>{item.v}</dd>
               </div>
-            </div>
-            <p>{path.description}</p>
-          </div>
+            ))}
+          </dl>
+          <a className={styles.primaryAction} href="#field">
+            Perturb the field <span aria-hidden="true">↓</span>
+          </a>
+        </section>
 
-          <div
-            className={styles.signalPath}
-            aria-label={`${path.label} capability sequence`}
-          >
-            {Object.entries(layers).map(([id, item]) => {
-              const layerId = id as LayerId
-              const sequenceIndex = path.sequence.indexOf(layerId)
-              const isInPath = sequenceIndex >= 0
-              const isActive = activeLayer === layerId
+        <section
+          id="field"
+          className={styles.field}
+          aria-labelledby="field-heading"
+        >
+          <header className={styles.sectionHead}>
+            <span className={styles.sectionKicker}>The field</span>
+            <h2 id="field-heading">Nine attractors, and what each one costs</h2>
+            <p>
+              Each card is an attractor in the simulation running behind this
+              page. Hover one, or tab to its title and press it to hold the
+              attractor open, and the flow reorganises around it. Every one of
+              these is a position I have had to defend on somebody else’s
+              deadline — none of the writing depends on the field running.
+            </p>
+          </header>
 
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  className={`${styles.layerNode} ${isInPath ? styles.layerNodeInPath : ''} ${isActive ? styles.layerNodeActive : ''}`}
-                  onClick={() => setActiveLayer(layerId)}
-                  aria-pressed={isActive}
+          <ul className={styles.cards}>
+            {capabilities.map((item) => (
+              <li key={item.id}>
+                <article
+                  className={styles.card}
+                  data-active={item.id === activeId ? 'true' : undefined}
+                  data-pinned={item.id === pinned ? 'true' : undefined}
+                  aria-labelledby={`cap-${item.id}`}
+                  onMouseEnter={() => perturb(item.id)}
+                  onMouseLeave={() => perturb(null)}
                 >
-                  <span className={styles.layerOrder}>
-                    {isInPath
-                      ? String(sequenceIndex + 1).padStart(2, '0')
-                      : '—'}
-                  </span>
-                  <strong>{item.short}</strong>
-                  <small>{item.tools}</small>
-                </button>
-              )
-            })}
+                  <p className={styles.cardTop}>
+                    <span>{item.index}</span>
+                    <span>{item.short}</span>
+                  </p>
+                  <h3 id={`cap-${item.id}`} className={styles.cardName}>
+                    <button
+                      type="button"
+                      className={styles.cardButton}
+                      aria-pressed={item.id === pinned}
+                      onClick={() => togglePin(item.id)}
+                      onFocus={() => perturb(item.id)}
+                      onBlur={() => perturb(null)}
+                    >
+                      {item.name}
+                      <span className={styles.cardHint}>
+                        {item.id === pinned ? 'held' : 'hold attractor'}
+                      </span>
+                    </button>
+                  </h3>
+                  <p className={styles.cardTools}>{item.tools}</p>
+                  <p className={styles.cardClaim}>{item.claim}</p>
+                  <p className={styles.cardTradeoff}>{item.tradeoff}</p>
+                </article>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className={styles.pushback} aria-labelledby="pushback-heading">
+          <header className={styles.sectionHead}>
+            <span className={styles.sectionKicker}>Where I push back</span>
+            <h2 id="pushback-heading">
+              Three sentences I have learned to answer slowly
+            </h2>
+          </header>
+          <ol className={styles.pushbackList}>
+            {pushbacks.map((item, i) => (
+              <li key={item.quote}>
+                <span className={styles.pushbackIndex} aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <blockquote>{item.quote}</blockquote>
+                <p>{item.answer}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className={styles.outro} aria-labelledby="outro-heading">
+          <h2 id="outro-heading" className={styles.outroTitle}>
+            <DecodeText text="Same engineer. Other frequency." duration={1} />
+          </h2>
+          <p>
+            The career that produced these opinions — one firm since 2018, seven
+            years inside Apple across three eras, a hypergrowth delivery
+            integration in the middle of it, and a founder’s habit of counting
+            the cost of ownership — is one page over.
+          </p>
+          <div className={styles.outroLinks}>
+            <Link href="/career">
+              Read the career signal <span aria-hidden="true">→</span>
+            </Link>
+            <a
+              href="https://www.linkedin.com/in/bulldevon"
+              target="_blank"
+              rel="noreferrer"
+            >
+              LinkedIn <span aria-hidden="true">↗</span>
+            </a>
+            <a
+              href="https://github.com/DBULL7"
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub <span aria-hidden="true">↗</span>
+            </a>
           </div>
-
-          <article
-            className={styles.activeLayer}
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            <div className={styles.activeLayerHeading}>
-              <span>{layer.number}</span>
-              <div>
-                <p>Active capability</p>
-                <h2>{layer.title}</h2>
-              </div>
-              <strong>{layer.tools}</strong>
-            </div>
-            <div className={styles.activeLayerBody}>
-              <p>{layer.role}</p>
-              <dl>
-                <div>
-                  <dt>Input</dt>
-                  <dd>{layer.inputs}</dd>
-                </div>
-                <div>
-                  <dt>Output</dt>
-                  <dd>{layer.output}</dd>
-                </div>
-              </dl>
-              <blockquote>{layer.question}</blockquote>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section className={styles.index} aria-labelledby="index-title">
-        <div className={styles.sectionHeading}>
-          <div>
-            <p className={styles.eyebrow}>Capability index · plain text</p>
-            <h2 id="index-title">The whole system, one layer at a time.</h2>
-          </div>
-          <p>
-            No single tool is the point. The value is being able to follow a
-            product decision down through implementation and operations—and
-            bring what production teaches back to the next decision.
-          </p>
-        </div>
-
-        <div className={styles.indexGrid}>
-          {Object.entries(layers).map(([id, item]) => (
-            <article key={id} className={styles.indexCard}>
-              <div className={styles.indexTopline}>
-                <span>{item.number}</span>
-                <span>{item.tools}</span>
-              </div>
-              <div>
-                <h3>{item.title}</h3>
-                <p>{item.role}</p>
-              </div>
-              <dl>
-                <div>
-                  <dt>System question</dt>
-                  <dd>{item.question}</dd>
-                </div>
-              </dl>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className={styles.model} aria-labelledby="model-title">
-        <div className={styles.modelIntro}>
-          <p className={styles.eyebrow}>Systems model</p>
-          <h2 id="model-title">A loop, not a stack.</h2>
-          <p>
-            Product intent moves toward production. Runtime evidence moves back
-            toward the product. Good engineering keeps both directions visible.
-          </p>
-        </div>
-        <ol className={styles.loop}>
-          <li>
-            <span>01</span>
-            <strong>Frame</strong>
-            <small>Understand the product and operating context.</small>
-          </li>
-          <li>
-            <span>02</span>
-            <strong>Connect</strong>
-            <small>Design the boundaries and handoffs between layers.</small>
-          </li>
-          <li>
-            <span>03</span>
-            <strong>Deliver</strong>
-            <small>Make change safe enough to move with confidence.</small>
-          </li>
-          <li>
-            <span>04</span>
-            <strong>Learn</strong>
-            <small>Use production feedback to improve the next decision.</small>
-          </li>
-        </ol>
-      </section>
-
-      <section className={styles.next} aria-labelledby="systems-next-title">
-        <div>
-          <p className={styles.eyebrow}>Context behind the toolkit</p>
-          <h2 id="systems-next-title">See where the range came from.</h2>
-        </div>
-        <div>
-          <p>
-            The career map connects these capabilities to consulting, embedded
-            client work, and an approach to engineering leadership.
-          </p>
-          <Link href="/career">
-            Explore the career map <span aria-hidden="true">→</span>
-          </Link>
-        </div>
-      </section>
+        </section>
+      </div>
     </main>
   )
 }

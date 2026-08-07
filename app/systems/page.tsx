@@ -4,7 +4,7 @@ import { SystemsExperience } from './systems-experience'
 export const metadata: Metadata = {
   title: 'Systems | Devon Bull',
   description:
-    'Explore how Devon Bull connects interfaces, services, data, cloud infrastructure, delivery feedback, and AI tooling.',
+    'Nine capabilities Devon Bull works in — product interface, developer platform, scale, third-party integrations, modernization, data, cloud, observability and applied AI — with the tradeoff behind each one.',
   alternates: { canonical: '/systems' }
 }
 
