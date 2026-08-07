@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     template: '%s'
   },
   description:
-    'Interactive portfolio of Devon Bull, a senior software engineer working across embedded systems, platforms, and the web.',
+    'Portfolio of Devon Bull, a senior software engineer in Raleigh, NC working on high-traffic consumer platforms, third-party integrations, and legacy modernisation.',
   applicationName: 'Devon Bull',
   authors: [{ name: 'Devon Bull', url: 'https://devonbull.com' }],
   creator: 'Devon Bull',
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Devon Bull | Senior Software Engineer',
     description:
-      'Embedded systems, platforms, and the web—explored through a series of interactive worlds.',
+      'High-traffic consumer platforms, third-party integrations, and legacy modernisation—plus a few interactive experiments.',
     type: 'website',
     images: [
       {
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Devon Bull | Senior Software Engineer',
     description:
-      'Embedded systems, platforms, and the web—explored through a series of interactive worlds.',
+      'High-traffic consumer platforms, third-party integrations, and legacy modernisation—plus a few interactive experiments.',
     images: ['/og.png']
   }
 }

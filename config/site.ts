@@ -2,7 +2,8 @@ export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
   name: 'DEVON BULL',
-  description: 'Senior software engineer working across embedded systems, platforms, and the web.',
+  description:
+    'Senior software engineer working on high-traffic consumer platforms, integrations, and legacy modernisation.',
   mainNav: [
     { title: 'Orbital', href: '/orbital' },
     { title: 'Career', href: '/career' },

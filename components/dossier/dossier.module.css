@@ -1,0 +1,252 @@
+/* Shared primitives for the /career + /systems record pages. */
+
+.todo {
+  display: inline;
+  padding: 0.02em 0.1em;
+  border-bottom: 1px dotted var(--d-todo-rule);
+  color: var(--d-todo);
+  background: transparent;
+  font-family: var(--d-mono);
+  font-size: 0.82em;
+  font-style: normal;
+  line-height: 1.5;
+  transition: background 140ms ease;
+}
+
+.todo:hover {
+  background: var(--d-todo-bg);
+}
+
+.todoTag {
+  margin-right: 0.4em;
+  font-size: 0.82em;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* ── Section heading ─────────────────────────────────────────────── */
+
+.sectionHead {
+  display: grid;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--d-rule-strong);
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: 0 1.5rem;
+  align-items: baseline;
+}
+
+.sectionIndex {
+  color: var(--d-faint);
+  font-family: var(--d-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  font-variant-numeric: tabular-nums;
+}
+
+.sectionTitle {
+  margin: 0;
+  color: var(--d-text-strong);
+  font-family: var(--d-serif);
+  font-size: clamp(1.6rem, 3vw, 2.35rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+.sectionNote {
+  margin: 0.5rem 0 0;
+  max-width: 58ch;
+  color: var(--d-muted);
+  font-size: 0.94rem;
+  line-height: 1.6;
+  grid-column: 2;
+}
+
+@media (max-width: 640px) {
+  .sectionHead {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+
+  .sectionNote {
+    grid-column: 1;
+  }
+}
+
+/* ── Contact panel ───────────────────────────────────────────────── */
+
+.contact {
+  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.15rem, 5vw, 4rem);
+  color: var(--d-inv-text);
+  background: var(--d-inv-bg);
+}
+
+.contactShell {
+  display: grid;
+  width: var(--d-shell);
+  margin: 0 auto;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: start;
+}
+
+.contactLede h2 {
+  margin: 0.9rem 0 0;
+  font-family: var(--d-serif);
+  font-size: clamp(2rem, 4.2vw, 3.2rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.contactLede p {
+  margin: 1.1rem 0 0;
+  max-width: 42ch;
+  color: var(--d-inv-muted);
+  font-size: 0.97rem;
+  line-height: 1.65;
+}
+
+.contactEyebrow {
+  display: flex;
+  margin: 0;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--d-inv-accent);
+  font-family: var(--d-mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.statusDot {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status {
+  margin: 1.6rem 0 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--d-inv-rule);
+  font-family: var(--d-mono);
+  font-size: 0.74rem;
+  line-height: 1.55;
+}
+
+.status strong {
+  display: block;
+  color: var(--d-inv-text);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.status span {
+  color: var(--d-inv-muted);
+}
+
+.ctaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--d-inv-rule);
+  border: 1px solid var(--d-inv-rule);
+}
+
+.cta {
+  display: flex;
+  min-height: 7.5rem;
+  padding: 1.15rem 1.15rem 1rem;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.7rem;
+  background: var(--d-inv-bg);
+  transition:
+    background 140ms ease,
+    color 140ms ease;
+}
+
+.cta:hover,
+.cta:focus-visible {
+  background: color-mix(in srgb, var(--d-inv-text) 9%, var(--d-inv-bg));
+}
+
+.ctaLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--d-inv-text);
+  font-family: var(--d-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ctaValue {
+  color: var(--d-inv-muted);
+  font-size: 0.83rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.ctaPrimary {
+  grid-column: span 2;
+  min-height: 6rem;
+  color: var(--d-inv-bg);
+  background: var(--d-inv-accent);
+}
+
+.ctaPrimary .ctaLabel {
+  color: inherit;
+  font-size: 1rem;
+}
+
+.ctaPrimary .ctaValue {
+  color: inherit;
+  opacity: 0.78;
+}
+
+.ctaPrimary:hover,
+.ctaPrimary:focus-visible {
+  background: color-mix(in srgb, var(--d-inv-accent) 82%, var(--d-inv-text));
+}
+
+.ctaFoot {
+  margin: 0.9rem 0 0;
+  color: var(--d-inv-muted);
+  font-family: var(--d-mono);
+  font-size: 0.68rem;
+  line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+  .contactShell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 460px) {
+  .ctaGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cta {
+    min-height: 0;
+    gap: 0.4rem;
+    padding: 0.95rem 1rem;
+  }
+
+  .ctaPrimary {
+    grid-column: span 1;
+    min-height: 0;
+  }
+}
