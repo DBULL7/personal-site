@@ -551,7 +551,12 @@ export function MatrixChamber({
         glyphSet === 'toolkit'
           ? glyphs[index % glyphs.length]
           : glyphs[Math.floor(random() * glyphs.length)]
-      drawGlyph(glyphCanvas, glyphContext, initialGlyph, brightness)
+      drawGlyph(
+        glyphCanvas,
+        glyphContext,
+        initialGlyph,
+        isBlackGlass ? 0.86 : brightness
+      )
       const texture = new THREE.CanvasTexture(glyphCanvas)
       texture.colorSpace = THREE.SRGBColorSpace
       const material = new THREE.SpriteMaterial({
@@ -693,7 +698,7 @@ export function MatrixChamber({
             particle.canvas,
             particle.context,
             glyphs[Math.floor(random() * glyphs.length)],
-            particle.brightness
+            isBlackGlass ? 0.86 : particle.brightness
           )
           particle.texture.needsUpdate = true
           particle.nextMutation =
@@ -711,12 +716,19 @@ export function MatrixChamber({
         const heightFromFloor = particle.y - floorY
         const surfaceBirth =
           isBlackGlass && heightFromFloor >= 0
-            ? (1 - THREE.MathUtils.clamp(heightFromFloor / 1.6, 0, 1)) * 0.38
+            ? 1 - THREE.MathUtils.clamp(heightFromFloor / 1.7, 0, 1)
             : 0
-        const fade = Math.max(Math.sin(progress * Math.PI), surfaceBirth)
         const flicker = 0.82 + Math.sin(elapsed * 4.2 + particle.phase) * 0.18
-        particle.material.opacity =
-          fade * particle.brightness * flicker * (1 + surge * 0.24)
+        const ambientOpacity =
+          Math.sin(progress * Math.PI) *
+          particle.brightness *
+          flicker *
+          (1 + surge * 0.24)
+        const breachOpacity =
+          surfaceBirth *
+          (0.54 + particle.brightness * 0.12) *
+          (0.94 + flicker * 0.06)
+        particle.material.opacity = Math.max(ambientOpacity, breachOpacity)
         particle.sprite.position.set(currentX, particle.y, currentZ)
 
         if (particle.floorGhost) {
@@ -729,7 +741,10 @@ export function MatrixChamber({
           const ghostStrength =
             heightFromFloor < 0 ? 0.08 + approach * 0.44 : release * 0.27
           particle.floorGhost.material.opacity =
-            ghostStrength * particle.brightness * flicker * (1 + surge * 0.28)
+            ghostStrength *
+            (0.72 + particle.brightness * 0.28) *
+            flicker *
+            (1 + surge * 0.28)
           particle.floorGhost.mesh.position.set(
             currentX,
             floorY + 0.058,
