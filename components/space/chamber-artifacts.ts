@@ -10,6 +10,15 @@ export type ChamberEnvironment =
   | 'castle'
   | 'black-glass'
 
+export type BlackGlassBackWallStudy =
+  | 'baseline'
+  | 'lightning'
+  | 'terminal'
+  | 'matrix-rain'
+  | 'server-wall'
+  | 'aperture'
+  | 'server-lightning'
+
 export type ChamberArtifact = {
   group: THREE.Group
   update: (elapsed: number, surge: number) => void
@@ -649,7 +658,8 @@ function createCyberVault(floorY: number, centerZ: number): ChamberArtifact {
 
 function createBlackGlassFloor(
   floorY: number,
-  centerZ: number
+  centerZ: number,
+  backWallStudy: BlackGlassBackWallStudy
 ): ChamberArtifact {
   const group = new THREE.Group()
   const reflectionSize = window.innerWidth < 700 ? 512 : 1024
@@ -761,8 +771,414 @@ function createBlackGlassFloor(
     new THREE.PlaneGeometry(27, 15.1),
     roomMaterial
   )
-  backWall.position.set(0, roomCenterY, centerZ - 18)
+  const backWallZ = centerZ - 18
+  backWall.position.set(0, roomCenterY, backWallZ)
   group.add(leftWall, rightWall, ceiling, backWall)
+
+  const studyWallZ = centerZ - 14
+  if (backWallStudy !== 'baseline') {
+    const studyBacking = new THREE.Mesh(
+      new THREE.PlaneGeometry(27, 15.1),
+      roomMaterial.clone()
+    )
+    studyBacking.position.set(0, roomCenterY, studyWallZ - 0.08)
+    group.add(studyBacking)
+  }
+
+  const wallUpdaters: Array<(elapsed: number, surge: number) => void> = []
+  const wallTextures: THREE.CanvasTexture[] = []
+  let wallSeed = 93017
+  const wallRandom = () => {
+    wallSeed = (wallSeed * 16807) % 2147483647
+    return (wallSeed - 1) / 2147483646
+  }
+
+  const addTerminalWall = () => {
+    const canvas = document.createElement('canvas')
+    canvas.width = 1024
+    canvas.height = 512
+    const context = canvas.getContext('2d')
+    if (!context) return
+    const texture = new THREE.CanvasTexture(canvas)
+    texture.colorSpace = THREE.SRGBColorSpace
+    wallTextures.push(texture)
+    const material = new THREE.MeshBasicMaterial({
+      map: texture,
+      transparent: true,
+      opacity: 0.5,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      fog: false
+    })
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(23.8, 12.8), material)
+    plane.position.set(0, roomCenterY, studyWallZ + 0.08)
+    group.add(plane)
+
+    const terminalLines = [
+      'devon@black-glass:~$ trace --field toolkit',
+      '[ok] catalog mounted / 94 marks',
+      '[ok] mirror plane synchronized',
+      'devon@black-glass:~$ inspect --depth all',
+      'near .............. active',
+      'middle ............ active',
+      'far ............... active',
+      'devon@black-glass:~$ watch --breaches',
+      'stream open_'
+    ]
+    let lastTerminalFrame = -1
+    wallUpdaters.push((elapsed, surge) => {
+      const frame = Math.floor(elapsed * 12)
+      if (frame === lastTerminalFrame) return
+      lastTerminalFrame = frame
+      context.clearRect(0, 0, canvas.width, canvas.height)
+      context.fillStyle = 'rgba(0, 7, 2, .68)'
+      context.fillRect(0, 0, canvas.width, canvas.height)
+      context.strokeStyle = 'rgba(104, 255, 145, .16)'
+      context.lineWidth = 2
+      context.strokeRect(19, 19, canvas.width - 38, canvas.height - 38)
+      context.font = '600 22px ui-monospace, SFMono-Regular, Menlo, monospace'
+      context.fillStyle = 'rgba(125, 255, 158, .42)'
+      context.fillText('BLACK_GLASS://SHELL', 48, 58)
+      const activeLine = Math.floor(elapsed / 1.45) % terminalLines.length
+      const typedCharacters = Math.floor((elapsed % 1.45) * 34)
+      terminalLines.forEach((line, index) => {
+        const active = index === activeLine
+        context.fillStyle = active
+          ? 'rgba(194, 255, 208, .88)'
+          : 'rgba(108, 255, 143, .34)'
+        const renderedLine = active ? line.slice(0, typedCharacters) : line
+        const y = 86 + index * 45
+        context.fillText(renderedLine, 48, y)
+        if (active && Math.floor(elapsed * 2) % 2 === 0) {
+          const cursorX = 48 + context.measureText(renderedLine).width + 4
+          context.fillRect(cursorX, y - 18, 10, 3)
+        }
+      })
+      texture.needsUpdate = true
+      material.opacity = 0.46 + surge * 0.1
+    })
+  }
+
+  const addMatrixRainWall = () => {
+    const canvas = document.createElement('canvas')
+    canvas.width = 768
+    canvas.height = 512
+    const context = canvas.getContext('2d')
+    if (!context) return
+    context.fillStyle = '#000301'
+    context.fillRect(0, 0, canvas.width, canvas.height)
+    const texture = new THREE.CanvasTexture(canvas)
+    texture.colorSpace = THREE.SRGBColorSpace
+    wallTextures.push(texture)
+    const material = new THREE.MeshBasicMaterial({
+      map: texture,
+      transparent: true,
+      opacity: 0.4,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      fog: false
+    })
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(24.2, 13.6), material)
+    plane.position.set(0, roomCenterY, studyWallZ + 0.07)
+    group.add(plane)
+
+    const fontSize = 18
+    const columns = Math.floor(canvas.width / fontSize)
+    const drops = Array.from({ length: columns }, () =>
+      Math.floor(wallRandom() * (canvas.height / fontSize))
+    )
+    const rainGlyphs = Array.from(
+      '01<>[]{}アイウエオカキクケコサシスセソタチツテト'
+    )
+    let lastRainFrame = -1
+    wallUpdaters.push((elapsed, surge) => {
+      const frame = Math.floor(elapsed * 9)
+      if (frame === lastRainFrame) return
+      lastRainFrame = frame
+      context.fillStyle = 'rgba(0, 3, 1, .13)'
+      context.fillRect(0, 0, canvas.width, canvas.height)
+      context.font = `${fontSize}px ui-monospace, SFMono-Regular, Menlo, monospace`
+      context.textAlign = 'center'
+      drops.forEach((drop, index) => {
+        const glyph = rainGlyphs[Math.floor(wallRandom() * rainGlyphs.length)]
+        const x = index * fontSize + fontSize / 2
+        const y = drop * fontSize
+        context.shadowColor = 'rgba(71, 255, 116, .35)'
+        context.shadowBlur = index % 7 === 0 ? 8 : 2
+        context.fillStyle =
+          index % 11 === 0
+            ? 'rgba(190, 255, 205, .72)'
+            : 'rgba(65, 224, 103, .46)'
+        context.fillText(glyph, x, y)
+        drops[index] += index % 5 === 0 ? 0.48 : 0.3
+        if (y > canvas.height && wallRandom() > 0.972) drops[index] = 0
+      })
+      texture.needsUpdate = true
+      material.opacity = 0.36 + surge * 0.12
+    })
+  }
+
+  const addServerWall = () => {
+    const shellMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0x061009,
+      emissive: 0x06150b,
+      emissiveIntensity: 0.52,
+      metalness: 0.94,
+      roughness: 0.18,
+      clearcoat: 0.9,
+      clearcoatRoughness: 0.12
+    })
+    const insetMaterial = new THREE.MeshStandardMaterial({
+      color: 0x010201,
+      emissive: 0x0a3216,
+      emissiveIntensity: 0.52,
+      metalness: 0.72,
+      roughness: 0.46
+    })
+    const ledMaterial = new THREE.MeshBasicMaterial({
+      color: 0x68ff91,
+      transparent: true,
+      opacity: 0.42,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    })
+    const serverWash = new THREE.PointLight(0x67ff91, 24, 13, 1.7)
+    serverWash.position.set(0, roomCenterY + 0.4, studyWallZ + 3.8)
+    group.add(serverWash)
+    const bayGeometry = new THREE.BoxGeometry(2.85, 12.7, 0.42)
+    const bayEdgeGeometry = new THREE.EdgesGeometry(bayGeometry)
+    const bayEdgeMaterial = new THREE.LineBasicMaterial({
+      color: 0x50b86d,
+      transparent: true,
+      opacity: 0.2,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      fog: false
+    })
+    const ventGeometry = new THREE.BoxGeometry(2.25, 0.075, 0.035)
+    const ledGeometry = new THREE.BoxGeometry(0.08, 0.08, 0.04)
+    const ventCount = 7 * 9
+    const vents = new THREE.InstancedMesh(
+      ventGeometry,
+      insetMaterial,
+      ventCount
+    )
+    const leds = new THREE.InstancedMesh(ledGeometry, ledMaterial, ventCount)
+    const matrix = new THREE.Matrix4()
+    let instance = 0
+    for (let bay = 0; bay < 7; bay += 1) {
+      const x = (bay - 3) * 3.45
+      const shell = new THREE.Mesh(bayGeometry, shellMaterial)
+      shell.position.set(x, roomCenterY, studyWallZ + 0.25)
+      const bayEdge = new THREE.LineSegments(
+        bayEdgeGeometry,
+        bayEdgeMaterial.clone()
+      )
+      bayEdge.position.copy(shell.position)
+      group.add(shell, bayEdge)
+      const crown = new THREE.Mesh(
+        new THREE.BoxGeometry(2.45, 0.16, 0.08),
+        ledMaterial.clone()
+      )
+      crown.position.set(x, floorY + 13.25, studyWallZ + 0.5)
+      group.add(crown)
+      for (let slot = 0; slot < 9; slot += 1) {
+        const y = floorY + 1.4 + slot * 1.27
+        matrix.makeTranslation(x, y, studyWallZ + 0.49)
+        vents.setMatrixAt(instance, matrix)
+        matrix.makeTranslation(x + 0.93, y + 0.28, studyWallZ + 0.52)
+        leds.setMatrixAt(instance, matrix)
+        instance += 1
+      }
+    }
+    vents.instanceMatrix.needsUpdate = true
+    leds.instanceMatrix.needsUpdate = true
+    group.add(vents, leds)
+    wallUpdaters.push((elapsed, surge) => {
+      ledMaterial.opacity =
+        0.26 + Math.max(0, Math.sin(elapsed * 1.7)) * 0.18 + surge * 0.22
+      insetMaterial.emissiveIntensity = 0.5 + surge * 0.65
+      serverWash.intensity = 18 + surge * 22
+    })
+  }
+
+  const addSignalAperture = () => {
+    const haloMaterial = additiveMaterial(0x39ff77, 0.14)
+    const coreMaterial = additiveMaterial(0xb8ffca, 0.7)
+    const halo = new THREE.Mesh(
+      new THREE.PlaneGeometry(3.8, 14.1),
+      haloMaterial
+    )
+    halo.position.set(0, roomCenterY, studyWallZ + 0.055)
+    const core = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.48, 13.35),
+      coreMaterial
+    )
+    core.position.set(0, roomCenterY, studyWallZ + 0.09)
+    group.add(halo, core)
+
+    const frameMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0x010302,
+      metalness: 0.96,
+      roughness: 0.12,
+      clearcoat: 1
+    })
+    const frameGeometry = new THREE.BoxGeometry(0.58, 14.25, 0.34)
+    const leftFrame = new THREE.Mesh(frameGeometry, frameMaterial)
+    leftFrame.position.set(-0.64, roomCenterY, studyWallZ + 0.23)
+    const rightFrame = leftFrame.clone()
+    rightFrame.position.x = 0.64
+    group.add(leftFrame, rightFrame)
+
+    const signalMaterial = new THREE.MeshBasicMaterial({
+      color: 0x001606,
+      transparent: true,
+      opacity: 0.8,
+      depthWrite: false
+    })
+    const signals = Array.from({ length: 7 }, (_, index) => {
+      const signal = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.34, 0.025 + (index % 3) * 0.035),
+        signalMaterial.clone()
+      )
+      signal.position.set(0, floorY + index * 2.1, studyWallZ + 0.12)
+      group.add(signal)
+      return signal
+    })
+    wallUpdaters.push((elapsed, surge) => {
+      const pulse = 0.5 + Math.sin(elapsed * 0.8) * 0.5
+      coreMaterial.opacity = 0.58 + pulse * 0.18 + surge * 0.16
+      haloMaterial.opacity = 0.08 + pulse * 0.08 + surge * 0.12
+      core.scale.x = 0.9 + pulse * 0.22
+      signals.forEach((signal, index) => {
+        signal.position.y =
+          floorY + ((elapsed * (0.38 + index * 0.015) + index * 2.4) % 14.2)
+        const material = signal.material as THREE.MeshBasicMaterial
+        material.opacity = 0.45 + Math.sin(elapsed * 1.4 + index) * 0.22
+      })
+    })
+  }
+
+  const addReverseLightning = () => {
+    const coreMaterial = new THREE.MeshBasicMaterial({
+      color: BRIGHT_GREEN,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      fog: false
+    })
+    const branchMaterial = new THREE.MeshBasicMaterial({
+      color: GREEN,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      fog: false
+    })
+    const glowMaterial = branchMaterial.clone()
+    const boltGroup = new THREE.Group()
+    boltGroup.position.set(0, floorY + 0.25, studyWallZ + 0.18)
+    group.add(boltGroup)
+    const flashLight = new THREE.PointLight(GREEN, 0, 22, 1.5)
+    flashLight.position.set(0, roomCenterY, studyWallZ + 2.4)
+    group.add(flashLight)
+    let boltMeshes: THREE.Mesh[] = []
+    let strikeStartedAt = -100
+    let nextStrikeAt = 4.2
+
+    const clearBolt = () => {
+      boltMeshes.forEach((mesh) => {
+        boltGroup.remove(mesh)
+        mesh.geometry.dispose()
+      })
+      boltMeshes = []
+    }
+    const addBoltPath = (
+      points: THREE.Vector3[],
+      radius: number,
+      material: THREE.MeshBasicMaterial
+    ) => {
+      const curve = new THREE.CatmullRomCurve3(points)
+      const mesh = new THREE.Mesh(
+        new THREE.TubeGeometry(
+          curve,
+          Math.max(8, points.length * 2),
+          radius,
+          5
+        ),
+        material
+      )
+      boltGroup.add(mesh)
+      boltMeshes.push(mesh)
+      return curve
+    }
+    const prepareStrike = (elapsed: number) => {
+      clearBolt()
+      const side = wallRandom() < 0.5 ? -1 : 1
+      const startX = side * (8.3 + wallRandom() * 1.7)
+      const mainPoints: THREE.Vector3[] = []
+      let x = startX
+      const segments = 22
+      for (let index = 0; index <= segments; index += 1) {
+        const progress = index / segments
+        x += (wallRandom() - 0.5) * (0.9 - progress * 0.45)
+        mainPoints.push(
+          new THREE.Vector3(x, progress * 14.1, (wallRandom() - 0.5) * 0.03)
+        )
+      }
+      addBoltPath(mainPoints, 0.13, glowMaterial)
+      addBoltPath(mainPoints, 0.048, coreMaterial)
+      Array.from({ length: 3 }, (_, branchIndex) => {
+        const originIndex = 7 + branchIndex * 4
+        const origin = mainPoints[originIndex]
+        const direction = branchIndex % 2 === 0 ? -1 : 1
+        const points = [origin.clone()]
+        for (let step = 1; step <= 6; step += 1) {
+          points.push(
+            new THREE.Vector3(
+              origin.x + direction * step * (0.42 + wallRandom() * 0.24),
+              origin.y + step * (0.34 + wallRandom() * 0.22),
+              0.012
+            )
+          )
+        }
+        addBoltPath(points, 0.026, branchMaterial)
+      })
+      flashLight.position.x = startX
+      strikeStartedAt = elapsed
+      nextStrikeAt = elapsed + 11 + wallRandom() * 8
+      boltGroup.scale.y = 0.01
+      boltGroup.visible = true
+    }
+
+    wallUpdaters.push((elapsed, surge) => {
+      const canReactToSurge = surge > 0.82 && elapsed - strikeStartedAt > 2.5
+      if (elapsed >= nextStrikeAt || canReactToSurge) prepareStrike(elapsed)
+      const age = elapsed - strikeStartedAt
+      const energy =
+        age >= 0 && age < 1.55
+          ? Math.exp(-age * 1.7) * (0.72 + Math.abs(Math.sin(age * 32)) * 0.28)
+          : 0
+      const reveal = THREE.MathUtils.clamp(age / 0.17, 0, 1)
+      boltGroup.scale.y = Math.max(0.01, reveal)
+      boltGroup.visible = energy > 0.002
+      coreMaterial.opacity = energy
+      glowMaterial.opacity = energy * 0.2
+      branchMaterial.opacity = energy * 0.72
+      flashLight.intensity = energy * 46
+    })
+  }
+
+  if (backWallStudy === 'terminal') addTerminalWall()
+  if (backWallStudy === 'matrix-rain') addMatrixRainWall()
+  if (backWallStudy === 'server-wall') addServerWall()
+  if (backWallStudy === 'aperture') addSignalAperture()
+  if (backWallStudy === 'lightning') addReverseLightning()
+  if (backWallStudy === 'server-lightning') {
+    addServerWall()
+    addReverseLightning()
+  }
 
   const groutMaterial = new THREE.MeshStandardMaterial({
     color: 0x030504,
@@ -868,6 +1284,7 @@ function createBlackGlassFloor(
       elapsedTime = elapsed
       mirrorMaterial.uniforms.time.value = elapsed
       mirrorMaterial.uniforms.surge.value = surge
+      wallUpdaters.forEach((updateWall) => updateWall(elapsed, surge))
       edgeGlints.forEach((edge, index) => {
         if (Array.isArray(edge.material)) return
         edge.material.opacity =
@@ -888,6 +1305,7 @@ function createBlackGlassFloor(
     dispose: () => {
       mirror.dispose()
       chargeTexture.dispose()
+      wallTextures.forEach((texture) => texture.dispose())
     }
   }
 }
@@ -895,13 +1313,14 @@ function createBlackGlassFloor(
 export function createChamberArtifact(
   environment: ChamberEnvironment,
   floorY: number,
-  centerZ: number
+  centerZ: number,
+  blackGlassBackWall: BlackGlassBackWallStudy = 'baseline'
 ): ChamberArtifact | null {
   if (environment === 'relic') return createRelic(floorY, centerZ)
   if (environment === 'reactor') return createReactor(floorY, centerZ)
   if (environment === 'invocation') return createInvocation(floorY, centerZ)
   if (environment === 'cyber') return createCyberVault(floorY, centerZ)
   if (environment === 'black-glass')
-    return createBlackGlassFloor(floorY, centerZ)
+    return createBlackGlassFloor(floorY, centerZ, blackGlassBackWall)
   return null
 }

@@ -99,6 +99,7 @@ import {
 import * as THREE from 'three'
 import {
   createChamberArtifact,
+  type BlackGlassBackWallStudy,
   type ChamberEnvironment
 } from './chamber-artifacts'
 import styles from './matrix-chamber.module.css'
@@ -107,6 +108,7 @@ type MatrixChamberProps = {
   paused?: boolean
   glyphSet?: 'matrix' | 'toolkit'
   environment?: ChamberEnvironment
+  blackGlassBackWall?: BlackGlassBackWallStudy
 }
 
 type RainGlyph =
@@ -337,7 +339,8 @@ function makeGlowTexture() {
 export function MatrixChamber({
   paused = false,
   glyphSet = 'matrix',
-  environment = 'standard'
+  environment = 'standard',
+  blackGlassBackWall = 'baseline'
 }: MatrixChamberProps) {
   const hostRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -488,7 +491,12 @@ export function MatrixChamber({
       scene.add(centralGlow)
     }
 
-    const artifact = createChamberArtifact(environment, floorY, artifactCenterZ)
+    const artifact = createChamberArtifact(
+      environment,
+      floorY,
+      artifactCenterZ,
+      blackGlassBackWall
+    )
     if (artifact) scene.add(artifact.group)
 
     const chooseDepth = (index: number) => {
@@ -852,7 +860,7 @@ export function MatrixChamber({
       })
       renderer.dispose()
     }
-  }, [environment, glyphSet])
+  }, [blackGlassBackWall, environment, glyphSet])
 
   return (
     <div

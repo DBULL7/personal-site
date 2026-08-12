@@ -3,7 +3,13 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { MatrixChamber } from '@/components/space/matrix-chamber'
-import { chamberConfigs, type ChamberVariant } from './chamber-config'
+import {
+  blackGlassStudies,
+  blackGlassStudyConfigs,
+  chamberConfigs,
+  type BlackGlassStudy,
+  type ChamberVariant
+} from './chamber-config'
 import styles from './chamber-experiment.module.css'
 
 const details = [
@@ -15,17 +21,31 @@ const details = [
 
 const chamberOrder: ChamberVariant[] = ['black-glass']
 
-export function ChamberExperiment({ variant }: { variant: ChamberVariant }) {
+export function ChamberExperiment({
+  variant,
+  blackGlassStudy = 'baseline'
+}: {
+  variant: ChamberVariant
+  blackGlassStudy?: BlackGlassStudy
+}) {
   const [paused, setPaused] = useState(false)
-  const config = chamberConfigs[variant]
+  const config =
+    variant === 'black-glass'
+      ? blackGlassStudyConfigs[blackGlassStudy]
+      : chamberConfigs[variant]
 
   return (
-    <main className={styles.page} data-variant={variant}>
+    <main
+      className={styles.page}
+      data-variant={variant}
+      data-black-glass-study={blackGlassStudy}
+    >
       <MatrixChamber
-        key={variant}
+        key={`${variant}-${blackGlassStudy}`}
         paused={paused}
         glyphSet="toolkit"
         environment={variant}
+        blackGlassBackWall={blackGlassStudy}
       />
       <div className={styles.scanlines} aria-hidden="true" />
       <div className={styles.vignette} aria-hidden="true" />
@@ -96,6 +116,29 @@ export function ChamberExperiment({ variant }: { variant: ChamberVariant }) {
           </div>
         </dl>
       </aside>
+
+      {variant === 'black-glass' ? (
+        <nav className={styles.studyNav} aria-label="Black Glass wall studies">
+          <span>WALL_STUDY</span>
+          <div>
+            {blackGlassStudies.map((study, index) => (
+              <Link
+                key={study}
+                href={
+                  study === 'baseline'
+                    ? '/directions/chambers/black-glass'
+                    : `/directions/chambers/black-glass/${study}`
+                }
+                aria-current={study === blackGlassStudy ? 'page' : undefined}
+                title={blackGlassStudyConfigs[study].name}
+              >
+                {String(index).padStart(2, '0')}_
+                {blackGlassStudyConfigs[study].shortLabel}
+              </Link>
+            ))}
+          </div>
+        </nav>
+      ) : null}
 
       <div className={styles.controls}>
         <button
