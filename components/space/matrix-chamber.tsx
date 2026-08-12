@@ -431,12 +431,14 @@ export function MatrixChamber({
       })
     )
     room.add(roomLines)
-    ;[5, 10, 15, 20, 25, 30].forEach((depth) => {
-      const marker = makeMarker(`${String(depth).padStart(2, '0')} FT`)
-      marker.position.set(-10.3, floorY + 0.22, roomFront - depth)
-      marker.rotation.x = -Math.PI / 2
-      room.add(marker)
-    })
+    if (environment === 'standard') {
+      ;[5, 10, 15, 20, 25, 30].forEach((depth) => {
+        const marker = makeMarker(`${String(depth).padStart(2, '0')} FT`)
+        marker.position.set(-10.3, floorY + 0.22, roomFront - depth)
+        marker.rotation.x = -Math.PI / 2
+        room.add(marker)
+      })
+    }
 
     const glowTexture = makeGlowTexture()
     if (glowTexture) {
@@ -694,6 +696,13 @@ export function MatrixChamber({
       if (environment === 'relic')
         window.removeEventListener('keydown', triggerSurge)
       timer.dispose()
+      const disposeMaterial = (material: THREE.Material) => {
+        const mappedMaterial = material as THREE.Material & {
+          map?: THREE.Texture | null
+        }
+        mappedMaterial.map?.dispose()
+        material.dispose()
+      }
       scene.traverse((object) => {
         if (
           object instanceof THREE.LineSegments ||
@@ -703,12 +712,11 @@ export function MatrixChamber({
         ) {
           object.geometry.dispose()
           if (Array.isArray(object.material))
-            object.material.forEach((material) => material.dispose())
-          else object.material.dispose()
+            object.material.forEach(disposeMaterial)
+          else disposeMaterial(object.material)
         }
         if (object instanceof THREE.Sprite) {
-          object.material.map?.dispose()
-          object.material.dispose()
+          disposeMaterial(object.material)
         }
       })
       renderer.dispose()
@@ -726,7 +734,7 @@ export function MatrixChamber({
         {failed
           ? 'Static chamber'
           : environment !== 'standard'
-            ? `Spatial render · 30 ft · ${environment}`
+            ? `Powered field · ${environment}`
             : glyphSet === 'toolkit'
               ? 'Spatial render · 30 ft · toolkit'
               : 'Spatial render · 30 ft'}

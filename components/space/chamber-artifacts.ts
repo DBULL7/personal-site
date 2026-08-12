@@ -23,15 +23,53 @@ function additiveMaterial(color = GREEN, opacity = 0.5, wireframe = false) {
   })
 }
 
-function makeFloorCircle(
+function makeFloorGlow(
+  width: number,
+  depth: number,
+  floorY: number,
+  centerZ: number,
+  opacity = 0.2
+) {
+  const canvas = document.createElement('canvas')
+  canvas.width = 256
+  canvas.height = 256
+  const context = canvas.getContext('2d')
+  if (!context) return new THREE.Group()
+  const gradient = context.createRadialGradient(128, 128, 0, 128, 128, 128)
+  gradient.addColorStop(0, 'rgba(113, 255, 153, .95)')
+  gradient.addColorStop(0.22, 'rgba(49, 255, 105, .4)')
+  gradient.addColorStop(0.65, 'rgba(16, 127, 52, .08)')
+  gradient.addColorStop(1, 'rgba(0, 0, 0, 0)')
+  context.fillStyle = gradient
+  context.fillRect(0, 0, 256, 256)
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.colorSpace = THREE.SRGBColorSpace
+  const glow = new THREE.Mesh(
+    new THREE.PlaneGeometry(width, depth),
+    new THREE.MeshBasicMaterial({
+      map: texture,
+      transparent: true,
+      opacity,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      side: THREE.DoubleSide
+    })
+  )
+  glow.rotation.x = -Math.PI / 2
+  glow.position.set(0, floorY, centerZ)
+  return glow
+}
+
+function makeFloorPolygon(
+  sides: number,
   radius: number,
   floorY: number,
   centerZ: number,
-  opacity = 0.5,
-  color = GREEN
+  rotation = 0,
+  opacity = 0.5
 ) {
-  const points = Array.from({ length: 97 }, (_, index) => {
-    const angle = (index / 96) * Math.PI * 2
+  const points = Array.from({ length: sides + 1 }, (_, index) => {
+    const angle = (index / sides) * Math.PI * 2 + rotation
     return new THREE.Vector3(
       Math.cos(angle) * radius,
       floorY,
@@ -41,7 +79,7 @@ function makeFloorCircle(
   return new THREE.Line(
     new THREE.BufferGeometry().setFromPoints(points),
     new THREE.LineBasicMaterial({
-      color,
+      color: GREEN,
       transparent: true,
       opacity,
       blending: THREE.AdditiveBlending,
@@ -50,28 +88,7 @@ function makeFloorCircle(
   )
 }
 
-function makeRadialTicks(
-  radius: number,
-  count: number,
-  floorY: number,
-  centerZ: number,
-  length = 0.55,
-  opacity = 0.45
-) {
-  const positions: number[] = []
-  for (let index = 0; index < count; index += 1) {
-    const angle = (index / count) * Math.PI * 2
-    const inner = radius - length / 2
-    const outer = radius + length / 2
-    positions.push(
-      Math.cos(angle) * inner,
-      floorY,
-      centerZ + Math.sin(angle) * inner,
-      Math.cos(angle) * outer,
-      floorY,
-      centerZ + Math.sin(angle) * outer
-    )
-  }
+function makeFloorSegments(positions: number[], opacity = 0.4) {
   const geometry = new THREE.BufferGeometry()
   geometry.setAttribute(
     'position',
@@ -81,6 +98,35 @@ function makeRadialTicks(
     geometry,
     new THREE.LineBasicMaterial({
       color: GREEN,
+      transparent: true,
+      opacity,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    })
+  )
+}
+
+function makeFloorStar(
+  points: number,
+  outerRadius: number,
+  innerRadius: number,
+  floorY: number,
+  centerZ: number,
+  opacity = 0.55
+) {
+  const vertices = Array.from({ length: points * 2 + 1 }, (_, index) => {
+    const radius = index % 2 === 0 ? outerRadius : innerRadius
+    const angle = (index / (points * 2)) * Math.PI * 2 - Math.PI / 2
+    return new THREE.Vector3(
+      Math.cos(angle) * radius,
+      floorY,
+      centerZ + Math.sin(angle) * radius
+    )
+  })
+  return new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(vertices),
+    new THREE.LineBasicMaterial({
+      color: BRIGHT_GREEN,
       transparent: true,
       opacity,
       blending: THREE.AdditiveBlending,
@@ -177,18 +223,38 @@ function createRelic(floorY: number, centerZ: number): ChamberArtifact {
   beam.position.set(0, floorY + 1.15, centerZ)
   group.add(beam)
 
-  const rings = [1.7, 2.7, 3.8].map((radius, index) => {
-    const ring = makeFloorCircle(
-      radius,
-      floorY + 0.035 + index * 0.008,
-      centerZ,
-      0.62 - index * 0.14
-    )
-    group.add(ring)
-    return ring
-  })
-  const ticks = makeRadialTicks(3.8, 28, floorY + 0.05, centerZ, 0.45, 0.34)
-  group.add(ticks)
+  const underlight = makeFloorGlow(7.6, 4.6, floorY + 0.03, centerZ, 0.16)
+  group.add(underlight)
+  const frame = makeFloorSegments(
+    [
+      -3.2,
+      floorY + 0.06,
+      centerZ - 1.55,
+      -2.25,
+      floorY + 0.06,
+      centerZ - 1.55,
+      2.25,
+      floorY + 0.06,
+      centerZ - 1.55,
+      3.2,
+      floorY + 0.06,
+      centerZ - 1.55,
+      -3.2,
+      floorY + 0.06,
+      centerZ + 1.55,
+      -2.25,
+      floorY + 0.06,
+      centerZ + 1.55,
+      2.25,
+      floorY + 0.06,
+      centerZ + 1.55,
+      3.2,
+      floorY + 0.06,
+      centerZ + 1.55
+    ],
+    0.38
+  )
+  group.add(frame)
 
   return {
     group,
@@ -198,19 +264,23 @@ function createRelic(floorY: number, centerZ: number): ChamberArtifact {
       keyboard.rotation.y = Math.sin(elapsed * 0.42) * 0.075
       keyMaterial.opacity = 0.52 + Math.sin(elapsed * 3.6) * 0.08 + surge * 0.32
       beam.material.opacity = 0.06 + surge * 0.16
-      rings.forEach((ring, index) => {
-        const pulse = 1 + Math.sin(elapsed * 1.7 - index * 0.8) * 0.025
-        ring.scale.setScalar(pulse + surge * 0.018)
-      })
-      ticks.rotation.y = elapsed * 0.08
+      if (
+        underlight instanceof THREE.Mesh &&
+        !Array.isArray(underlight.material)
+      )
+        underlight.material.opacity =
+          0.12 + Math.sin(elapsed * 1.5) * 0.025 + surge * 0.16
     }
   }
 }
 
 function createReactor(floorY: number, centerZ: number): ChamberArtifact {
   const group = new THREE.Group()
+  const underlight = makeFloorGlow(10, 7.2, floorY + 0.015, centerZ, 0.18)
+  group.add(underlight)
+
   const aperture = new THREE.Mesh(
-    new THREE.CircleGeometry(3.25, 96),
+    new THREE.CircleGeometry(3.1, 8),
     new THREE.MeshBasicMaterial({
       color: 0x000301,
       transparent: true,
@@ -222,26 +292,36 @@ function createReactor(floorY: number, centerZ: number): ChamberArtifact {
   aperture.position.set(0, floorY + 0.025, centerZ)
   group.add(aperture)
 
-  const ringMeshes = [
-    { inner: 3.15, outer: 3.35, opacity: 0.78 },
-    { inner: 4.05, outer: 4.16, opacity: 0.46 },
-    { inner: 5.0, outer: 5.07, opacity: 0.25 }
-  ].map(({ inner, outer, opacity }, index) => {
-    const ring = new THREE.Mesh(
-      new THREE.RingGeometry(inner, outer, 128),
-      additiveMaterial(index === 0 ? BRIGHT_GREEN : GREEN, opacity)
-    )
-    ring.rotation.x = -Math.PI / 2
-    ring.position.set(0, floorY + 0.04 + index * 0.01, centerZ)
-    group.add(ring)
-    return ring
-  })
+  const apertureEdge = makeFloorPolygon(
+    8,
+    3.22,
+    floorY + 0.075,
+    centerZ,
+    Math.PI / 8,
+    0.8
+  )
+  group.add(apertureEdge)
 
-  const ticks = makeRadialTicks(4.55, 40, floorY + 0.075, centerZ, 0.85, 0.52)
-  group.add(ticks)
+  const shutterMaterial = additiveMaterial(DARK_GREEN, 0.56)
+  const shutters = new THREE.Group()
+  for (let index = 0; index < 8; index += 1) {
+    const angle = (index / 8) * Math.PI * 2 + Math.PI / 8
+    const panel = new THREE.Mesh(
+      new THREE.BoxGeometry(2.5, 0.14, 0.78),
+      shutterMaterial.clone()
+    )
+    panel.position.set(
+      Math.cos(angle) * 4.02,
+      floorY + 0.08,
+      centerZ + Math.sin(angle) * 4.02
+    )
+    panel.rotation.y = -angle
+    shutters.add(panel)
+  }
+  group.add(shutters)
 
   const core = new THREE.Mesh(
-    new THREE.CylinderGeometry(2.35, 3.15, 0.38, 96, 1, true),
+    new THREE.CylinderGeometry(2.35, 3.05, 0.38, 8, 1, true),
     additiveMaterial(GREEN, 0.23)
   )
   core.position.set(0, floorY + 0.12, centerZ)
@@ -254,89 +334,92 @@ function createReactor(floorY: number, centerZ: number): ChamberArtifact {
   plume.position.set(0, floorY + 2.9, centerZ)
   group.add(plume)
 
-  const spokes: number[] = []
-  for (let index = 0; index < 12; index += 1) {
-    const angle = (index / 12) * Math.PI * 2
-    spokes.push(
-      Math.cos(angle) * 3.4,
+  const trenches: number[] = []
+  for (let index = 0; index < 8; index += 1) {
+    const angle = (index / 8) * Math.PI * 2 + Math.PI / 8
+    trenches.push(
+      Math.cos(angle) * 4.55,
       floorY + 0.06,
-      centerZ + Math.sin(angle) * 3.4,
-      Math.cos(angle) * 7.8,
+      centerZ + Math.sin(angle) * 4.55,
+      Math.cos(angle) * 8.2,
       floorY + 0.06,
-      centerZ + Math.sin(angle) * 7.8
+      centerZ + Math.sin(angle) * 8.2
     )
   }
-  const spokeGeometry = new THREE.BufferGeometry()
-  spokeGeometry.setAttribute(
-    'position',
-    new THREE.Float32BufferAttribute(spokes, 3)
-  )
-  const spokeLines = new THREE.LineSegments(
-    spokeGeometry,
-    new THREE.LineBasicMaterial({
-      color: GREEN,
-      transparent: true,
-      opacity: 0.16,
-      blending: THREE.AdditiveBlending
-    })
-  )
-  group.add(spokeLines)
+  const trenchLines = makeFloorSegments(trenches, 0.22)
+  group.add(trenchLines)
 
   return {
     group,
     update: (elapsed, surge) => {
       const heartbeat = Math.pow(Math.max(0, Math.sin(elapsed * 0.78)), 14)
-      ticks.rotation.y = elapsed * 0.22
-      spokeLines.rotation.y = -elapsed * 0.035
+      shutters.rotation.y = Math.sin(elapsed * 0.32) * 0.018
       core.material.opacity = 0.2 + heartbeat * 0.23 + surge * 0.12
       plume.material.opacity = 0.045 + heartbeat * 0.085 + surge * 0.08
-      ringMeshes.forEach((ring, index) => {
-        const pulse = 1 + heartbeat * (0.018 + index * 0.006)
-        ring.scale.setScalar(pulse)
+      shutters.children.forEach((panel, index) => {
+        if (panel instanceof THREE.Mesh && !Array.isArray(panel.material))
+          panel.material.opacity =
+            0.42 + heartbeat * 0.28 + Math.sin(elapsed * 2 + index) * 0.06
       })
+      if (
+        underlight instanceof THREE.Mesh &&
+        !Array.isArray(underlight.material)
+      )
+        underlight.material.opacity = 0.12 + heartbeat * 0.18 + surge * 0.1
     }
   }
 }
 
 function createInvocation(floorY: number, centerZ: number): ChamberArtifact {
   const group = new THREE.Group()
-  const circles = [1.35, 2.65, 4.1, 5.25].map((radius, index) => {
-    const circle = makeFloorCircle(
-      radius,
-      floorY + 0.035 + index * 0.008,
+  const underlight = makeFloorGlow(10, 7.8, floorY + 0.015, centerZ, 0.12)
+  const star = makeFloorStar(8, 5.15, 2.05, floorY + 0.06, centerZ, 0.55)
+  const diamond = makeFloorPolygon(
+    4,
+    3.55,
+    floorY + 0.065,
+    centerZ,
+    Math.PI / 4,
+    0.42
+  )
+  const axes = makeFloorSegments(
+    [
+      -6.2,
+      floorY + 0.055,
       centerZ,
-      0.72 - index * 0.11,
-      index === 0 ? BRIGHT_GREEN : GREEN
-    )
-    group.add(circle)
-    return circle
-  })
-
-  const innerTicks = makeRadialTicks(
-    2.05,
-    16,
-    floorY + 0.055,
-    centerZ,
-    1.0,
-    0.52
+      6.2,
+      floorY + 0.055,
+      centerZ,
+      0,
+      floorY + 0.055,
+      centerZ - 6.2,
+      0,
+      floorY + 0.055,
+      centerZ + 6.2,
+      -4.2,
+      floorY + 0.055,
+      centerZ - 4.2,
+      4.2,
+      floorY + 0.055,
+      centerZ + 4.2,
+      4.2,
+      floorY + 0.055,
+      centerZ - 4.2,
+      -4.2,
+      floorY + 0.055,
+      centerZ + 4.2
+    ],
+    0.22
   )
-  const outerTicks = makeRadialTicks(
-    4.72,
-    32,
-    floorY + 0.06,
-    centerZ,
-    0.48,
-    0.38
-  )
-  group.add(innerTicks, outerTicks)
+  group.add(underlight, star, diamond, axes)
 
   const runes = 'アカサタナハマヤラワ零壱'.split('').map((character, index) => {
     const rune = makeRuneSprite(character)
     const angle = (index / 12) * Math.PI * 2
     rune.position.set(
-      Math.cos(angle) * 3.45,
+      Math.cos(angle) * 4.2,
       floorY + 0.3,
-      centerZ + Math.sin(angle) * 3.45
+      centerZ + Math.sin(angle) * 4.2
     )
     group.add(rune)
     return rune
@@ -344,28 +427,43 @@ function createInvocation(floorY: number, centerZ: number): ChamberArtifact {
 
   const crown = new THREE.Group()
   crown.position.set(0, floorY + 2.25, centerZ)
-  ;[2.25, 2.9].forEach((radius, index) => {
-    const ring = new THREE.Mesh(
-      new THREE.TorusGeometry(radius, 0.025, 8, 96),
-      additiveMaterial(index === 0 ? BRIGHT_GREEN : GREEN, 0.34)
-    )
-    ring.rotation.x = Math.PI / 2
-    ring.rotation.y = index * 0.12
-    crown.add(ring)
+  const diamondPoints = [
+    new THREE.Vector3(-2.6, 0, 0),
+    new THREE.Vector3(0, 1.15, 0),
+    new THREE.Vector3(2.6, 0, 0),
+    new THREE.Vector3(0, -1.15, 0),
+    new THREE.Vector3(-2.6, 0, 0)
+  ]
+  const crownMaterial = new THREE.LineBasicMaterial({
+    color: BRIGHT_GREEN,
+    transparent: true,
+    opacity: 0.4,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
   })
+  const frontDiamond = new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(diamondPoints),
+    crownMaterial
+  )
+  const crossDiamond = frontDiamond.clone()
+  crossDiamond.rotation.y = Math.PI / 2
+  crown.add(frontDiamond, crossDiamond)
   group.add(crown)
 
   return {
     group,
     update: (elapsed, surge) => {
-      innerTicks.rotation.y = elapsed * 0.17
-      outerTicks.rotation.y = -elapsed * 0.08
       crown.position.y = floorY + 2.25 + Math.sin(elapsed * 0.8) * 0.13
       crown.rotation.y = elapsed * 0.12
-      circles.forEach((circle, index) => {
-        const breath = 1 + Math.sin(elapsed * 1.1 - index * 0.52) * 0.018
-        circle.scale.setScalar(breath + surge * 0.012)
-      })
+      const breath = 1 + Math.sin(elapsed * 1.1) * 0.018 + surge * 0.014
+      star.scale.setScalar(breath)
+      diamond.scale.setScalar(2 - breath)
+      if (
+        underlight instanceof THREE.Mesh &&
+        !Array.isArray(underlight.material)
+      )
+        underlight.material.opacity =
+          0.08 + Math.sin(elapsed * 1.1) * 0.02 + surge * 0.12
       runes.forEach((rune, index) => {
         rune.position.y =
           floorY +

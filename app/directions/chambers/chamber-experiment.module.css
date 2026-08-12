@@ -329,18 +329,6 @@
   letter-spacing: 0.08em;
 }
 
-.floorLegend {
-  position: absolute;
-  bottom: 1.4rem;
-  left: 1.25rem;
-  z-index: 4;
-  display: flex;
-  width: min(32rem, 45vw);
-  justify-content: space-between;
-  color: rgba(var(--accent-rgb), 0.3);
-  font-size: 0.44rem;
-}
-
 @media (max-width: 700px) {
   .header {
     grid-template-columns: auto 1fr;
@@ -381,7 +369,6 @@
     display: none;
   }
 
-  .floorLegend,
   .controls > span {
     display: none;
   }

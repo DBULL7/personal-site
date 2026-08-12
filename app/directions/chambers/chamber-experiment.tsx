@@ -21,7 +21,7 @@ export function ChamberExperiment({ variant }: { variant: ChamberVariant }) {
 
   return (
     <main className={styles.page} data-variant={variant}>
-      <MatrixChamber paused={paused} glyphSet="matrix" environment={variant} />
+      <MatrixChamber paused={paused} glyphSet="toolkit" environment={variant} />
       <div className={styles.scanlines} aria-hidden="true" />
       <div className={styles.vignette} aria-hidden="true" />
 
@@ -78,12 +78,12 @@ export function ChamberExperiment({ variant }: { variant: ChamberVariant }) {
         <strong>{config.artifact}</strong>
         <dl>
           <div>
-            <dt>DEPTH</dt>
-            <dd>30.0 FT</dd>
+            <dt>FIELD</dt>
+            <dd>94 TOOLKIT MARKS</dd>
           </div>
           <div>
-            <dt>FIELD</dt>
-            <dd>ASCII / KANA</dd>
+            <dt>SOURCE</dt>
+            <dd>SOFTWARE / SYSTEMS</dd>
           </div>
           <div>
             <dt>FLOW</dt>
@@ -101,16 +101,6 @@ export function ChamberExperiment({ variant }: { variant: ChamberVariant }) {
           {paused ? 'RESUME_FIELD' : 'PAUSE_FIELD'}
         </button>
         <span>{config.instruction}</span>
-      </div>
-
-      <div className={styles.floorLegend} aria-hidden="true">
-        <span>00</span>
-        <span>05</span>
-        <span>10</span>
-        <span>15</span>
-        <span>20</span>
-        <span>25</span>
-        <span>30 FT</span>
       </div>
     </main>
   )

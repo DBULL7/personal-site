@@ -116,7 +116,16 @@
   width: 13rem;
   height: 13rem;
   border: 1px solid rgba(102, 255, 143, 0.22);
-  border-radius: 50%;
+  clip-path: polygon(
+    30% 0,
+    70% 0,
+    100% 30%,
+    100% 70%,
+    70% 100%,
+    30% 100%,
+    0 70%,
+    0 30%
+  );
   box-shadow:
     0 0 3rem rgba(49, 255, 104, 0.12),
     0 0 0 2.2rem rgba(73, 255, 121, 0.025);
@@ -128,17 +137,41 @@
   inset: 18%;
   display: block;
   border: 1px solid rgba(121, 255, 156, 0.3);
-  border-radius: 50%;
+  transform: rotate(45deg);
 }
 
 .artifact i:nth-child(2) {
   inset: 36%;
+  transform: rotate(0deg);
 }
 
 .artifact i:nth-child(3) {
   inset: 47%;
   border-color: #94ffaf;
   box-shadow: 0 0 2rem rgba(82, 255, 127, 0.38);
+}
+
+.card[data-variant='invocation'] .artifact {
+  clip-path: polygon(
+    50% 0,
+    62% 32%,
+    100% 50%,
+    62% 68%,
+    50% 100%,
+    38% 68%,
+    0 50%,
+    38% 32%
+  );
+  transform: translateX(-50%) perspective(20rem) rotateX(67deg) rotateZ(22.5deg);
+}
+
+.card[data-variant='invocation'] .artifact i {
+  inset: 25%;
+}
+
+.card[data-variant='invocation'] .artifact i:nth-child(2) {
+  inset: 38%;
+  transform: rotate(45deg);
 }
 
 .card[data-variant='relic'] .artifact {

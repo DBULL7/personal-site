@@ -4,7 +4,7 @@ import { ChamberExperiment } from '../chamber-experiment'
 export const metadata: Metadata = {
   title: 'The Glyph Reactor | Chamber Experiment',
   description:
-    'A subfloor reactor that powers a rising thirty-foot field of Matrix glyphs.',
+    'A subfloor reactor that powers a rising field of software logos.',
   robots: { index: false, follow: false }
 }
 

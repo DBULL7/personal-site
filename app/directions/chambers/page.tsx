@@ -6,7 +6,7 @@ import styles from './chambers.module.css'
 export const metadata: Metadata = {
   title: 'Power Chamber Experiments | Devon Bull',
   description:
-    'Three spatial experiments built around a rising field of Matrix glyphs.',
+    'Three spatial experiments built around a rising field of software logos.',
   robots: { index: false, follow: false }
 }
 
@@ -25,7 +25,7 @@ export default function ChamberExperimentsPage() {
         <p>Three powered rooms</p>
         <h1>One field. Three sources of power.</h1>
         <span>
-          The glyphs always rise. What changes is the artifact that commands
+          The logos always rise. What changes is the artifact that commands
           them.
         </span>
       </section>

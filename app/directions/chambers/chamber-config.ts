@@ -35,12 +35,12 @@ export const chamberConfigs: Record<ChamberVariant, ChamberConfig> = {
   },
   invocation: {
     index: 'C',
-    code: 'INVOCATION_RING',
-    name: 'The Invocation Ring',
+    code: 'INVOCATION_SIGIL',
+    name: 'The Invocation Sigil',
     artifact: 'ACTIVE_SIGIL',
     status: 'FIELD_OPEN',
     instruction: 'CLICK THE FIELD TO INVOKE',
     description:
-      'A precise floor language turns identity into ritual. The ring gathers energy, releases it, and keeps the room alive.'
+      'A precise floor language turns identity into ritual. The sigil gathers energy, releases it, and keeps the room alive.'
   }
 }
