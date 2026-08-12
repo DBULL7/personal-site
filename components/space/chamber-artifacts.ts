@@ -13,6 +13,7 @@ export type ChamberEnvironment =
 export type ChamberArtifact = {
   group: THREE.Group
   update: (elapsed: number, surge: number) => void
+  onGlyphEmerge?: (x: number, z: number) => void
   dispose?: () => void
 }
 
@@ -652,16 +653,116 @@ function createBlackGlassFloor(
 ): ChamberArtifact {
   const group = new THREE.Group()
   const reflectionSize = window.innerWidth < 700 ? 512 : 1024
+  const blackGlassShader = {
+    name: 'BlackGlassReflector',
+    uniforms: {
+      color: { value: null },
+      tDiffuse: { value: null },
+      textureMatrix: { value: null },
+      time: { value: 0 },
+      surge: { value: 0 }
+    },
+    vertexShader: /* glsl */ `
+      uniform mat4 textureMatrix;
+      varying vec4 vUv;
+
+      #include <common>
+      #include <logdepthbuf_pars_vertex>
+
+      void main() {
+        vUv = textureMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        #include <logdepthbuf_vertex>
+      }
+    `,
+    fragmentShader: /* glsl */ `
+      uniform vec3 color;
+      uniform sampler2D tDiffuse;
+      uniform float time;
+      uniform float surge;
+      varying vec4 vUv;
+
+      #include <logdepthbuf_pars_fragment>
+
+      float blendOverlay(float base, float blend) {
+        return base < 0.5
+          ? 2.0 * base * blend
+          : 1.0 - 2.0 * (1.0 - base) * (1.0 - blend);
+      }
+
+      vec3 blendOverlay(vec3 base, vec3 blend) {
+        return vec3(
+          blendOverlay(base.r, blend.r),
+          blendOverlay(base.g, blend.g),
+          blendOverlay(base.b, blend.b)
+        );
+      }
+
+      void main() {
+        #include <logdepthbuf_fragment>
+
+        vec2 projectedUv = vUv.xy / max(vUv.w, 0.0001);
+        float viscosity = 0.35 + surge * 1.4;
+        vec2 distortion = vec2(
+          sin(projectedUv.y * 76.0 + time * 0.58),
+          sin(projectedUv.x * 91.0 - time * 0.43)
+        ) * 0.00065 * viscosity;
+        vec4 distortedUv = vUv;
+        distortedUv.xy += distortion * vUv.w;
+        vec4 reflected = texture2DProj(tDiffuse, distortedUv);
+        float movingSheen = 0.96 +
+          sin((projectedUv.x + projectedUv.y) * 17.0 + time * 0.24) * 0.04;
+        reflected.rgb *= movingSheen;
+        gl_FragColor = vec4(blendOverlay(reflected.rgb, color), 1.0);
+
+        #include <tonemapping_fragment>
+        #include <colorspace_fragment>
+      }
+    `
+  }
   const mirror = new Reflector(new THREE.PlaneGeometry(27, 38), {
     color: 0x7c827e,
     textureWidth: reflectionSize,
     textureHeight: reflectionSize,
     clipBias: 0.0025,
-    multisample: window.innerWidth < 700 ? 0 : 2
+    multisample: window.innerWidth < 700 ? 0 : 2,
+    shader: blackGlassShader
   })
   mirror.rotation.x = -Math.PI / 2
   mirror.position.set(0, floorY, centerZ + 1)
   group.add(mirror)
+  const mirrorMaterial = mirror.material as THREE.ShaderMaterial
+
+  const roomMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0x010302,
+    emissive: 0x010302,
+    emissiveIntensity: 0.24,
+    metalness: 0.96,
+    roughness: 0.08,
+    clearcoat: 1,
+    clearcoatRoughness: 0.06,
+    side: THREE.DoubleSide
+  })
+  const roomCenterZ = centerZ + 1
+  const roomCenterY = floorY + 7.55
+  const leftWall = new THREE.Mesh(
+    new THREE.PlaneGeometry(38, 15.1),
+    roomMaterial
+  )
+  leftWall.rotation.y = Math.PI / 2
+  leftWall.position.set(-13.45, roomCenterY, roomCenterZ)
+  const rightWall = leftWall.clone()
+  rightWall.rotation.y = -Math.PI / 2
+  rightWall.position.x = 13.45
+  const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(27, 38), roomMaterial)
+  ceiling.rotation.x = Math.PI / 2
+  ceiling.position.set(0, floorY + 15.1, roomCenterZ)
+  const backWall = new THREE.Mesh(
+    new THREE.PlaneGeometry(27, 15.1),
+    roomMaterial
+  )
+  backWall.position.set(0, roomCenterY, centerZ - 18)
+  group.add(leftWall, rightWall, ceiling, backWall)
 
   const groutMaterial = new THREE.MeshStandardMaterial({
     color: 0x030504,
@@ -701,9 +802,72 @@ function createBlackGlassFloor(
     return edge
   })
 
+  const chargeCanvas = document.createElement('canvas')
+  chargeCanvas.width = 128
+  chargeCanvas.height = 128
+  const chargeContext = chargeCanvas.getContext('2d')
+  if (chargeContext) {
+    const chargeGradient = chargeContext.createRadialGradient(
+      64,
+      64,
+      2,
+      64,
+      64,
+      78
+    )
+    chargeGradient.addColorStop(0, 'rgba(132, 255, 164, .9)')
+    chargeGradient.addColorStop(0.28, 'rgba(54, 255, 108, .34)')
+    chargeGradient.addColorStop(0.72, 'rgba(16, 116, 48, .07)')
+    chargeGradient.addColorStop(1, 'rgba(0, 0, 0, 0)')
+    chargeContext.fillStyle = chargeGradient
+    chargeContext.fillRect(0, 0, 128, 128)
+  }
+  const chargeTexture = new THREE.CanvasTexture(chargeCanvas)
+  chargeTexture.colorSpace = THREE.SRGBColorSpace
+  const chargeGeometry = new THREE.PlaneGeometry(2.86, 2.86)
+  const tileCharges = Array.from({ length: 18 }, () => {
+    const material = new THREE.MeshBasicMaterial({
+      map: chargeTexture,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide
+    })
+    const mesh = new THREE.Mesh(chargeGeometry, material)
+    mesh.rotation.x = -Math.PI / 2
+    mesh.position.set(0, floorY + 0.052, centerZ)
+    group.add(mesh)
+    return { mesh, material, bornAt: -100 }
+  })
+  let elapsedTime = 0
+
+  const chargeTile = (x: number, z: number) => {
+    const charge = tileCharges.reduce((oldest, candidate) =>
+      candidate.bornAt < oldest.bornAt ? candidate : oldest
+    )
+    const tileX = THREE.MathUtils.clamp(
+      Math.floor((x + 12) / 3) * 3 - 10.5,
+      -10.5,
+      10.5
+    )
+    const gridStartZ = centerZ - 17
+    const tileZ = THREE.MathUtils.clamp(
+      gridStartZ + Math.floor((z - gridStartZ) / 3) * 3 + 1.5,
+      centerZ - 15.5,
+      centerZ + 17.5
+    )
+    charge.mesh.position.set(tileX, floorY + 0.052, tileZ)
+    charge.mesh.rotation.z = (Math.round(tileX + tileZ) % 2) * Math.PI
+    charge.bornAt = elapsedTime
+  }
+
   return {
     group,
     update: (elapsed, surge) => {
+      elapsedTime = elapsed
+      mirrorMaterial.uniforms.time.value = elapsed
+      mirrorMaterial.uniforms.surge.value = surge
       edgeGlints.forEach((edge, index) => {
         if (Array.isArray(edge.material)) return
         edge.material.opacity =
@@ -711,8 +875,20 @@ function createBlackGlassFloor(
           Math.max(0, Math.sin(elapsed * 0.34 + index * 0.72)) * 0.09 +
           surge * 0.12
       })
+      tileCharges.forEach((charge, index) => {
+        const age = elapsed - charge.bornAt
+        const energy = Math.exp(-Math.max(0, age) * 1.85)
+        charge.material.opacity =
+          energy * (0.18 + surge * 0.1) * (0.92 + (index % 3) * 0.04)
+        const scale = 0.94 + energy * 0.06
+        charge.mesh.scale.setScalar(scale)
+      })
     },
-    dispose: () => mirror.dispose()
+    onGlyphEmerge: chargeTile,
+    dispose: () => {
+      mirror.dispose()
+      chargeTexture.dispose()
+    }
   }
 }
 

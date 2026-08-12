@@ -73,11 +73,11 @@ export const chamberConfigs: Record<ChamberVariant, ChamberConfig> = {
     index: 'F',
     code: 'BLACK_GLASS',
     name: 'The Black Glass',
-    artifact: 'REFLECTIVE_TILE_FIELD',
-    setting: 'OBSIDIAN TILE',
+    artifact: 'SUBSURFACE_FIELD',
+    setting: 'INFINITE BLACK GLASS',
     status: 'SURFACE_ONLINE',
-    instruction: 'MOVE TO SHIFT THE REFLECTION',
+    instruction: 'CLICK TO DISTURB THE GLASS',
     description:
-      'A super-reflective black tile floor doubles the field beneath itself. Software rises into the room while its light stretches across the surface.'
+      'The field exists twice: first beneath the glass, then in the room. Each breach charges the tile while the reflection mutates and bends below it.'
   }
 }
