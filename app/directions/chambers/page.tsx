@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { chamberConfigs, type ChamberVariant } from './chamber-experiment'
+import { chamberConfigs, type ChamberVariant } from './chamber-config'
 import styles from './chambers.module.css'
 
 export const metadata: Metadata = {
