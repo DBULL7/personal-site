@@ -97,11 +97,16 @@ import {
   siYarn
 } from 'simple-icons'
 import * as THREE from 'three'
+import {
+  createChamberArtifact,
+  type ChamberEnvironment
+} from './chamber-artifacts'
 import styles from './matrix-chamber.module.css'
 
 type MatrixChamberProps = {
   paused?: boolean
   glyphSet?: 'matrix' | 'toolkit'
+  environment?: ChamberEnvironment
 }
 
 type RainGlyph =
@@ -327,7 +332,8 @@ function makeGlowTexture() {
 
 export function MatrixChamber({
   paused = false,
-  glyphSet = 'matrix'
+  glyphSet = 'matrix',
+  environment = 'standard'
 }: MatrixChamberProps) {
   const hostRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -391,6 +397,7 @@ export function MatrixChamber({
     const ceilingY = 9.5
     const roomFront = 8
     const roomBack = -22
+    const artifactCenterZ = -8
     for (let depth = 0; depth <= 30; depth += 2.5) {
       const z = roomFront - depth
       addLine([-12, floorY, z], [12, floorY, z])
@@ -448,11 +455,40 @@ export function MatrixChamber({
       scene.add(centralGlow)
     }
 
+    const artifact = createChamberArtifact(environment, floorY, artifactCenterZ)
+    if (artifact) scene.add(artifact.group)
+
     const chooseDepth = (index: number) => {
       const band = index % 3
       if (band === 0) return 2 + random() * 7
       if (band === 1) return 10 + random() * 9
       return 20 + random() * 10
+    }
+
+    const chooseParticlePosition = (index: number) => {
+      const ambientPosition = {
+        baseX: -10.5 + random() * 21,
+        depth: chooseDepth(index)
+      }
+      if (environment === 'standard' || index % 3 !== 0) return ambientPosition
+
+      if (environment === 'relic') {
+        return {
+          baseX: -3.4 + random() * 6.8,
+          depth: roomFront - (artifactCenterZ - 2.2 + random() * 4.4)
+        }
+      }
+
+      const angle = random() * Math.PI * 2
+      const radius =
+        environment === 'reactor'
+          ? Math.sqrt(random()) * 3.2
+          : 2.7 + random() * 2.4
+      const z = artifactCenterZ + Math.sin(angle) * radius
+      return {
+        baseX: Math.cos(angle) * radius,
+        depth: roomFront - z
+      }
     }
 
     const particles: GlyphParticle[] = []
@@ -463,7 +499,8 @@ export function MatrixChamber({
       glyphCanvas.height = 96
       const glyphContext = glyphCanvas.getContext('2d')
       if (!glyphContext) continue
-      const depth = chooseDepth(index)
+      const position = chooseParticlePosition(index)
+      const depth = position.depth
       const brightness = THREE.MathUtils.lerp(0.94, 0.32, depth / 30)
       drawGlyph(
         glyphCanvas,
@@ -485,7 +522,7 @@ export function MatrixChamber({
       const sprite = new THREE.Sprite(material)
       const scale = 0.48 + random() * 0.34
       sprite.scale.set(scale, scale, 1)
-      const baseX = -10.5 + random() * 21
+      const baseX = position.baseX
       const y = floorY + random() * (ceilingY - floorY)
       sprite.position.set(baseX, y, roomFront - depth)
       scene.add(sprite)
@@ -515,6 +552,7 @@ export function MatrixChamber({
     let frame = 0
     let inView = true
     let pageVisible = !document.hidden
+    let surgeStarted = -10
 
     const resize = () => {
       const width = host.clientWidth
@@ -537,13 +575,28 @@ export function MatrixChamber({
       const delta = Math.min(timer.getDelta(), 0.05)
       const elapsed = timer.getElapsed()
       const shouldMove = !pausedRef.current && !reducedMotion
+      const triggeredSurge = THREE.MathUtils.clamp(
+        1 - (elapsed - surgeStarted) / 1.35,
+        0,
+        1
+      )
+      const ambientSurge =
+        environment === 'reactor'
+          ? Math.pow(Math.max(0, Math.sin(elapsed * 0.78)), 16) * 0.62
+          : environment === 'invocation'
+            ? Math.pow(Math.max(0, Math.sin(elapsed * 0.52)), 20) * 0.34
+            : 0
+      const surge = Math.max(triggeredSurge, ambientSurge)
+
+      artifact?.update(elapsed, surge)
 
       particles.forEach((particle, index) => {
-        if (shouldMove) particle.y += delta * particle.speed
+        if (shouldMove) particle.y += delta * particle.speed * (1 + surge * 2.2)
         if (particle.y > ceilingY + 0.8) {
           particle.y = floorY - random() * 1.4
-          particle.depth = chooseDepth(index + Math.floor(elapsed))
-          particle.baseX = -10.5 + random() * 21
+          const position = chooseParticlePosition(index + Math.floor(elapsed))
+          particle.depth = position.depth
+          particle.baseX = position.baseX
           particle.brightness = THREE.MathUtils.lerp(
             0.94,
             0.32,
@@ -573,7 +626,8 @@ export function MatrixChamber({
         )
         const fade = Math.sin(progress * Math.PI)
         const flicker = 0.82 + Math.sin(elapsed * 4.2 + particle.phase) * 0.18
-        particle.material.opacity = fade * particle.brightness * flicker
+        particle.material.opacity =
+          fade * particle.brightness * flicker * (1 + surge * 0.24)
         particle.sprite.position.set(
           particle.baseX +
             Math.sin(elapsed * particle.drift + particle.phase) * 0.16,
@@ -616,11 +670,17 @@ export function MatrixChamber({
       pageVisible = !document.hidden
       syncAnimation()
     }
+    const triggerSurge = () => {
+      if (environment !== 'standard') surgeStarted = timer.getElapsed()
+    }
 
     resizeObserver.observe(host)
     visibilityObserver.observe(host)
     document.addEventListener('visibilitychange', handleVisibility)
     host.addEventListener('pointermove', updatePointer)
+    host.addEventListener('pointerdown', triggerSurge)
+    if (environment === 'relic')
+      window.addEventListener('keydown', triggerSurge)
     resize()
     syncAnimation()
 
@@ -630,11 +690,21 @@ export function MatrixChamber({
       visibilityObserver.disconnect()
       document.removeEventListener('visibilitychange', handleVisibility)
       host.removeEventListener('pointermove', updatePointer)
+      host.removeEventListener('pointerdown', triggerSurge)
+      if (environment === 'relic')
+        window.removeEventListener('keydown', triggerSurge)
       timer.dispose()
       scene.traverse((object) => {
-        if (object instanceof THREE.LineSegments) {
+        if (
+          object instanceof THREE.LineSegments ||
+          object instanceof THREE.Line ||
+          object instanceof THREE.Mesh ||
+          object instanceof THREE.InstancedMesh
+        ) {
           object.geometry.dispose()
-          object.material.dispose()
+          if (Array.isArray(object.material))
+            object.material.forEach((material) => material.dispose())
+          else object.material.dispose()
         }
         if (object instanceof THREE.Sprite) {
           object.material.map?.dispose()
@@ -643,7 +713,7 @@ export function MatrixChamber({
       })
       renderer.dispose()
     }
-  }, [glyphSet])
+  }, [environment, glyphSet])
 
   return (
     <div ref={hostRef} className={styles.scene} aria-hidden="true">
@@ -655,9 +725,11 @@ export function MatrixChamber({
       <span className={styles.renderStatus}>
         {failed
           ? 'Static chamber'
-          : glyphSet === 'toolkit'
-            ? 'Spatial render · 30 ft · toolkit'
-            : 'Spatial render · 30 ft'}
+          : environment !== 'standard'
+            ? `Spatial render · 30 ft · ${environment}`
+            : glyphSet === 'toolkit'
+              ? 'Spatial render · 30 ft · toolkit'
+              : 'Spatial render · 30 ft'}
       </span>
     </div>
   )
