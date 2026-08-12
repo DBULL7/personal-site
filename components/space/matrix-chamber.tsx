@@ -129,19 +129,9 @@ type GlyphParticle = {
   nextMutation: number
   brightness: number
   floorGhost?: {
-    canvas: HTMLCanvasElement
-    context: CanvasRenderingContext2D
-    texture: THREE.CanvasTexture
     material: THREE.MeshBasicMaterial
     mesh: THREE.Mesh
   }
-  wallEchoes?: Array<{
-    material: THREE.SpriteMaterial
-    sprite: THREE.Sprite
-    side: -1 | 1
-  }>
-  pendingGlyph?: RainGlyph
-  pendingMutationAt?: number
 }
 
 const matrixGlyphs: RainGlyph[] = [
@@ -584,51 +574,25 @@ export function MatrixChamber({
 
       let floorGhost: GlyphParticle['floorGhost']
       if (isBlackGlass) {
-        const ghostCanvas = document.createElement('canvas')
-        ghostCanvas.width = 96
-        ghostCanvas.height = 96
-        const ghostContext = ghostCanvas.getContext('2d')
-        if (ghostContext) {
-          drawGlyph(ghostCanvas, ghostContext, initialGlyph, brightness)
-          const ghostTexture = new THREE.CanvasTexture(ghostCanvas)
-          ghostTexture.colorSpace = THREE.SRGBColorSpace
-          const ghostMaterial = new THREE.MeshBasicMaterial({
-            map: ghostTexture,
-            transparent: true,
-            opacity: 0,
-            depthWrite: false,
-            blending: THREE.AdditiveBlending,
-            side: THREE.DoubleSide
-          })
-          const ghostMesh = new THREE.Mesh(
-            new THREE.PlaneGeometry(1, 1),
-            ghostMaterial
-          )
-          ghostMesh.rotation.x = -Math.PI / 2
-          ghostMesh.position.set(baseX, floorY + 0.058, roomFront - depth)
-          scene.add(ghostMesh)
-          floorGhost = {
-            canvas: ghostCanvas,
-            context: ghostContext,
-            texture: ghostTexture,
-            material: ghostMaterial,
-            mesh: ghostMesh
-          }
-        }
-      }
-
-      let wallEchoes: GlyphParticle['wallEchoes']
-      if (isBlackGlass && index % 4 === 0) {
-        wallEchoes = ([-1, 1] as const).map((side) => {
-          const echoMaterial = material.clone()
-          echoMaterial.opacity = 0
-          const echoSprite = new THREE.Sprite(echoMaterial)
-          const echoScale = scale * (0.42 + random() * 0.16)
-          echoSprite.scale.set(echoScale, echoScale, 1)
-          echoSprite.position.set(side * 12.75, y, roomFront - depth)
-          scene.add(echoSprite)
-          return { material: echoMaterial, sprite: echoSprite, side }
+        const ghostMaterial = new THREE.MeshBasicMaterial({
+          map: texture,
+          transparent: true,
+          opacity: 0,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+          side: THREE.DoubleSide
         })
+        const ghostMesh = new THREE.Mesh(
+          new THREE.PlaneGeometry(1, 1),
+          ghostMaterial
+        )
+        ghostMesh.rotation.x = -Math.PI / 2
+        ghostMesh.position.set(baseX, floorY + 0.058, roomFront - depth)
+        scene.add(ghostMesh)
+        floorGhost = {
+          material: ghostMaterial,
+          mesh: ghostMesh
+        }
       }
 
       particles.push({
@@ -645,11 +609,8 @@ export function MatrixChamber({
         drift: 0.25 + random() * 0.5,
         nextMutation: random() * 0.8,
         brightness,
-        floorGhost,
-        wallEchoes
+        floorGhost
       })
-      if (isBlackGlass && index % 19 === 0)
-        artifact?.onGlyphEmerge?.(baseX, roomFront - depth)
     }
 
     const pointer = new THREE.Vector2()
@@ -708,8 +669,6 @@ export function MatrixChamber({
       particles.forEach((particle, index) => {
         const previousY = particle.y
         if (shouldMove) particle.y += delta * particle.speed * (1 + surge * 2.2)
-        if (previousY < floorY && particle.y >= floorY)
-          artifact?.onGlyphEmerge?.(particle.baseX, roomFront - particle.depth)
         if (particle.y > ceilingY + 0.8) {
           particle.y = floorY - random() * 1.4
           const position = chooseParticlePosition(index + Math.floor(elapsed))
@@ -722,50 +681,14 @@ export function MatrixChamber({
           )
         }
 
-        if (
-          shouldMove &&
-          isBlackGlass &&
-          particle.floorGhost &&
-          !particle.pendingGlyph &&
-          elapsed >= particle.nextMutation - 0.18
-        ) {
-          const nextGlyph = glyphs[Math.floor(random() * glyphs.length)]
-          drawGlyph(
-            particle.floorGhost.canvas,
-            particle.floorGhost.context,
-            nextGlyph,
-            particle.brightness
-          )
-          particle.floorGhost.texture.needsUpdate = true
-          particle.pendingGlyph = nextGlyph
-          particle.pendingMutationAt = Math.max(
-            particle.nextMutation,
-            elapsed + 0.12
-          )
-        }
+        const currentX =
+          particle.baseX +
+          Math.sin(elapsed * particle.drift + particle.phase) * 0.16
+        const currentZ = roomFront - particle.depth
+        if (previousY < floorY && particle.y >= floorY)
+          artifact?.onGlyphEmerge?.(currentX, currentZ)
 
-        if (
-          shouldMove &&
-          isBlackGlass &&
-          particle.pendingGlyph &&
-          particle.pendingMutationAt !== undefined &&
-          elapsed >= particle.pendingMutationAt
-        ) {
-          drawGlyph(
-            particle.canvas,
-            particle.context,
-            particle.pendingGlyph,
-            particle.brightness
-          )
-          particle.texture.needsUpdate = true
-          particle.pendingGlyph = undefined
-          particle.pendingMutationAt = undefined
-          particle.nextMutation = elapsed + 0.6 + random() * 1.4
-        } else if (
-          shouldMove &&
-          !isBlackGlass &&
-          elapsed >= particle.nextMutation
-        ) {
+        if (shouldMove && elapsed >= particle.nextMutation) {
           drawGlyph(
             particle.canvas,
             particle.context,
@@ -785,18 +708,18 @@ export function MatrixChamber({
           0,
           1
         )
-        const fade = Math.sin(progress * Math.PI)
+        const heightFromFloor = particle.y - floorY
+        const surfaceBirth =
+          isBlackGlass && heightFromFloor >= 0
+            ? (1 - THREE.MathUtils.clamp(heightFromFloor / 1.6, 0, 1)) * 0.38
+            : 0
+        const fade = Math.max(Math.sin(progress * Math.PI), surfaceBirth)
         const flicker = 0.82 + Math.sin(elapsed * 4.2 + particle.phase) * 0.18
         particle.material.opacity =
           fade * particle.brightness * flicker * (1 + surge * 0.24)
-        const currentX =
-          particle.baseX +
-          Math.sin(elapsed * particle.drift + particle.phase) * 0.16
-        const currentZ = roomFront - particle.depth
         particle.sprite.position.set(currentX, particle.y, currentZ)
 
         if (particle.floorGhost) {
-          const heightFromFloor = particle.y - floorY
           const approach = THREE.MathUtils.clamp(
             1 + heightFromFloor / 1.35,
             0,
@@ -820,16 +743,6 @@ export function MatrixChamber({
             1
           )
         }
-
-        particle.wallEchoes?.forEach((echo, echoIndex) => {
-          echo.material.opacity =
-            particle.material.opacity * (0.13 + echoIndex * 0.025)
-          echo.sprite.position.set(
-            echo.side * 12.75,
-            particle.y + Math.sin(elapsed * 0.4 + particle.phase) * 0.08,
-            currentZ - echoIndex * 0.45
-          )
-        })
       })
 
       const cameraEase = 0.035
@@ -895,11 +808,15 @@ export function MatrixChamber({
         window.removeEventListener('keydown', triggerSurge)
       timer.dispose()
       artifact?.dispose?.()
+      const disposedTextures = new Set<THREE.Texture>()
       const disposeMaterial = (material: THREE.Material) => {
         const mappedMaterial = material as THREE.Material & {
           map?: THREE.Texture | null
         }
-        mappedMaterial.map?.dispose()
+        if (mappedMaterial.map && !disposedTextures.has(mappedMaterial.map)) {
+          disposedTextures.add(mappedMaterial.map)
+          mappedMaterial.map.dispose()
+        }
         material.dispose()
       }
       scene.traverse((object) => {
