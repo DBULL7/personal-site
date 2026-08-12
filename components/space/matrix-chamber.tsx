@@ -351,6 +351,7 @@ export function MatrixChamber({
     const glyphs = glyphSet === 'toolkit' ? toolkitGlyphs : matrixGlyphs
     const isCastle = environment === 'castle'
     const isCyber = environment === 'cyber'
+    const isBlackGlass = environment === 'black-glass'
 
     let renderer: THREE.WebGLRenderer
     try {
@@ -375,7 +376,10 @@ export function MatrixChamber({
     scene.background = isCastle ? null : new THREE.Color(0x000301)
     scene.fog = isCastle
       ? null
-      : new THREE.FogExp2(isCyber ? 0x010805 : 0x000301, isCyber ? 0.017 : 0.03)
+      : new THREE.FogExp2(
+          isCyber ? 0x010805 : 0x000301,
+          isCyber ? 0.017 : isBlackGlass ? 0.021 : 0.03
+        )
 
     if (isCyber) {
       scene.add(new THREE.AmbientLight(0x214d30, 1.7))
@@ -385,6 +389,13 @@ export function MatrixChamber({
       const backLight = new THREE.PointLight(0x2a7dff, 9, 22, 1.8)
       backLight.position.set(0, 6.2, -19)
       scene.add(backLight)
+    }
+
+    if (isBlackGlass) {
+      scene.add(new THREE.AmbientLight(0x213029, 1.4))
+      const floorLight = new THREE.PointLight(0x7dff9f, 13, 25, 1.8)
+      floorLight.position.set(0, 1.8, -3)
+      scene.add(floorLight)
     }
 
     const camera = new THREE.PerspectiveCamera(56, 1, 0.1, 80)
@@ -445,7 +456,7 @@ export function MatrixChamber({
         opacity: 0.18
       })
     )
-    roomLines.visible = !isCastle && !isCyber
+    roomLines.visible = !isCastle && !isCyber && !isBlackGlass
     room.add(roomLines)
     if (environment === 'standard') {
       ;[5, 10, 15, 20, 25, 30].forEach((depth) => {
@@ -457,7 +468,7 @@ export function MatrixChamber({
     }
 
     const glowTexture = makeGlowTexture()
-    if (glowTexture && !isCastle) {
+    if (glowTexture && !isCastle && !isBlackGlass) {
       const centralGlow = new THREE.Sprite(
         new THREE.SpriteMaterial({
           map: glowTexture,
@@ -491,6 +502,8 @@ export function MatrixChamber({
       if (environment === 'standard' || index % 3 !== 0) return ambientPosition
 
       if (environment === 'castle') return ambientPosition
+
+      if (environment === 'black-glass') return ambientPosition
 
       if (environment === 'relic') {
         return {
@@ -609,15 +622,17 @@ export function MatrixChamber({
         1
       )
       const ambientSurge =
-        environment === 'cyber'
-          ? Math.pow(Math.max(0, Math.sin(elapsed * 0.64)), 12) * 0.42
-          : environment === 'castle'
-            ? Math.pow(Math.max(0, Math.sin(elapsed * 0.34)), 20) * 0.16
-            : environment === 'reactor'
-              ? Math.pow(Math.max(0, Math.sin(elapsed * 0.78)), 16) * 0.62
-              : environment === 'invocation'
-                ? Math.pow(Math.max(0, Math.sin(elapsed * 0.52)), 20) * 0.34
-                : 0
+        environment === 'black-glass'
+          ? Math.pow(Math.max(0, Math.sin(elapsed * 0.42)), 18) * 0.24
+          : environment === 'cyber'
+            ? Math.pow(Math.max(0, Math.sin(elapsed * 0.64)), 12) * 0.42
+            : environment === 'castle'
+              ? Math.pow(Math.max(0, Math.sin(elapsed * 0.34)), 20) * 0.16
+              : environment === 'reactor'
+                ? Math.pow(Math.max(0, Math.sin(elapsed * 0.78)), 16) * 0.62
+                : environment === 'invocation'
+                  ? Math.pow(Math.max(0, Math.sin(elapsed * 0.52)), 20) * 0.34
+                  : 0
       const surge = Math.max(triggeredSurge, ambientSurge)
 
       artifact?.update(elapsed, surge)
@@ -730,6 +745,7 @@ export function MatrixChamber({
       if (environment === 'relic')
         window.removeEventListener('keydown', triggerSurge)
       timer.dispose()
+      artifact?.dispose?.()
       const disposeMaterial = (material: THREE.Material) => {
         const mappedMaterial = material as THREE.Material & {
           map?: THREE.Texture | null

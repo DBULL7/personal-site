@@ -68,5 +68,16 @@ export const chamberConfigs: Record<ChamberVariant, ChamberConfig> = {
     instruction: 'CLICK THE FIELD TO AWAKEN',
     description:
       'An ancient courtyard makes the software field feel discovered rather than engineered. The sword waits while modern tools rise like dormant power.'
+  },
+  'black-glass': {
+    index: 'F',
+    code: 'BLACK_GLASS',
+    name: 'The Black Glass',
+    artifact: 'REFLECTIVE_TILE_FIELD',
+    setting: 'OBSIDIAN TILE',
+    status: 'SURFACE_ONLINE',
+    instruction: 'MOVE TO SHIFT THE REFLECTION',
+    description:
+      'A super-reflective black tile floor doubles the field beneath itself. Software rises into the room while its light stretches across the surface.'
   }
 }

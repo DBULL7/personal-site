@@ -69,9 +69,9 @@
 
 .grid {
   display: grid;
-  width: min(100%, 92rem);
+  width: min(100%, 72rem);
   margin: 0 auto;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: 0.75rem;
 }
 
@@ -175,6 +175,87 @@
     4rem 4rem,
     4rem 4rem,
     auto;
+}
+
+.card[data-variant='black-glass'] .scenery {
+  background:
+    radial-gradient(
+      ellipse at 50% 72%,
+      rgba(75, 255, 124, 0.2),
+      transparent 24%
+    ),
+    linear-gradient(180deg, #000201 0 42%, #050807 100%);
+}
+
+.card[data-variant='black-glass'] .sceneDepth {
+  overflow: hidden;
+}
+
+.card[data-variant='black-glass'] .sceneDepth::before {
+  position: absolute;
+  right: -10%;
+  bottom: -31%;
+  left: -10%;
+  height: 86%;
+  content: '';
+  background:
+    linear-gradient(rgba(124, 255, 158, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 255, 158, 0.1) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(8, 15, 11, 0.98), #010201);
+  background-size:
+    5rem 4rem,
+    5rem 4rem,
+    auto;
+  box-shadow: 0 -1rem 5rem rgba(65, 255, 113, 0.08) inset;
+  transform: rotateX(66deg);
+  transform-origin: top;
+}
+
+.card[data-variant='black-glass'] .sceneDepth i {
+  position: absolute;
+  bottom: 31%;
+  left: 50%;
+  width: 0.34rem;
+  height: 5.8rem;
+  background: linear-gradient(0deg, transparent, #9bffb7 38%, transparent);
+  box-shadow: 0 0 1.8rem rgba(95, 255, 139, 0.55);
+}
+
+.card[data-variant='black-glass'] .sceneDepth i::after {
+  position: absolute;
+  top: calc(100% - 0.3rem);
+  left: 0;
+  width: 100%;
+  height: 4.8rem;
+  content: '';
+  background: linear-gradient(180deg, rgba(155, 255, 183, 0.5), transparent);
+  filter: blur(1px);
+  transform: scaleY(-1);
+  transform-origin: top;
+}
+
+.card[data-variant='black-glass'] .sceneDepth i:nth-child(1) {
+  margin-left: -29%;
+  transform: scale(0.62);
+}
+
+.card[data-variant='black-glass'] .sceneDepth i:nth-child(2) {
+  margin-left: -16%;
+  transform: scale(0.82);
+}
+
+.card[data-variant='black-glass'] .sceneDepth i:nth-child(3) {
+  height: 8rem;
+}
+
+.card[data-variant='black-glass'] .sceneDepth i:nth-child(4) {
+  margin-left: 16%;
+  transform: scale(0.76);
+}
+
+.card[data-variant='black-glass'] .sceneDepth i:nth-child(5) {
+  margin-left: 29%;
+  transform: scale(0.56);
 }
 
 .sceneDepth {

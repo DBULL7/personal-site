@@ -13,7 +13,7 @@ const details = [
   ['CLIENTS', 'APPLE / CHICK-FIL-A']
 ] as const
 
-const chamberOrder: ChamberVariant[] = ['cyber', 'castle']
+const chamberOrder: ChamberVariant[] = ['black-glass']
 
 export function ChamberExperiment({ variant }: { variant: ChamberVariant }) {
   const [paused, setPaused] = useState(false)

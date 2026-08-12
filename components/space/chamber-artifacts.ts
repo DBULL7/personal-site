@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { Reflector } from 'three/addons/objects/Reflector.js'
 
 export type ChamberEnvironment =
   | 'standard'
@@ -7,10 +8,12 @@ export type ChamberEnvironment =
   | 'invocation'
   | 'cyber'
   | 'castle'
+  | 'black-glass'
 
 export type ChamberArtifact = {
   group: THREE.Group
   update: (elapsed: number, surge: number) => void
+  dispose?: () => void
 }
 
 const GREEN = 0x72ff9a
@@ -643,6 +646,76 @@ function createCyberVault(floorY: number, centerZ: number): ChamberArtifact {
   }
 }
 
+function createBlackGlassFloor(
+  floorY: number,
+  centerZ: number
+): ChamberArtifact {
+  const group = new THREE.Group()
+  const reflectionSize = window.innerWidth < 700 ? 512 : 1024
+  const mirror = new Reflector(new THREE.PlaneGeometry(27, 38), {
+    color: 0x7c827e,
+    textureWidth: reflectionSize,
+    textureHeight: reflectionSize,
+    clipBias: 0.0025,
+    multisample: window.innerWidth < 700 ? 0 : 2
+  })
+  mirror.rotation.x = -Math.PI / 2
+  mirror.position.set(0, floorY, centerZ + 1)
+  group.add(mirror)
+
+  const groutMaterial = new THREE.MeshStandardMaterial({
+    color: 0x030504,
+    emissive: 0x020503,
+    emissiveIntensity: 0.35,
+    metalness: 0.18,
+    roughness: 0.94
+  })
+  const seamGeometryX = new THREE.BoxGeometry(0.052, 0.035, 38)
+  const seamGeometryZ = new THREE.BoxGeometry(27, 0.035, 0.052)
+  const seams = new THREE.Group()
+
+  for (let x = -12; x <= 12; x += 3) {
+    const seam = new THREE.Mesh(seamGeometryX, groutMaterial)
+    seam.position.set(x, floorY + 0.018, centerZ + 1)
+    seams.add(seam)
+  }
+  for (let z = centerZ - 17; z <= centerZ + 19; z += 3) {
+    const seam = new THREE.Mesh(seamGeometryZ, groutMaterial)
+    seam.position.set(0, floorY + 0.018, z)
+    seams.add(seam)
+  }
+  group.add(seams)
+
+  const edgeMaterial = new THREE.MeshBasicMaterial({
+    color: 0x26342b,
+    transparent: true,
+    opacity: 0.17,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  })
+  const edgeGeometry = new THREE.BoxGeometry(0.018, 0.018, 38)
+  const edgeGlints = [-12, -9, -6, -3, 0, 3, 6, 9, 12].map((x) => {
+    const edge = new THREE.Mesh(edgeGeometry, edgeMaterial.clone())
+    edge.position.set(x + 0.055, floorY + 0.041, centerZ + 1)
+    group.add(edge)
+    return edge
+  })
+
+  return {
+    group,
+    update: (elapsed, surge) => {
+      edgeGlints.forEach((edge, index) => {
+        if (Array.isArray(edge.material)) return
+        edge.material.opacity =
+          0.08 +
+          Math.max(0, Math.sin(elapsed * 0.34 + index * 0.72)) * 0.09 +
+          surge * 0.12
+      })
+    },
+    dispose: () => mirror.dispose()
+  }
+}
+
 export function createChamberArtifact(
   environment: ChamberEnvironment,
   floorY: number,
@@ -652,5 +725,7 @@ export function createChamberArtifact(
   if (environment === 'reactor') return createReactor(floorY, centerZ)
   if (environment === 'invocation') return createInvocation(floorY, centerZ)
   if (environment === 'cyber') return createCyberVault(floorY, centerZ)
+  if (environment === 'black-glass')
+    return createBlackGlassFloor(floorY, centerZ)
   return null
 }

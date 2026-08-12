@@ -4,13 +4,13 @@ import { chamberConfigs, type ChamberVariant } from './chamber-config'
 import styles from './chambers.module.css'
 
 export const metadata: Metadata = {
-  title: 'Environment Experiments | Devon Bull',
+  title: 'Black Glass Experiment | Devon Bull',
   description:
-    'Two immersive environments built around a rising field of software logos.',
+    'A reflective black tile environment built around a rising field of software logos.',
   robots: { index: false, follow: false }
 }
 
-const variants: ChamberVariant[] = ['cyber', 'castle']
+const variants: ChamberVariant[] = ['black-glass']
 
 export default function ChamberExperimentsPage() {
   return (
@@ -22,11 +22,11 @@ export default function ChamberExperimentsPage() {
       </header>
 
       <section className={styles.intro}>
-        <p>Two complete worlds</p>
-        <h1>Same power. Different mythology.</h1>
+        <p>Material study / 01</p>
+        <h1>Power, reflected.</h1>
         <span>
-          The logo field and identity stay constant. What changes is the world
-          they inhabit: machine intelligence or ancient legend.
+          One black room. One impossibly glossy tile floor. The logo field rises
+          through the surface and leaves a second world underneath it.
         </span>
       </section>
 
