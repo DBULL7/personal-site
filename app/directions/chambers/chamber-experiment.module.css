@@ -20,6 +20,51 @@
   --accent-rgb: 133, 255, 166;
 }
 
+.page[data-variant='cyber'] {
+  --accent: #9dffb8;
+  --accent-rgb: 90, 255, 136;
+}
+
+.page[data-variant='castle'] {
+  --accent: #b8ffc8;
+  --accent-rgb: 110, 255, 150;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0, 4, 2, 0.1) 0%,
+      rgba(0, 5, 2, 0.04) 42%,
+      rgba(0, 3, 1, 0.28) 100%
+    ),
+    url('/images/chambers/castle-courtyard.webp') center center / cover
+      no-repeat,
+    #020706;
+}
+
+.page[data-variant='castle'] .scanlines {
+  opacity: 0.055;
+}
+
+.page[data-variant='castle'] .vignette {
+  background:
+    radial-gradient(
+      circle at 50% 52%,
+      transparent 20%,
+      rgba(0, 6, 3, 0.08) 58%,
+      rgba(0, 3, 1, 0.72) 100%
+    ),
+    linear-gradient(0deg, rgba(0, 3, 1, 0.56), transparent 29%);
+}
+
+.page[data-variant='castle'] .identity {
+  top: 39%;
+  background: rgba(0, 7, 3, 0.92);
+  box-shadow:
+    0 0 0 1px rgba(var(--accent-rgb), 0.06) inset,
+    0 1.5rem 6rem rgba(0, 0, 0, 0.38),
+    0 0 5rem rgba(var(--accent-rgb), 0.06);
+  backdrop-filter: blur(9px) saturate(0.84);
+}
+
 .scanlines,
 .vignette {
   position: absolute;
@@ -295,6 +340,8 @@
   color: var(--accent);
   font-size: 0.82rem;
   font-weight: 520;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 
 .telemetry dl {
@@ -345,6 +392,10 @@
   .identity {
     top: 46%;
     width: calc(100% - 1.5rem);
+  }
+
+  .page[data-variant='castle'] .identity {
+    top: 43%;
   }
 
   .identityTitle h1 {

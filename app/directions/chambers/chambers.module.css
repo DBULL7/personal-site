@@ -71,26 +71,20 @@
   display: grid;
   width: min(100%, 92rem);
   margin: 0 auto;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.75rem;
 }
 
 .card {
   position: relative;
   display: flex;
-  min-height: min(34rem, 57svh);
+  min-height: min(42rem, 66svh);
   padding: 1.1rem;
   border: 1px solid rgba(93, 255, 137, 0.2);
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  background:
-    radial-gradient(
-      circle at 50% 48%,
-      rgba(39, 255, 98, 0.13),
-      transparent 30%
-    ),
-    rgba(0, 8, 2, 0.86);
+  background: rgba(0, 8, 2, 0.86);
   transition:
     border-color 180ms ease,
     transform 180ms ease;
@@ -102,6 +96,8 @@
 }
 
 .cardTopline {
+  position: relative;
+  z-index: 3;
   display: flex;
   justify-content: space-between;
   color: rgba(184, 255, 200, 0.46);
@@ -109,91 +105,160 @@
   letter-spacing: 0.1em;
 }
 
-.artifact {
+.scenery {
   position: absolute;
-  top: 19%;
-  left: 50%;
-  width: 13rem;
-  height: 13rem;
-  border: 1px solid rgba(102, 255, 143, 0.22);
-  clip-path: polygon(
-    30% 0,
-    70% 0,
-    100% 30%,
-    100% 70%,
-    70% 100%,
-    30% 100%,
-    0 70%,
-    0 30%
-  );
-  box-shadow:
-    0 0 3rem rgba(49, 255, 104, 0.12),
-    0 0 0 2.2rem rgba(73, 255, 121, 0.025);
-  transform: translateX(-50%) perspective(20rem) rotateX(67deg);
+  inset: 3.3rem 0.8rem 11.5rem;
+  overflow: hidden;
+  border: 1px solid rgba(102, 255, 143, 0.16);
+  background-color: #010503;
+  background-position: center;
+  background-size: cover;
 }
 
-.artifact i {
+.scenery::before,
+.scenery::after {
   position: absolute;
-  inset: 18%;
-  display: block;
-  border: 1px solid rgba(121, 255, 156, 0.3);
-  transform: rotate(45deg);
+  inset: 0;
+  content: '';
+  pointer-events: none;
 }
 
-.artifact i:nth-child(2) {
-  inset: 36%;
-  transform: rotate(0deg);
-}
-
-.artifact i:nth-child(3) {
-  inset: 47%;
-  border-color: #94ffaf;
-  box-shadow: 0 0 2rem rgba(82, 255, 127, 0.38);
-}
-
-.card[data-variant='invocation'] .artifact {
-  clip-path: polygon(
-    50% 0,
-    62% 32%,
-    100% 50%,
-    62% 68%,
-    50% 100%,
-    38% 68%,
-    0 50%,
-    38% 32%
+.scenery::before {
+  z-index: 2;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 7, 3, 0.02),
+    transparent 45%,
+    rgba(0, 5, 2, 0.72)
   );
-  transform: translateX(-50%) perspective(20rem) rotateX(67deg) rotateZ(22.5deg);
 }
 
-.card[data-variant='invocation'] .artifact i {
-  inset: 25%;
+.scenery::after {
+  z-index: 2;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 4px,
+    rgba(101, 255, 144, 0.035) 4px 5px
+  );
 }
 
-.card[data-variant='invocation'] .artifact i:nth-child(2) {
-  inset: 38%;
-  transform: rotate(45deg);
+.scenery > span {
+  position: absolute;
+  bottom: 0.7rem;
+  left: 0.75rem;
+  z-index: 3;
+  color: rgba(196, 255, 211, 0.48);
+  font-size: 0.48rem;
+  letter-spacing: 0.12em;
 }
 
-.card[data-variant='relic'] .artifact {
-  top: 25%;
-  width: 10rem;
-  height: 4.2rem;
-  border-radius: 0.3rem;
-  box-shadow: 0 1.7rem 3rem rgba(49, 255, 104, 0.2);
-  transform: translateX(-50%) perspective(20rem) rotateX(58deg) rotateZ(-3deg);
+.card[data-variant='castle'] .scenery {
+  background-image: url('/images/chambers/castle-courtyard.webp');
 }
 
-.card[data-variant='relic'] .artifact i {
-  inset: 15%;
-  border-radius: 0.15rem;
+.card[data-variant='castle'] .scenery::after {
+  opacity: 0.35;
 }
 
-.card[data-variant='relic'] .artifact i:nth-child(2) {
-  inset: 32% 12%;
+.card[data-variant='cyber'] .scenery {
+  background:
+    radial-gradient(
+      circle at 50% 48%,
+      rgba(49, 255, 105, 0.14),
+      transparent 28%
+    ),
+    linear-gradient(90deg, rgba(19, 255, 80, 0.04) 1px, transparent 1px),
+    linear-gradient(rgba(19, 255, 80, 0.035) 1px, transparent 1px),
+    linear-gradient(180deg, #010503, #020b06);
+  background-size:
+    auto,
+    4rem 4rem,
+    4rem 4rem,
+    auto;
 }
 
-.card[data-variant='relic'] .artifact i:nth-child(3) {
+.sceneDepth {
+  position: absolute;
+  inset: 0;
+  perspective: 28rem;
+  perspective-origin: 50% 43%;
+}
+
+.card[data-variant='castle'] .sceneDepth {
   display: none;
+}
+
+.card[data-variant='cyber'] .sceneDepth::before {
+  position: absolute;
+  right: 13%;
+  bottom: -18%;
+  left: 13%;
+  height: 82%;
+  border: 1px solid rgba(97, 255, 138, 0.2);
+  content: '';
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(37, 255, 96, 0.07) 0 1px,
+    transparent 1px 2.4rem
+  );
+  transform: rotateX(68deg);
+  transform-origin: bottom;
+}
+
+.card[data-variant='cyber'] .sceneDepth i {
+  position: absolute;
+  bottom: 5%;
+  width: 17%;
+  height: 82%;
+  border: 1px solid rgba(99, 255, 139, 0.25);
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(112, 255, 149, 0.09) 0 2px,
+      transparent 2px 2rem
+    ),
+    linear-gradient(90deg, #020805, #07170e 50%, #020805);
+  box-shadow: 0 0 1.5rem rgba(35, 255, 91, 0.06);
+}
+
+.card[data-variant='cyber'] .sceneDepth i:nth-child(1) {
+  left: -2%;
+  transform: rotateY(24deg);
+}
+
+.card[data-variant='cyber'] .sceneDepth i:nth-child(2) {
+  right: -2%;
+  transform: rotateY(-24deg);
+}
+
+.card[data-variant='cyber'] .sceneDepth i:nth-child(3) {
+  bottom: 21%;
+  left: 21%;
+  height: 58%;
+  transform: rotateY(18deg) translateZ(-5rem);
+}
+
+.card[data-variant='cyber'] .sceneDepth i:nth-child(4) {
+  right: 21%;
+  bottom: 21%;
+  height: 58%;
+  transform: rotateY(-18deg) translateZ(-5rem);
+}
+
+.card[data-variant='cyber'] .sceneDepth i:nth-child(5) {
+  right: 37%;
+  bottom: 38%;
+  left: 37%;
+  width: auto;
+  height: 40%;
+  box-shadow: 0 0 3rem rgba(65, 255, 116, 0.18);
+  transform: translateZ(-10rem);
+}
+
+.cardCopy {
+  position: relative;
+  z-index: 3;
+  padding-right: 1rem;
 }
 
 .card h2 {

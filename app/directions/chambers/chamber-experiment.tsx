@@ -13,7 +13,7 @@ const details = [
   ['CLIENTS', 'APPLE / CHICK-FIL-A']
 ] as const
 
-const chamberOrder: ChamberVariant[] = ['relic', 'reactor', 'invocation']
+const chamberOrder: ChamberVariant[] = ['cyber', 'castle']
 
 export function ChamberExperiment({ variant }: { variant: ChamberVariant }) {
   const [paused, setPaused] = useState(false)
@@ -21,7 +21,12 @@ export function ChamberExperiment({ variant }: { variant: ChamberVariant }) {
 
   return (
     <main className={styles.page} data-variant={variant}>
-      <MatrixChamber paused={paused} glyphSet="toolkit" environment={variant} />
+      <MatrixChamber
+        key={variant}
+        paused={paused}
+        glyphSet="toolkit"
+        environment={variant}
+      />
       <div className={styles.scanlines} aria-hidden="true" />
       <div className={styles.vignette} aria-hidden="true" />
 
@@ -82,8 +87,8 @@ export function ChamberExperiment({ variant }: { variant: ChamberVariant }) {
             <dd>94 TOOLKIT MARKS</dd>
           </div>
           <div>
-            <dt>SOURCE</dt>
-            <dd>SOFTWARE / SYSTEMS</dd>
+            <dt>SCENE</dt>
+            <dd>{config.setting}</dd>
           </div>
           <div>
             <dt>FLOW</dt>

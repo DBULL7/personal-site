@@ -1,6 +1,12 @@
 import * as THREE from 'three'
 
-export type ChamberEnvironment = 'standard' | 'relic' | 'reactor' | 'invocation'
+export type ChamberEnvironment =
+  | 'standard'
+  | 'relic'
+  | 'reactor'
+  | 'invocation'
+  | 'cyber'
+  | 'castle'
 
 export type ChamberArtifact = {
   group: THREE.Group
@@ -478,6 +484,165 @@ function createInvocation(floorY: number, centerZ: number): ChamberArtifact {
   }
 }
 
+function createCyberVault(floorY: number, centerZ: number): ChamberArtifact {
+  const group = new THREE.Group()
+  const architectureMaterial = new THREE.MeshStandardMaterial({
+    color: 0x07130c,
+    emissive: 0x062611,
+    emissiveIntensity: 1.05,
+    metalness: 0.92,
+    roughness: 0.32
+  })
+  const secondaryMaterial = new THREE.MeshStandardMaterial({
+    color: 0x0a2115,
+    emissive: 0x082e17,
+    emissiveIntensity: 0.78,
+    metalness: 0.82,
+    roughness: 0.44
+  })
+  const stripMaterials: THREE.MeshBasicMaterial[] = []
+  const makeStripMaterial = (opacity: number) => {
+    const material = new THREE.MeshBasicMaterial({
+      color: GREEN,
+      transparent: true,
+      opacity,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    })
+    stripMaterials.push(material)
+    return material
+  }
+
+  const floorSlabs = new THREE.Group()
+  for (let index = 0; index < 12; index += 1) {
+    const z = 6.6 - index * 2.55
+    const slab = new THREE.Mesh(
+      new THREE.BoxGeometry(18.8, 0.18, 2.38),
+      index % 2 === 0 ? architectureMaterial : secondaryMaterial
+    )
+    slab.position.set(0, floorY - 0.08, z)
+    floorSlabs.add(slab)
+
+    const seam = new THREE.Mesh(
+      new THREE.BoxGeometry(17.2, 0.025, 0.025),
+      makeStripMaterial(index % 3 === 0 ? 0.34 : 0.12)
+    )
+    seam.position.set(0, floorY + 0.03, z - 1.2)
+    floorSlabs.add(seam)
+  }
+  group.add(floorSlabs)
+
+  const towers = new THREE.Group()
+  const towerDepths = [4.5, -1.5, -7.5, -13.5, -19.5]
+  towerDepths.forEach((z, depthIndex) => {
+    ;[-1, 1].forEach((side) => {
+      const tower = new THREE.Mesh(
+        new THREE.BoxGeometry(2.35, 10.8, 3.55),
+        depthIndex % 2 === 0 ? architectureMaterial : secondaryMaterial
+      )
+      tower.position.set(side * 9.5, floorY + 5.2, z)
+      towers.add(tower)
+
+      for (let slot = 0; slot < 4; slot += 1) {
+        const light = new THREE.Mesh(
+          new THREE.BoxGeometry(0.035, 1.15, 1.75),
+          makeStripMaterial(0.26 + slot * 0.04)
+        )
+        light.position.set(
+          side * 8.31,
+          floorY + 2.05 + slot * 2.05,
+          z + (slot % 2 === 0 ? -0.35 : 0.35)
+        )
+        towers.add(light)
+      }
+    })
+  })
+  group.add(towers)
+
+  const overhead = new THREE.Group()
+  towerDepths.forEach((z, index) => {
+    const beam = new THREE.Mesh(
+      new THREE.BoxGeometry(17.8, 0.34, 0.56),
+      architectureMaterial
+    )
+    beam.position.set(0, floorY + 11.15, z)
+    overhead.add(beam)
+
+    const light = new THREE.Mesh(
+      new THREE.BoxGeometry(index % 2 === 0 ? 7.4 : 4.6, 0.05, 0.12),
+      makeStripMaterial(index % 2 === 0 ? 0.34 : 0.2)
+    )
+    light.position.set(0, floorY + 10.93, z + 0.15)
+    overhead.add(light)
+  })
+  ;[-5.8, 5.8].forEach((x) => {
+    const conduit = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.16, 0.16, 29, 12),
+      secondaryMaterial
+    )
+    conduit.rotation.x = Math.PI / 2
+    conduit.position.set(x, floorY + 10.55, -7.5)
+    overhead.add(conduit)
+  })
+  group.add(overhead)
+
+  const threshold = new THREE.Group()
+  const thresholdZ = centerZ - 11.8
+  ;[-6.6, 6.6].forEach((x) => {
+    const pillar = new THREE.Mesh(
+      new THREE.BoxGeometry(1.25, 12.4, 1.15),
+      architectureMaterial
+    )
+    pillar.position.set(x, floorY + 5.9, thresholdZ)
+    threshold.add(pillar)
+  })
+  const lintel = new THREE.Mesh(
+    new THREE.BoxGeometry(14.4, 1.15, 1.15),
+    architectureMaterial
+  )
+  lintel.position.set(0, floorY + 11.55, thresholdZ)
+  threshold.add(lintel)
+  const thresholdLight = new THREE.Mesh(
+    new THREE.BoxGeometry(11.6, 0.08, 0.08),
+    makeStripMaterial(0.48)
+  )
+  thresholdLight.position.set(0, floorY + 10.82, thresholdZ + 0.6)
+  threshold.add(thresholdLight)
+  group.add(threshold)
+
+  const scanMaterial = new THREE.MeshBasicMaterial({
+    color: 0x42ff7f,
+    transparent: true,
+    opacity: 0.035,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  })
+  const scanPlane = new THREE.Mesh(
+    new THREE.PlaneGeometry(18.6, 12.8),
+    scanMaterial
+  )
+  scanPlane.position.set(0, floorY + 5.7, -18)
+  group.add(scanPlane)
+
+  return {
+    group,
+    update: (elapsed, surge) => {
+      scanPlane.position.z = -20 + ((elapsed * 2.35) % 27)
+      scanMaterial.opacity = 0.018 + surge * 0.065
+      stripMaterials.forEach((material, index) => {
+        const pulse = Math.max(
+          0,
+          Math.sin(elapsed * (1.1 + (index % 5) * 0.14) + index * 0.78)
+        )
+        material.opacity =
+          Math.min(0.58, material.opacity * 0.92 + pulse * 0.028) + surge * 0.08
+      })
+      threshold.position.y = Math.sin(elapsed * 0.34) * 0.025
+    }
+  }
+}
+
 export function createChamberArtifact(
   environment: ChamberEnvironment,
   floorY: number,
@@ -486,5 +651,6 @@ export function createChamberArtifact(
   if (environment === 'relic') return createRelic(floorY, centerZ)
   if (environment === 'reactor') return createReactor(floorY, centerZ)
   if (environment === 'invocation') return createInvocation(floorY, centerZ)
+  if (environment === 'cyber') return createCyberVault(floorY, centerZ)
   return null
 }

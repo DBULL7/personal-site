@@ -349,12 +349,15 @@ export function MatrixChamber({
     const canvas = canvasRef.current
     if (!host || !canvas) return
     const glyphs = glyphSet === 'toolkit' ? toolkitGlyphs : matrixGlyphs
+    const isCastle = environment === 'castle'
+    const isCyber = environment === 'cyber'
 
     let renderer: THREE.WebGLRenderer
     try {
       renderer = new THREE.WebGLRenderer({
         canvas,
         antialias: true,
+        alpha: isCastle,
         powerPreference: 'high-performance'
       })
     } catch {
@@ -362,15 +365,27 @@ export function MatrixChamber({
       return
     }
 
-    renderer.setClearColor(0x000301, 1)
+    renderer.setClearColor(0x000301, isCastle ? 0 : 1)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.08
 
     const scene = new THREE.Scene()
-    scene.background = new THREE.Color(0x000301)
-    scene.fog = new THREE.FogExp2(0x000301, 0.03)
+    scene.background = isCastle ? null : new THREE.Color(0x000301)
+    scene.fog = isCastle
+      ? null
+      : new THREE.FogExp2(isCyber ? 0x010805 : 0x000301, isCyber ? 0.017 : 0.03)
+
+    if (isCyber) {
+      scene.add(new THREE.AmbientLight(0x214d30, 1.7))
+      const corridorLight = new THREE.PointLight(0x59ff89, 23, 34, 1.7)
+      corridorLight.position.set(0, 4.2, -5)
+      scene.add(corridorLight)
+      const backLight = new THREE.PointLight(0x2a7dff, 9, 22, 1.8)
+      backLight.position.set(0, 6.2, -19)
+      scene.add(backLight)
+    }
 
     const camera = new THREE.PerspectiveCamera(56, 1, 0.1, 80)
     camera.position.set(0, 1.4, 14)
@@ -430,6 +445,7 @@ export function MatrixChamber({
         opacity: 0.18
       })
     )
+    roomLines.visible = !isCastle && !isCyber
     room.add(roomLines)
     if (environment === 'standard') {
       ;[5, 10, 15, 20, 25, 30].forEach((depth) => {
@@ -441,7 +457,7 @@ export function MatrixChamber({
     }
 
     const glowTexture = makeGlowTexture()
-    if (glowTexture) {
+    if (glowTexture && !isCastle) {
       const centralGlow = new THREE.Sprite(
         new THREE.SpriteMaterial({
           map: glowTexture,
@@ -474,10 +490,20 @@ export function MatrixChamber({
       }
       if (environment === 'standard' || index % 3 !== 0) return ambientPosition
 
+      if (environment === 'castle') return ambientPosition
+
       if (environment === 'relic') {
         return {
           baseX: -3.4 + random() * 6.8,
           depth: roomFront - (artifactCenterZ - 2.2 + random() * 4.4)
+        }
+      }
+
+      if (environment === 'cyber') {
+        const side = random() < 0.5 ? -1 : 1
+        return {
+          baseX: side * (5.1 + random() * 4.6),
+          depth: 1.5 + random() * 27.5
         }
       }
 
@@ -583,11 +609,15 @@ export function MatrixChamber({
         1
       )
       const ambientSurge =
-        environment === 'reactor'
-          ? Math.pow(Math.max(0, Math.sin(elapsed * 0.78)), 16) * 0.62
-          : environment === 'invocation'
-            ? Math.pow(Math.max(0, Math.sin(elapsed * 0.52)), 20) * 0.34
-            : 0
+        environment === 'cyber'
+          ? Math.pow(Math.max(0, Math.sin(elapsed * 0.64)), 12) * 0.42
+          : environment === 'castle'
+            ? Math.pow(Math.max(0, Math.sin(elapsed * 0.34)), 20) * 0.16
+            : environment === 'reactor'
+              ? Math.pow(Math.max(0, Math.sin(elapsed * 0.78)), 16) * 0.62
+              : environment === 'invocation'
+                ? Math.pow(Math.max(0, Math.sin(elapsed * 0.52)), 20) * 0.34
+                : 0
       const surge = Math.max(triggeredSurge, ambientSurge)
 
       artifact?.update(elapsed, surge)
@@ -639,10 +669,14 @@ export function MatrixChamber({
       })
 
       const cameraEase = 0.035
-      camera.position.x += (pointer.x * 0.72 - camera.position.x) * cameraEase
+      const cameraTravel = isCastle ? 0.22 : 0.72
+      camera.position.x +=
+        (pointer.x * cameraTravel - camera.position.x) * cameraEase
       camera.position.y +=
-        (1.4 + pointer.y * 0.34 - camera.position.y) * cameraEase
-      cameraTarget.x += (pointer.x * 0.18 - cameraTarget.x) * cameraEase
+        (1.4 + pointer.y * (isCastle ? 0.12 : 0.34) - camera.position.y) *
+        cameraEase
+      cameraTarget.x +=
+        (pointer.x * (isCastle ? 0.06 : 0.18) - cameraTarget.x) * cameraEase
       camera.lookAt(cameraTarget)
       renderer.render(scene, camera)
     }
@@ -724,7 +758,12 @@ export function MatrixChamber({
   }, [environment, glyphSet])
 
   return (
-    <div ref={hostRef} className={styles.scene} aria-hidden="true">
+    <div
+      ref={hostRef}
+      className={styles.scene}
+      data-environment={environment}
+      aria-hidden="true"
+    >
       {failed ? (
         <div className={styles.fallback} />
       ) : (

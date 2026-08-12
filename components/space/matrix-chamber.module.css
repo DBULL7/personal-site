@@ -5,6 +5,10 @@
   background: #000301;
 }
 
+.scene[data-environment='castle'] {
+  background: transparent;
+}
+
 .canvas {
   display: block;
   width: 100%;
@@ -31,6 +35,16 @@
       transparent 28%
     ),
     #000301;
+}
+
+.scene[data-environment='castle'] .fallback {
+  background:
+    radial-gradient(
+      circle at 50% 58%,
+      rgba(57, 255, 112, 0.12),
+      transparent 30%
+    ),
+    linear-gradient(rgba(0, 8, 3, 0.08), rgba(0, 4, 1, 0.26));
 }
 
 .renderStatus {
