@@ -752,57 +752,27 @@ function createBlackGlassFloor(
   const mirrorMaterial = mirror.material as THREE.ShaderMaterial
   const floorReflectionExclusions: THREE.Object3D[] = []
   const renderFloorReflection = mirror.onBeforeRender.bind(mirror)
-  let ceilingMirror: Reflector | null = null
-  let ceilingMirrorMaterial: THREE.ShaderMaterial | null = null
+  let ceilingMaterial: THREE.MeshPhysicalMaterial | null = null
 
   if (isHorizonRailStudy) {
     const ceilingY = floorY + 38.66
-    if (window.innerWidth >= 700) {
-      ceilingMirror = new Reflector(
-        new THREE.PlaneGeometry(roomWidth, roomDepth),
-        {
-          color: 0x18251c,
-          textureWidth: 512,
-          textureHeight: 512,
-          clipBias: 0.003,
-          multisample: 0,
-          shader: blackGlassShader
-        }
-      )
-      ceilingMirror.rotation.x = Math.PI / 2
-      ceilingMirror.position.set(0, ceilingY, roomCenterZ)
-      ceilingMirrorMaterial = ceilingMirror.material as THREE.ShaderMaterial
-
-      const renderCeilingReflection =
-        ceilingMirror.onBeforeRender.bind(ceilingMirror)
-      ceilingMirror.onBeforeRender = (...args) => {
-        if (!ceilingMirror) return
-        mirror.visible = false
-        try {
-          renderCeilingReflection(...args)
-        } finally {
-          mirror.visible = true
-        }
-      }
-      group.add(ceilingMirror)
-    } else {
-      const ceiling = new THREE.Mesh(
-        new THREE.PlaneGeometry(roomWidth, roomDepth),
-        new THREE.MeshPhysicalMaterial({
-          color: 0x010302,
-          emissive: 0x031108,
-          emissiveIntensity: 0.35,
-          metalness: 0.98,
-          roughness: 0.09,
-          clearcoat: 1,
-          clearcoatRoughness: 0.08,
-          side: THREE.DoubleSide
-        })
-      )
-      ceiling.rotation.x = Math.PI / 2
-      ceiling.position.set(0, ceilingY, roomCenterZ)
-      group.add(ceiling)
-    }
+    ceilingMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0x030a06,
+      emissive: 0x082a13,
+      emissiveIntensity: 0.72,
+      metalness: 0.98,
+      roughness: 0.16,
+      clearcoat: 1,
+      clearcoatRoughness: 0.12,
+      side: THREE.DoubleSide
+    })
+    const ceiling = new THREE.Mesh(
+      new THREE.PlaneGeometry(roomWidth, roomDepth),
+      ceilingMaterial
+    )
+    ceiling.rotation.x = Math.PI / 2
+    ceiling.position.set(0, ceilingY, roomCenterZ)
+    group.add(ceiling)
   }
 
   if (isHorizonRailStudy) {
@@ -813,14 +783,12 @@ function createBlackGlassFloor(
       floorReflectionExclusions.forEach((object) => {
         object.visible = false
       })
-      if (ceilingMirror) ceilingMirror.visible = false
       try {
         renderFloorReflection(...args)
       } finally {
         floorReflectionExclusions.forEach((object, index) => {
           object.visible = visibility[index]
         })
-        if (ceilingMirror) ceilingMirror.visible = true
       }
     }
   }
@@ -1878,60 +1846,70 @@ function createBlackGlassFloor(
       blending: THREE.AdditiveBlending,
       toneMapped: false
     })
-    const searchBeamGeometry = new THREE.BufferGeometry()
-    searchBeamGeometry.setAttribute(
-      'position',
-      new THREE.BufferAttribute(
-        new Float32Array([0, 0, -0.2, -1.08, 0, -4.8, 1.08, 0, -4.8]),
-        3
-      )
-    )
-    searchBeamGeometry.setAttribute(
-      'uv',
-      new THREE.BufferAttribute(new Float32Array([0.5, 0, 0, 1, 1, 1]), 2)
-    )
-    searchBeamGeometry.setIndex([0, 1, 2])
-
     const skimmerConfigs = [
       {
         side: -1,
-        x: 14.15,
-        xDrift: 0.28,
-        z: roomNearZ - 23,
-        zDrift: 4.8,
-        speed: 0.16,
-        phase: 0.4,
-        scale: 1.35
+        x: 17.2,
+        xDrift: 1.15,
+        xWobble: 0.35,
+        z: roomNearZ - 32,
+        zDrift: 5,
+        zWobble: 1.3,
+        speed: 0.102,
+        secondarySpeed: 0.059,
+        zRate: 0.92,
+        phase: 0.35,
+        direction: 1,
+        scale: 1.35,
+        bobSpeed: 0.68
       },
       {
         side: 1,
-        x: 14.35,
-        xDrift: 0.48,
+        x: 18.5,
+        xDrift: 1.7,
+        xWobble: 0.45,
         z: roomNearZ - 30,
-        zDrift: 5.7,
-        speed: 0.12,
-        phase: 2.2,
-        scale: 1
+        zDrift: 6.5,
+        zWobble: 1.9,
+        speed: 0.078,
+        secondarySpeed: 0.043,
+        zRate: 1.18,
+        phase: 2.45,
+        direction: -1,
+        scale: 1.05,
+        bobSpeed: 0.49
       },
       {
         side: -1,
-        x: 14.25,
-        xDrift: 0.36,
-        z: roomFarZ + 21,
-        zDrift: 4.5,
-        speed: 0.1,
-        phase: 4.35,
-        scale: 0.72
+        x: 21.4,
+        xDrift: 2,
+        xWobble: 0.7,
+        z: roomFarZ + 22,
+        zDrift: 5,
+        zWobble: 1.4,
+        speed: 0.064,
+        secondarySpeed: 0.037,
+        zRate: 0.76,
+        phase: 4.7,
+        direction: 1,
+        scale: 0.72,
+        bobSpeed: 0.57
       },
       {
         side: 1,
-        x: 14.45,
-        xDrift: 0.5,
-        z: roomFarZ + 10,
-        zDrift: 3.8,
-        speed: 0.075,
-        phase: 1.25,
-        scale: 0.52
+        x: 17.4,
+        xDrift: 1.3,
+        xWobble: 0.4,
+        z: roomFarZ + 11,
+        zDrift: 3.9,
+        zWobble: 1,
+        speed: 0.049,
+        secondarySpeed: 0.028,
+        zRate: 1.31,
+        phase: 1.18,
+        direction: -1,
+        scale: 0.52,
+        bobSpeed: 0.41
       }
     ]
     const skimmers = skimmerConfigs.map((config, index) => {
@@ -1957,53 +1935,11 @@ function createBlackGlassFloor(
         return sensor
       })
 
-      const scanner = new THREE.Group()
-      const searchMaterial = new THREE.ShaderMaterial({
-        uniforms: {
-          time: { value: 0 },
-          storm: { value: 0 },
-          phase: { value: config.phase }
-        },
-        vertexShader: /* glsl */ `
-          varying vec2 vUv;
-
-          void main() {
-            vUv = uv;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-          }
-        `,
-        fragmentShader: /* glsl */ `
-          uniform float time;
-          uniform float storm;
-          uniform float phase;
-          varying vec2 vUv;
-
-          void main() {
-            float edge = 1.0 - abs(vUv.x * 2.0 - 1.0);
-            edge = smoothstep(0.0, 0.72, edge);
-            float lengthFade = smoothstep(0.02, 0.18, vUv.y) *
-              (1.0 - smoothstep(0.42, 1.0, vUv.y));
-            float sweepTexture = 0.82 +
-              sin(vUv.y * 36.0 - time * 0.9 + phase) * 0.08;
-            float alpha = edge * lengthFade * sweepTexture *
-              (0.06 + storm * 0.055);
-            gl_FragColor = vec4(vec3(0.08, 0.72, 0.24), alpha);
-          }
-        `,
-        transparent: true,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-        side: THREE.DoubleSide,
-        toneMapped: false
-      })
-      const searchBeam = new THREE.Mesh(searchBeamGeometry, searchMaterial)
-      searchBeam.position.y = -0.105
-      scanner.add(searchBeam)
-      skimmer.add(body, fin, rim, ...sensors, scanner)
+      skimmer.add(body, fin, rim, ...sensors)
       skimmer.scale.setScalar(config.scale)
       group.add(skimmer)
 
-      return { config, index, skimmer, scanner, searchMaterial, sensors }
+      return { config, index, skimmer, sensors }
     })
 
     let reflectedStorm = 0
@@ -2015,40 +1951,49 @@ function createBlackGlassFloor(
         material.uniforms.time.value = elapsed
         material.uniforms.storm.value = reflectedStorm
       })
-      skimmers.forEach(
-        ({ config, index, skimmer, scanner, searchMaterial, sensors }) => {
-          const travel = elapsed * config.speed + config.phase
-          const lateralPhase = travel * 0.73 + config.phase * 0.41
-          const x =
-            config.side * (config.x + Math.sin(lateralPhase) * config.xDrift)
-          const z = config.z + Math.sin(travel) * config.zDrift
-          const velocityX =
-            config.side *
-            Math.cos(lateralPhase) *
-            config.xDrift *
-            config.speed *
-            0.73
-          const velocityZ = Math.cos(travel) * config.zDrift * config.speed
-          skimmer.position.set(
-            x,
-            floorY +
-              0.058 +
-              0.105 * config.scale +
-              Math.sin(elapsed * 0.72 + index) * 0.012 * config.scale,
-            z
-          )
-          skimmer.rotation.y = Math.atan2(-velocityX, -velocityZ)
-          scanner.rotation.y =
-            -config.side * (Math.PI / 2) -
-            skimmer.rotation.y +
-            Math.sin(elapsed * (0.34 + index * 0.035) + config.phase) * 0.34
-          searchMaterial.uniforms.time.value = elapsed
-          searchMaterial.uniforms.storm.value = reflectedStorm
-          const sensorPulse =
-            0.82 + Math.sin(elapsed * 1.15 + config.phase) * 0.18
-          sensors.forEach((sensor) => sensor.scale.setScalar(sensorPulse))
-        }
-      )
+      skimmers.forEach(({ config, index, skimmer, sensors }) => {
+        const primaryRate = config.speed * config.direction
+        const primary = elapsed * primaryRate + config.phase
+        const secondary = elapsed * config.secondarySpeed + config.phase * 1.71
+        const x =
+          config.side *
+          (config.x +
+            Math.sin(primary) * config.xDrift +
+            Math.sin(secondary + index * 0.9) * config.xWobble)
+        const z =
+          config.z +
+          Math.cos(primary * config.zRate) * config.zDrift +
+          Math.sin(secondary * 0.83 + index) * config.zWobble
+        const velocityX =
+          config.side *
+          (Math.cos(primary) * primaryRate * config.xDrift +
+            Math.cos(secondary + index * 0.9) *
+              config.secondarySpeed *
+              config.xWobble)
+        const velocityZ =
+          -Math.sin(primary * config.zRate) *
+            primaryRate *
+            config.zRate *
+            config.zDrift +
+          Math.cos(secondary * 0.83 + index) *
+            config.secondarySpeed *
+            0.83 *
+            config.zWobble
+        skimmer.position.set(
+          x,
+          floorY +
+            0.058 +
+            0.105 * config.scale +
+            Math.sin(elapsed * config.bobSpeed + config.phase * 2.3) *
+              0.012 *
+              config.scale,
+          z
+        )
+        skimmer.rotation.y = Math.atan2(-velocityX, -velocityZ)
+        const sensorPulse =
+          0.82 + Math.sin(elapsed * (0.83 + index * 0.19) + config.phase) * 0.18
+        sensors.forEach((sensor) => sensor.scale.setScalar(sensorPulse))
+      })
     })
   }
 
@@ -2443,10 +2388,9 @@ function createBlackGlassFloor(
       elapsedTime = elapsed
       mirrorMaterial.uniforms.time.value = elapsed
       mirrorMaterial.uniforms.surge.value = surge
-      if (ceilingMirrorMaterial) {
-        ceilingMirrorMaterial.uniforms.time.value = elapsed * 0.82
-        ceilingMirrorMaterial.uniforms.surge.value = surge * 0.55
-      }
+      if (ceilingMaterial)
+        ceilingMaterial.emissiveIntensity =
+          0.7 + Math.sin(elapsed * 0.18) * 0.025 + surge * 0.14
       wallUpdaters.forEach((updateWall) => updateWall(elapsed, surge))
       edgeGlints.forEach((edge, index) => {
         if (Array.isArray(edge.material)) return
@@ -2467,7 +2411,6 @@ function createBlackGlassFloor(
     onGlyphEmerge: chargeTile,
     dispose: () => {
       mirror.dispose()
-      ceilingMirror?.dispose()
       chargeTexture.dispose()
       wallTextures.forEach((texture) => texture.dispose())
     }
