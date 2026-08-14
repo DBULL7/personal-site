@@ -2241,6 +2241,7 @@ function createBlackGlassFloor(
     ceilingLight.position.set(0, floorY + helixHeight - 1, helixZ)
     helix.position.set(0, floorY + 0.08, helixZ)
     group.add(helix, baseLight, ceilingLight)
+    floorReflectionExclusions.push(helix)
 
     wallUpdaters.push((elapsed, surge) => {
       helix.rotation.y = elapsed * 0.045
