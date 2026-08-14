@@ -153,7 +153,7 @@ export function ChamberExperiment({
                 setHazardStrikesPerMinute(Number(event.target.value))
               }
             >
-              {[0, 6, 12, 20, 30].map((rate) => (
+              {[0, 6, 12, 20, 30, 60, 75, 90].map((rate) => (
                 <option key={rate} value={rate}>
                   {rate === 0 ? 'OFF' : rate}
                 </option>

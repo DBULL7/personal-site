@@ -1309,7 +1309,7 @@ function createBlackGlassFloor(
   }
 
   const addHazardLightning = () => {
-    const strikeRate = THREE.MathUtils.clamp(hazardStrikesPerMinute, 0, 60)
+    const strikeRate = THREE.MathUtils.clamp(hazardStrikesPerMinute, 0, 90)
     const averageStrikeInterval =
       strikeRate > 0 ? 60 / strikeRate : Number.POSITIVE_INFINITY
     const actorCount = window.innerWidth < 700 ? 3 : 6
