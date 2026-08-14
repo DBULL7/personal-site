@@ -1722,6 +1722,8 @@ function createBlackGlassFloor(
     const liquidWidth = roomWidth / 2 - innerEdge
     const liquidGroup = new THREE.Group()
     const liquidMaterials: THREE.ShaderMaterial[] = []
+    mirror.updateMatrixWorld(true)
+    const inverseMirrorMatrix = mirror.matrixWorld.clone().invert()
 
     ;[-1, 1].forEach((side) => {
       const material = new THREE.ShaderMaterial({
@@ -1729,93 +1731,106 @@ function createBlackGlassFloor(
           time: { value: 0 },
           storm: { value: 0 },
           side: { value: side },
-          color: { value: new THREE.Color(0x58f58a) }
+          tReflection: { value: mirrorMaterial.uniforms.tDiffuse.value },
+          textureMatrix: { value: mirrorMaterial.uniforms.textureMatrix.value },
+          inverseMirrorMatrix: { value: inverseMirrorMatrix }
         },
         vertexShader: /* glsl */ `
-          uniform float time;
-          uniform float side;
+          uniform mat4 textureMatrix;
+          uniform mat4 inverseMirrorMatrix;
           varying vec2 vUv;
-          varying float vCrest;
+          varying vec3 vWorldPosition;
+          varying vec4 vReflectionUv;
 
           void main() {
             vUv = uv;
-            float railDistance = side > 0.0 ? uv.x : 1.0 - uv.x;
-            float shore = 1.0 - smoothstep(0.0, 0.16, railDistance);
-            float longWave = sin(position.y * 0.52 + time * 0.62 + side * 1.7) * 0.026;
-            float crossWave = sin(position.y * 0.24 - position.x * 0.88 - time * 0.48) * 0.016;
-            float shoreWave = sin(position.y * 1.36 - time * 0.96 + side) * 0.03 * shore;
-            float microWave = sin(position.y * 2.7 + position.x * 1.2 + time * 0.34) * 0.006;
-            float wave = longWave + crossWave + shoreWave + microWave;
-            vec3 transformed = position;
-            transformed.z += wave;
-            vCrest = wave * 17.0;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
+            vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+            vWorldPosition = worldPosition.xyz;
+            vec4 mirrorPosition = inverseMirrorMatrix * worldPosition;
+            vReflectionUv = textureMatrix * mirrorPosition;
+            gl_Position = projectionMatrix * viewMatrix * worldPosition;
           }
         `,
         fragmentShader: /* glsl */ `
           uniform float time;
           uniform float storm;
           uniform float side;
-          uniform vec3 color;
+          uniform sampler2D tReflection;
           varying vec2 vUv;
-          varying float vCrest;
+          varying vec3 vWorldPosition;
+          varying vec4 vReflectionUv;
 
           void main() {
+            vec2 p = vWorldPosition.xz;
+            vec2 directionA = normalize(vec2(0.92, 0.38));
+            vec2 directionB = normalize(vec2(-0.48, 0.88));
+            vec2 directionC = normalize(vec2(0.31, -0.95));
+            vec2 directionD = normalize(vec2(-0.79, -0.61));
+            float phaseA = dot(p, directionA) * 0.62 + time * 0.34;
+            float phaseB = dot(p, directionB) * 1.08 - time * 0.46;
+            float phaseC = dot(p, directionC) * 2.15 + time * 0.28;
+            float phaseD = dot(p, directionD) * 3.9 - time * 0.21;
+            vec2 gradient =
+              directionA * cos(phaseA) * 0.024 +
+              directionB * cos(phaseB) * 0.02 +
+              directionC * cos(phaseC) * 0.014 +
+              directionD * cos(phaseD) * 0.006;
+            vec3 normal = normalize(vec3(-gradient.x, 1.0, -gradient.y));
+            vec3 viewDirection = normalize(cameraPosition - vWorldPosition);
+            float fresnel = pow(
+              1.0 - clamp(dot(normal, viewDirection), 0.0, 1.0),
+              3.5
+            );
+
+            vec4 reflectedUv = vReflectionUv;
+            reflectedUv.xy += gradient * (0.008 + fresnel * 0.016) * vReflectionUv.w;
+            vec3 reflected = texture2DProj(tReflection, reflectedUv).rgb;
+
             float railDistance = side > 0.0 ? vUv.x : 1.0 - vUv.x;
             float lapCenter = 0.018 +
-              sin(vUv.y * 51.0 - time * 0.82 + side) * 0.007 +
-              sin(vUv.y * 19.0 + time * 0.37) * 0.004;
+              sin(p.y * 0.8 - time * 0.42 + side) * 0.0045 +
+              sin(p.y * 1.73 + time * 0.25) * 0.0025;
+            float lapDistance = abs(railDistance - lapCenter);
+            float antialiasWidth = max(fwidth(lapDistance) * 1.5, 0.0008);
             float lap = 1.0 - smoothstep(
-              0.003,
-              0.025,
-              abs(railDistance - lapCenter)
+              0.004 - antialiasWidth,
+              0.004 + antialiasWidth,
+              lapDistance
             );
-            float ridgeA = 0.5 + 0.5 * sin(vUv.y * 83.0 - time * 1.08 + side * 2.1);
-            float ridgeB = 0.5 + 0.5 * sin(vUv.y * 37.0 + vUv.x * 24.0 + time * 0.46);
-            float ripple = pow(max(0.0, ridgeA * ridgeB), 8.0);
-            float waveletPattern = 0.5 + 0.5 * sin(
-              vUv.y * 71.0 - time * 0.9 +
-              sin(vUv.x * 22.0 + time * 0.26) * 1.7
+            float lapBreak = smoothstep(
+              -0.35,
+              0.62,
+              sin(p.y * 1.36 - time * 0.31 + sin(p.y * 0.23) * 1.8)
             );
-            float wavelet = pow(waveletPattern, 18.0) *
-              (1.0 - smoothstep(0.15, 0.95, railDistance));
-            float broadSheen = pow(
-              0.5 + 0.5 * sin(
-                vUv.y * 21.0 - time * 0.32 +
-                sin(vUv.x * 8.0 + side) * 1.2
-              ),
-              22.0
-            ) * (1.0 - smoothstep(0.35, 1.0, railDistance));
-            float brokenLap = lap *
-              (0.36 + 0.64 * pow(0.5 + 0.5 * sin(vUv.y * 97.0 - time * 0.5 + side), 4.0));
-            float crest = pow(max(0.0, vCrest), 4.0);
-            float railReflection = exp(-railDistance * 12.0) *
-              (0.045 + ripple * 0.11 + brokenLap * 0.12);
-            float stormReflection = storm *
-              (0.04 + brokenLap * 0.28 + ripple * 0.22 + crest * 0.12) *
-              (1.0 - smoothstep(0.5, 1.0, railDistance));
-            float farFade = 1.0 - smoothstep(0.8, 1.0, vUv.y) * 0.72;
-            vec3 deepWater = vec3(0.0015, 0.008, 0.004);
-            vec3 reflectedLight = color *
-              (
-                railReflection + ripple * 0.038 +
-                wavelet * 0.075 + broadSheen * 0.055 +
-                max(vCrest, 0.0) * 0.028 +
-                stormReflection
-              ) * 1.3 *
+            lap *= lapBreak;
+
+            float nearRail = exp(-railDistance * 13.0);
+            float farFade = 1.0 - smoothstep(0.76, 1.0, vUv.y) * 0.62;
+            float reflectionStrength = mix(0.1, 0.3, fresnel) + storm * 0.12;
+            vec3 deepWater = vec3(0.0007, 0.0026, 0.00135);
+            vec3 surface = deepWater;
+            surface += reflected * reflectionStrength * farFade;
+            surface += vec3(0.08, 0.7, 0.25) *
+              (nearRail * 0.012 + lap * (0.018 + storm * 0.055)) *
               farFade;
-            float alpha = 0.8 - ripple * 0.05 - storm * 0.04;
-            gl_FragColor = vec4(deepWater + reflectedLight, alpha);
+            float dither = fract(
+              sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453
+            ) - 0.5;
+            surface += dither * 0.0012;
+            gl_FragColor = vec4(max(surface, 0.0), 1.0);
+
+            #include <tonemapping_fragment>
+            #include <colorspace_fragment>
           }
         `,
-        transparent: true,
-        depthWrite: false,
+        transparent: false,
+        depthWrite: true,
         side: THREE.DoubleSide,
         fog: false,
         toneMapped: false
       })
       const liquid = new THREE.Mesh(
-        new THREE.PlaneGeometry(liquidWidth, roomDepth, 36, 72),
+        new THREE.PlaneGeometry(liquidWidth, roomDepth),
         material
       )
       liquid.rotation.x = -Math.PI / 2
