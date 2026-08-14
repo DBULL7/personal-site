@@ -97,11 +97,18 @@ import {
   siYarn
 } from 'simple-icons'
 import * as THREE from 'three'
+import {
+  createChamberArtifact,
+  type BlackGlassBackWallStudy,
+  type ChamberEnvironment
+} from './chamber-artifacts'
 import styles from './matrix-chamber.module.css'
 
 type MatrixChamberProps = {
   paused?: boolean
   glyphSet?: 'matrix' | 'toolkit'
+  environment?: ChamberEnvironment
+  blackGlassBackWall?: BlackGlassBackWallStudy
 }
 
 type RainGlyph =
@@ -123,6 +130,10 @@ type GlyphParticle = {
   drift: number
   nextMutation: number
   brightness: number
+  floorGhost?: {
+    material: THREE.MeshBasicMaterial
+    mesh: THREE.Mesh
+  }
 }
 
 const matrixGlyphs: RainGlyph[] = [
@@ -327,7 +338,9 @@ function makeGlowTexture() {
 
 export function MatrixChamber({
   paused = false,
-  glyphSet = 'matrix'
+  glyphSet = 'matrix',
+  environment = 'standard',
+  blackGlassBackWall = 'baseline'
 }: MatrixChamberProps) {
   const hostRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -343,12 +356,16 @@ export function MatrixChamber({
     const canvas = canvasRef.current
     if (!host || !canvas) return
     const glyphs = glyphSet === 'toolkit' ? toolkitGlyphs : matrixGlyphs
+    const isCastle = environment === 'castle'
+    const isCyber = environment === 'cyber'
+    const isBlackGlass = environment === 'black-glass'
 
     let renderer: THREE.WebGLRenderer
     try {
       renderer = new THREE.WebGLRenderer({
         canvas,
         antialias: true,
+        alpha: isCastle,
         powerPreference: 'high-performance'
       })
     } catch {
@@ -356,19 +373,50 @@ export function MatrixChamber({
       return
     }
 
-    renderer.setClearColor(0x000301, 1)
+    renderer.setClearColor(0x000301, isCastle ? 0 : 1)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.08
 
     const scene = new THREE.Scene()
-    scene.background = new THREE.Color(0x000301)
-    scene.fog = new THREE.FogExp2(0x000301, 0.03)
+    scene.background = isCastle ? null : new THREE.Color(0x000301)
+    scene.fog = isCastle
+      ? null
+      : new THREE.FogExp2(
+          isCyber ? 0x010805 : 0x000301,
+          isCyber ? 0.017 : isBlackGlass ? 0.021 : 0.03
+        )
 
-    const camera = new THREE.PerspectiveCamera(56, 1, 0.1, 80)
+    if (isCyber) {
+      scene.add(new THREE.AmbientLight(0x214d30, 1.7))
+      const corridorLight = new THREE.PointLight(0x59ff89, 23, 34, 1.7)
+      corridorLight.position.set(0, 4.2, -5)
+      scene.add(corridorLight)
+      const backLight = new THREE.PointLight(0x2a7dff, 9, 22, 1.8)
+      backLight.position.set(0, 6.2, -19)
+      scene.add(backLight)
+    }
+
+    if (isBlackGlass) {
+      scene.add(new THREE.AmbientLight(0x213029, 1.4))
+      const floorLight = new THREE.PointLight(0x7dff9f, 13, 25, 1.8)
+      floorLight.position.set(0, 1.8, -3)
+      scene.add(floorLight)
+    }
+
+    const camera = new THREE.PerspectiveCamera(
+      56,
+      1,
+      0.1,
+      blackGlassBackWall === 'wall-lightning' ? 150 : 80
+    )
     camera.position.set(0, 1.4, 14)
-    const cameraTarget = new THREE.Vector3(0, 0.4, -7)
+    const cameraTarget = new THREE.Vector3(
+      0,
+      blackGlassBackWall === 'wall-lightning' ? 2.1 : 0.4,
+      -7
+    )
     camera.lookAt(cameraTarget)
 
     let seed = 481516
@@ -391,6 +439,7 @@ export function MatrixChamber({
     const ceilingY = 9.5
     const roomFront = 8
     const roomBack = -22
+    const artifactCenterZ = -8
     for (let depth = 0; depth <= 30; depth += 2.5) {
       const z = roomFront - depth
       addLine([-12, floorY, z], [12, floorY, z])
@@ -423,16 +472,19 @@ export function MatrixChamber({
         opacity: 0.18
       })
     )
+    roomLines.visible = !isCastle && !isCyber && !isBlackGlass
     room.add(roomLines)
-    ;[5, 10, 15, 20, 25, 30].forEach((depth) => {
-      const marker = makeMarker(`${String(depth).padStart(2, '0')} FT`)
-      marker.position.set(-10.3, floorY + 0.22, roomFront - depth)
-      marker.rotation.x = -Math.PI / 2
-      room.add(marker)
-    })
+    if (environment === 'standard') {
+      ;[5, 10, 15, 20, 25, 30].forEach((depth) => {
+        const marker = makeMarker(`${String(depth).padStart(2, '0')} FT`)
+        marker.position.set(-10.3, floorY + 0.22, roomFront - depth)
+        marker.rotation.x = -Math.PI / 2
+        room.add(marker)
+      })
+    }
 
     const glowTexture = makeGlowTexture()
-    if (glowTexture) {
+    if (glowTexture && !isCastle && !isBlackGlass) {
       const centralGlow = new THREE.Sprite(
         new THREE.SpriteMaterial({
           map: glowTexture,
@@ -448,11 +500,57 @@ export function MatrixChamber({
       scene.add(centralGlow)
     }
 
+    const artifact = createChamberArtifact(
+      environment,
+      floorY,
+      artifactCenterZ,
+      blackGlassBackWall
+    )
+    if (artifact) scene.add(artifact.group)
+
     const chooseDepth = (index: number) => {
       const band = index % 3
       if (band === 0) return 2 + random() * 7
       if (band === 1) return 10 + random() * 9
       return 20 + random() * 10
+    }
+
+    const chooseParticlePosition = (index: number) => {
+      const ambientPosition = {
+        baseX: -10.5 + random() * 21,
+        depth: chooseDepth(index)
+      }
+      if (environment === 'standard' || index % 3 !== 0) return ambientPosition
+
+      if (environment === 'castle') return ambientPosition
+
+      if (environment === 'black-glass') return ambientPosition
+
+      if (environment === 'relic') {
+        return {
+          baseX: -3.4 + random() * 6.8,
+          depth: roomFront - (artifactCenterZ - 2.2 + random() * 4.4)
+        }
+      }
+
+      if (environment === 'cyber') {
+        const side = random() < 0.5 ? -1 : 1
+        return {
+          baseX: side * (5.1 + random() * 4.6),
+          depth: 1.5 + random() * 27.5
+        }
+      }
+
+      const angle = random() * Math.PI * 2
+      const radius =
+        environment === 'reactor'
+          ? Math.sqrt(random()) * 3.2
+          : 2.7 + random() * 2.4
+      const z = artifactCenterZ + Math.sin(angle) * radius
+      return {
+        baseX: Math.cos(angle) * radius,
+        depth: roomFront - z
+      }
     }
 
     const particles: GlyphParticle[] = []
@@ -463,15 +561,18 @@ export function MatrixChamber({
       glyphCanvas.height = 96
       const glyphContext = glyphCanvas.getContext('2d')
       if (!glyphContext) continue
-      const depth = chooseDepth(index)
+      const position = chooseParticlePosition(index)
+      const depth = position.depth
       const brightness = THREE.MathUtils.lerp(0.94, 0.32, depth / 30)
+      const initialGlyph =
+        glyphSet === 'toolkit'
+          ? glyphs[index % glyphs.length]
+          : glyphs[Math.floor(random() * glyphs.length)]
       drawGlyph(
         glyphCanvas,
         glyphContext,
-        glyphSet === 'toolkit'
-          ? glyphs[index % glyphs.length]
-          : glyphs[Math.floor(random() * glyphs.length)],
-        brightness
+        initialGlyph,
+        isBlackGlass ? 0.86 : brightness
       )
       const texture = new THREE.CanvasTexture(glyphCanvas)
       texture.colorSpace = THREE.SRGBColorSpace
@@ -485,10 +586,37 @@ export function MatrixChamber({
       const sprite = new THREE.Sprite(material)
       const scale = 0.48 + random() * 0.34
       sprite.scale.set(scale, scale, 1)
-      const baseX = -10.5 + random() * 21
-      const y = floorY + random() * (ceilingY - floorY)
+      const baseX = position.baseX
+      const y =
+        isBlackGlass && index % 4 === 0
+          ? floorY - random() * 1.35
+          : floorY + random() * (ceilingY - floorY)
       sprite.position.set(baseX, y, roomFront - depth)
       scene.add(sprite)
+
+      let floorGhost: GlyphParticle['floorGhost']
+      if (isBlackGlass) {
+        const ghostMaterial = new THREE.MeshBasicMaterial({
+          map: texture,
+          transparent: true,
+          opacity: 0,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+          side: THREE.DoubleSide
+        })
+        const ghostMesh = new THREE.Mesh(
+          new THREE.PlaneGeometry(1, 1),
+          ghostMaterial
+        )
+        ghostMesh.rotation.x = -Math.PI / 2
+        ghostMesh.position.set(baseX, floorY + 0.058, roomFront - depth)
+        scene.add(ghostMesh)
+        floorGhost = {
+          material: ghostMaterial,
+          mesh: ghostMesh
+        }
+      }
+
       particles.push({
         canvas: glyphCanvas,
         context: glyphContext,
@@ -502,7 +630,8 @@ export function MatrixChamber({
         phase: random() * Math.PI * 2,
         drift: 0.25 + random() * 0.5,
         nextMutation: random() * 0.8,
-        brightness
+        brightness,
+        floorGhost
       })
     }
 
@@ -515,6 +644,7 @@ export function MatrixChamber({
     let frame = 0
     let inView = true
     let pageVisible = !document.hidden
+    let surgeStarted = -10
 
     const resize = () => {
       const width = host.clientWidth
@@ -537,13 +667,35 @@ export function MatrixChamber({
       const delta = Math.min(timer.getDelta(), 0.05)
       const elapsed = timer.getElapsed()
       const shouldMove = !pausedRef.current && !reducedMotion
+      const triggeredSurge = THREE.MathUtils.clamp(
+        1 - (elapsed - surgeStarted) / 1.35,
+        0,
+        1
+      )
+      const ambientSurge =
+        environment === 'black-glass'
+          ? Math.pow(Math.max(0, Math.sin(elapsed * 0.42)), 18) * 0.24
+          : environment === 'cyber'
+            ? Math.pow(Math.max(0, Math.sin(elapsed * 0.64)), 12) * 0.42
+            : environment === 'castle'
+              ? Math.pow(Math.max(0, Math.sin(elapsed * 0.34)), 20) * 0.16
+              : environment === 'reactor'
+                ? Math.pow(Math.max(0, Math.sin(elapsed * 0.78)), 16) * 0.62
+                : environment === 'invocation'
+                  ? Math.pow(Math.max(0, Math.sin(elapsed * 0.52)), 20) * 0.34
+                  : 0
+      const surge = Math.max(triggeredSurge, ambientSurge)
+
+      artifact?.update(elapsed, surge)
 
       particles.forEach((particle, index) => {
-        if (shouldMove) particle.y += delta * particle.speed
+        const previousY = particle.y
+        if (shouldMove) particle.y += delta * particle.speed * (1 + surge * 2.2)
         if (particle.y > ceilingY + 0.8) {
           particle.y = floorY - random() * 1.4
-          particle.depth = chooseDepth(index + Math.floor(elapsed))
-          particle.baseX = -10.5 + random() * 21
+          const position = chooseParticlePosition(index + Math.floor(elapsed))
+          particle.depth = position.depth
+          particle.baseX = position.baseX
           particle.brightness = THREE.MathUtils.lerp(
             0.94,
             0.32,
@@ -551,12 +703,19 @@ export function MatrixChamber({
           )
         }
 
+        const currentX =
+          particle.baseX +
+          Math.sin(elapsed * particle.drift + particle.phase) * 0.16
+        const currentZ = roomFront - particle.depth
+        if (previousY < floorY && particle.y >= floorY)
+          artifact?.onGlyphEmerge?.(currentX, currentZ)
+
         if (shouldMove && elapsed >= particle.nextMutation) {
           drawGlyph(
             particle.canvas,
             particle.context,
             glyphs[Math.floor(random() * glyphs.length)],
-            particle.brightness
+            isBlackGlass ? 0.86 : particle.brightness
           )
           particle.texture.needsUpdate = true
           particle.nextMutation =
@@ -571,22 +730,62 @@ export function MatrixChamber({
           0,
           1
         )
-        const fade = Math.sin(progress * Math.PI)
+        const heightFromFloor = particle.y - floorY
+        const surfaceBirth =
+          isBlackGlass && heightFromFloor >= 0
+            ? 1 - THREE.MathUtils.clamp(heightFromFloor / 1.7, 0, 1)
+            : 0
         const flicker = 0.82 + Math.sin(elapsed * 4.2 + particle.phase) * 0.18
-        particle.material.opacity = fade * particle.brightness * flicker
-        particle.sprite.position.set(
-          particle.baseX +
-            Math.sin(elapsed * particle.drift + particle.phase) * 0.16,
-          particle.y,
-          roomFront - particle.depth
-        )
+        const ambientOpacity =
+          Math.sin(progress * Math.PI) *
+          particle.brightness *
+          flicker *
+          (1 + surge * 0.24)
+        const breachOpacity =
+          surfaceBirth *
+          (0.54 + particle.brightness * 0.12) *
+          (0.94 + flicker * 0.06)
+        particle.material.opacity = Math.max(ambientOpacity, breachOpacity)
+        particle.sprite.position.set(currentX, particle.y, currentZ)
+
+        if (particle.floorGhost) {
+          const approach = THREE.MathUtils.clamp(
+            1 + heightFromFloor / 1.35,
+            0,
+            1
+          )
+          const release = 1 - THREE.MathUtils.clamp(heightFromFloor / 2.2, 0, 1)
+          const ghostStrength =
+            heightFromFloor < 0 ? 0.08 + approach * 0.44 : release * 0.27
+          particle.floorGhost.material.opacity =
+            ghostStrength *
+            (0.72 + particle.brightness * 0.28) *
+            flicker *
+            (1 + surge * 0.28)
+          particle.floorGhost.mesh.position.set(
+            currentX,
+            floorY + 0.058,
+            currentZ
+          )
+          const liquidWarp = Math.sin(elapsed * 1.7 + particle.phase) * 0.075
+          const ghostScale = particle.sprite.scale.x
+          particle.floorGhost.mesh.scale.set(
+            ghostScale * (1.42 + liquidWarp),
+            ghostScale * (1.12 - liquidWarp),
+            1
+          )
+        }
       })
 
       const cameraEase = 0.035
-      camera.position.x += (pointer.x * 0.72 - camera.position.x) * cameraEase
+      const cameraTravel = isCastle ? 0.22 : 0.72
+      camera.position.x +=
+        (pointer.x * cameraTravel - camera.position.x) * cameraEase
       camera.position.y +=
-        (1.4 + pointer.y * 0.34 - camera.position.y) * cameraEase
-      cameraTarget.x += (pointer.x * 0.18 - cameraTarget.x) * cameraEase
+        (1.4 + pointer.y * (isCastle ? 0.12 : 0.34) - camera.position.y) *
+        cameraEase
+      cameraTarget.x +=
+        (pointer.x * (isCastle ? 0.06 : 0.18) - cameraTarget.x) * cameraEase
       camera.lookAt(cameraTarget)
       renderer.render(scene, camera)
     }
@@ -616,11 +815,17 @@ export function MatrixChamber({
       pageVisible = !document.hidden
       syncAnimation()
     }
+    const triggerSurge = () => {
+      if (environment !== 'standard') surgeStarted = timer.getElapsed()
+    }
 
     resizeObserver.observe(host)
     visibilityObserver.observe(host)
     document.addEventListener('visibilitychange', handleVisibility)
     host.addEventListener('pointermove', updatePointer)
+    host.addEventListener('pointerdown', triggerSurge)
+    if (environment === 'relic')
+      window.addEventListener('keydown', triggerSurge)
     resize()
     syncAnimation()
 
@@ -630,23 +835,49 @@ export function MatrixChamber({
       visibilityObserver.disconnect()
       document.removeEventListener('visibilitychange', handleVisibility)
       host.removeEventListener('pointermove', updatePointer)
+      host.removeEventListener('pointerdown', triggerSurge)
+      if (environment === 'relic')
+        window.removeEventListener('keydown', triggerSurge)
       timer.dispose()
+      artifact?.dispose?.()
+      const disposedTextures = new Set<THREE.Texture>()
+      const disposeMaterial = (material: THREE.Material) => {
+        const mappedMaterial = material as THREE.Material & {
+          map?: THREE.Texture | null
+        }
+        if (mappedMaterial.map && !disposedTextures.has(mappedMaterial.map)) {
+          disposedTextures.add(mappedMaterial.map)
+          mappedMaterial.map.dispose()
+        }
+        material.dispose()
+      }
       scene.traverse((object) => {
-        if (object instanceof THREE.LineSegments) {
+        if (
+          object instanceof THREE.LineSegments ||
+          object instanceof THREE.Line ||
+          object instanceof THREE.Mesh ||
+          object instanceof THREE.InstancedMesh
+        ) {
           object.geometry.dispose()
-          object.material.dispose()
+          if (Array.isArray(object.material))
+            object.material.forEach(disposeMaterial)
+          else disposeMaterial(object.material)
         }
         if (object instanceof THREE.Sprite) {
-          object.material.map?.dispose()
-          object.material.dispose()
+          disposeMaterial(object.material)
         }
       })
       renderer.dispose()
     }
-  }, [glyphSet])
+  }, [blackGlassBackWall, environment, glyphSet])
 
   return (
-    <div ref={hostRef} className={styles.scene} aria-hidden="true">
+    <div
+      ref={hostRef}
+      className={styles.scene}
+      data-environment={environment}
+      aria-hidden="true"
+    >
       {failed ? (
         <div className={styles.fallback} />
       ) : (
@@ -655,9 +886,11 @@ export function MatrixChamber({
       <span className={styles.renderStatus}>
         {failed
           ? 'Static chamber'
-          : glyphSet === 'toolkit'
-            ? 'Spatial render · 30 ft · toolkit'
-            : 'Spatial render · 30 ft'}
+          : environment !== 'standard'
+            ? `Powered field · ${environment}`
+            : glyphSet === 'toolkit'
+              ? 'Spatial render · 30 ft · toolkit'
+              : 'Spatial render · 30 ft'}
       </span>
     </div>
   )

@@ -1,0 +1,402 @@
+.page {
+  min-height: 100svh;
+  padding: 1.25rem;
+  color: #b8ffc8;
+  background:
+    linear-gradient(rgba(83, 255, 128, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(83, 255, 128, 0.025) 1px, transparent 1px),
+    #020604;
+  background-size: 4rem 4rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.header {
+  display: grid;
+  height: 3rem;
+  padding: 0 0.25rem;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(115, 255, 151, 0.18);
+  align-items: center;
+  color: rgba(184, 255, 200, 0.5);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.header span {
+  text-align: center;
+}
+
+.header a:hover {
+  color: #e1ffe7;
+}
+
+.intro {
+  display: grid;
+  width: min(100%, 92rem);
+  margin: 0 auto;
+  padding: clamp(4rem, 8vw, 7rem) 0 clamp(3rem, 6vw, 5rem);
+  grid-template-columns: 0.35fr 1fr 0.45fr;
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: end;
+}
+
+.intro p,
+.intro span {
+  margin: 0;
+  color: rgba(184, 255, 200, 0.52);
+  font-size: 0.62rem;
+  line-height: 1.65;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.intro p {
+  align-self: start;
+  color: #84ffa4;
+}
+
+.intro h1 {
+  margin: 0;
+  color: #d0ffdb;
+  font-size: clamp(3rem, 6.6vw, 6.6rem);
+  font-weight: 520;
+  line-height: 0.9;
+  letter-spacing: -0.075em;
+  text-wrap: balance;
+}
+
+.grid {
+  display: grid;
+  width: min(100%, 72rem);
+  margin: 0 auto;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  min-height: min(42rem, 66svh);
+  padding: 1.1rem;
+  border: 1px solid rgba(93, 255, 137, 0.2);
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  background: rgba(0, 8, 2, 0.86);
+  transition:
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.card:hover {
+  border-color: rgba(126, 255, 161, 0.62);
+  transform: translateY(-0.3rem);
+}
+
+.cardTopline {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  color: rgba(184, 255, 200, 0.46);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+}
+
+.scenery {
+  position: absolute;
+  inset: 3.3rem 0.8rem 11.5rem;
+  overflow: hidden;
+  border: 1px solid rgba(102, 255, 143, 0.16);
+  background-color: #010503;
+  background-position: center;
+  background-size: cover;
+}
+
+.scenery::before,
+.scenery::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  pointer-events: none;
+}
+
+.scenery::before {
+  z-index: 2;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 7, 3, 0.02),
+    transparent 45%,
+    rgba(0, 5, 2, 0.72)
+  );
+}
+
+.scenery::after {
+  z-index: 2;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 4px,
+    rgba(101, 255, 144, 0.035) 4px 5px
+  );
+}
+
+.scenery > span {
+  position: absolute;
+  bottom: 0.7rem;
+  left: 0.75rem;
+  z-index: 3;
+  color: rgba(196, 255, 211, 0.48);
+  font-size: 0.48rem;
+  letter-spacing: 0.12em;
+}
+
+.card[data-variant='castle'] .scenery {
+  background-image: url('/images/chambers/castle-courtyard.webp');
+}
+
+.card[data-variant='castle'] .scenery::after {
+  opacity: 0.35;
+}
+
+.card[data-variant='cyber'] .scenery {
+  background:
+    radial-gradient(
+      circle at 50% 48%,
+      rgba(49, 255, 105, 0.14),
+      transparent 28%
+    ),
+    linear-gradient(90deg, rgba(19, 255, 80, 0.04) 1px, transparent 1px),
+    linear-gradient(rgba(19, 255, 80, 0.035) 1px, transparent 1px),
+    linear-gradient(180deg, #010503, #020b06);
+  background-size:
+    auto,
+    4rem 4rem,
+    4rem 4rem,
+    auto;
+}
+
+.card[data-variant='black-glass'] .scenery {
+  background:
+    radial-gradient(
+      ellipse at 50% 72%,
+      rgba(75, 255, 124, 0.2),
+      transparent 24%
+    ),
+    linear-gradient(180deg, #000201 0 42%, #050807 100%);
+}
+
+.card[data-variant='black-glass'] .sceneDepth {
+  overflow: hidden;
+}
+
+.card[data-variant='black-glass'] .sceneDepth::before {
+  position: absolute;
+  right: -10%;
+  bottom: -31%;
+  left: -10%;
+  height: 86%;
+  content: '';
+  background:
+    linear-gradient(rgba(124, 255, 158, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 255, 158, 0.1) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(8, 15, 11, 0.98), #010201);
+  background-size:
+    5rem 4rem,
+    5rem 4rem,
+    auto;
+  box-shadow: 0 -1rem 5rem rgba(65, 255, 113, 0.08) inset;
+  transform: rotateX(66deg);
+  transform-origin: top;
+}
+
+.card[data-variant='black-glass'] .sceneDepth i {
+  position: absolute;
+  bottom: 31%;
+  left: 50%;
+  width: 0.34rem;
+  height: 5.8rem;
+  background: linear-gradient(0deg, transparent, #9bffb7 38%, transparent);
+  box-shadow: 0 0 1.8rem rgba(95, 255, 139, 0.55);
+}
+
+.card[data-variant='black-glass'] .sceneDepth i::after {
+  position: absolute;
+  top: calc(100% - 0.3rem);
+  left: 0;
+  width: 100%;
+  height: 4.8rem;
+  content: '';
+  background: linear-gradient(180deg, rgba(155, 255, 183, 0.5), transparent);
+  filter: blur(1px);
+  transform: scaleY(-1);
+  transform-origin: top;
+}
+
+.card[data-variant='black-glass'] .sceneDepth i:nth-child(1) {
+  margin-left: -29%;
+  transform: scale(0.62);
+}
+
+.card[data-variant='black-glass'] .sceneDepth i:nth-child(2) {
+  margin-left: -16%;
+  transform: scale(0.82);
+}
+
+.card[data-variant='black-glass'] .sceneDepth i:nth-child(3) {
+  height: 8rem;
+}
+
+.card[data-variant='black-glass'] .sceneDepth i:nth-child(4) {
+  margin-left: 16%;
+  transform: scale(0.76);
+}
+
+.card[data-variant='black-glass'] .sceneDepth i:nth-child(5) {
+  margin-left: 29%;
+  transform: scale(0.56);
+}
+
+.sceneDepth {
+  position: absolute;
+  inset: 0;
+  perspective: 28rem;
+  perspective-origin: 50% 43%;
+}
+
+.card[data-variant='castle'] .sceneDepth {
+  display: none;
+}
+
+.card[data-variant='cyber'] .sceneDepth::before {
+  position: absolute;
+  right: 13%;
+  bottom: -18%;
+  left: 13%;
+  height: 82%;
+  border: 1px solid rgba(97, 255, 138, 0.2);
+  content: '';
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(37, 255, 96, 0.07) 0 1px,
+    transparent 1px 2.4rem
+  );
+  transform: rotateX(68deg);
+  transform-origin: bottom;
+}
+
+.card[data-variant='cyber'] .sceneDepth i {
+  position: absolute;
+  bottom: 5%;
+  width: 17%;
+  height: 82%;
+  border: 1px solid rgba(99, 255, 139, 0.25);
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(112, 255, 149, 0.09) 0 2px,
+      transparent 2px 2rem
+    ),
+    linear-gradient(90deg, #020805, #07170e 50%, #020805);
+  box-shadow: 0 0 1.5rem rgba(35, 255, 91, 0.06);
+}
+
+.card[data-variant='cyber'] .sceneDepth i:nth-child(1) {
+  left: -2%;
+  transform: rotateY(24deg);
+}
+
+.card[data-variant='cyber'] .sceneDepth i:nth-child(2) {
+  right: -2%;
+  transform: rotateY(-24deg);
+}
+
+.card[data-variant='cyber'] .sceneDepth i:nth-child(3) {
+  bottom: 21%;
+  left: 21%;
+  height: 58%;
+  transform: rotateY(18deg) translateZ(-5rem);
+}
+
+.card[data-variant='cyber'] .sceneDepth i:nth-child(4) {
+  right: 21%;
+  bottom: 21%;
+  height: 58%;
+  transform: rotateY(-18deg) translateZ(-5rem);
+}
+
+.card[data-variant='cyber'] .sceneDepth i:nth-child(5) {
+  right: 37%;
+  bottom: 38%;
+  left: 37%;
+  width: auto;
+  height: 40%;
+  box-shadow: 0 0 3rem rgba(65, 255, 116, 0.18);
+  transform: translateZ(-10rem);
+}
+
+.cardCopy {
+  position: relative;
+  z-index: 3;
+  padding-right: 1rem;
+}
+
+.card h2 {
+  max-width: 9ch;
+  margin: 0;
+  color: #c9ffd6;
+  font-size: clamp(2.1rem, 3.5vw, 3.6rem);
+  font-weight: 520;
+  line-height: 0.92;
+  letter-spacing: -0.065em;
+}
+
+.card p {
+  max-width: 27rem;
+  margin: 0.9rem 0 0;
+  color: rgba(196, 255, 209, 0.56);
+  font-size: 0.72rem;
+  line-height: 1.65;
+}
+
+.open {
+  font-size: 0.54rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 940px) {
+  .intro {
+    grid-template-columns: 1fr;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    min-height: 30rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .header span {
+    display: none;
+  }
+
+  .header {
+    grid-template-columns: 1fr auto;
+  }
+
+  .intro {
+    padding-top: 3.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+}
