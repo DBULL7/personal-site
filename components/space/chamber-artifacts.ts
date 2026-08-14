@@ -1695,7 +1695,7 @@ function createBlackGlassFloor(
             float packet = pow(max(0.0, flow), 10.0);
             float shimmer = 0.78 + sin(vAlong * 118.0 + time * 1.7 + phase) * 0.22;
             float baseFade = smoothstep(0.0, 0.035, vAlong);
-            float atmosphericFade = 1.0 - smoothstep(0.76, 1.0, vAlong) * 0.58;
+            float atmosphericFade = 1.0 - smoothstep(0.76, 1.0, vAlong) * 0.28;
             float energy = shimmer + packet * (1.25 + surge * 1.5) + surge * 0.22;
             float alpha = opacity * baseFade * atmosphericFade * energy;
             gl_FragColor = vec4(
@@ -1901,8 +1901,8 @@ function createBlackGlassFloor(
         new THREE.TubeGeometry(rootCurve, 48, 0.045, 5, false),
         createEnergyMaterial({
           color: strandColors[rootIndex],
-          opacity: 0.58,
-          brightness: 1.25,
+          opacity: 0.72,
+          brightness: 1.48,
           phase: rootPhase + 0.75,
           packetDensity: 34
         })
@@ -1948,9 +1948,9 @@ function createBlackGlassFloor(
       })
       const pulse = 0.92 + Math.sin(elapsed * 0.72) * 0.08
       bondMaterial.opacity = 0.045 * pulse + surge * 0.04
-      contactMaterial.opacity = 0.045 * pulse + surge * 0.035
+      contactMaterial.opacity = 0.065 * pulse + surge * 0.045
       baseBloomMaterial.opacity = 0.23 * pulse + surge * 0.08
-      ceilingBloomMaterial.opacity = 0.1 * pulse + surge * 0.06
+      ceilingBloomMaterial.opacity = 0.16 * pulse + surge * 0.08
       baseLight.intensity = 20 * pulse + surge * 18
       ceilingLight.intensity = 13 * pulse + surge * 12
       energyPackets.forEach((packet, index) => {
