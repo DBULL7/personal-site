@@ -750,6 +750,68 @@ function createBlackGlassFloor(
   mirror.position.set(0, floorY, roomCenterZ)
   group.add(mirror)
   const mirrorMaterial = mirror.material as THREE.ShaderMaterial
+  let ceilingMirror: Reflector | null = null
+  let ceilingMirrorMaterial: THREE.ShaderMaterial | null = null
+
+  if (isHorizonRailStudy) {
+    const ceilingY = floorY + 38.66
+    if (window.innerWidth >= 700) {
+      ceilingMirror = new Reflector(
+        new THREE.PlaneGeometry(roomWidth, roomDepth),
+        {
+          color: 0x18251c,
+          textureWidth: 512,
+          textureHeight: 512,
+          clipBias: 0.003,
+          multisample: 0,
+          shader: blackGlassShader
+        }
+      )
+      ceilingMirror.rotation.x = Math.PI / 2
+      ceilingMirror.position.set(0, ceilingY, roomCenterZ)
+      ceilingMirrorMaterial = ceilingMirror.material as THREE.ShaderMaterial
+
+      const renderFloorReflection = mirror.onBeforeRender.bind(mirror)
+      const renderCeilingReflection =
+        ceilingMirror.onBeforeRender.bind(ceilingMirror)
+      mirror.onBeforeRender = (...args) => {
+        if (!ceilingMirror) return
+        ceilingMirror.visible = false
+        try {
+          renderFloorReflection(...args)
+        } finally {
+          ceilingMirror.visible = true
+        }
+      }
+      ceilingMirror.onBeforeRender = (...args) => {
+        if (!ceilingMirror) return
+        mirror.visible = false
+        try {
+          renderCeilingReflection(...args)
+        } finally {
+          mirror.visible = true
+        }
+      }
+      group.add(ceilingMirror)
+    } else {
+      const ceiling = new THREE.Mesh(
+        new THREE.PlaneGeometry(roomWidth, roomDepth),
+        new THREE.MeshPhysicalMaterial({
+          color: 0x010302,
+          emissive: 0x031108,
+          emissiveIntensity: 0.35,
+          metalness: 0.98,
+          roughness: 0.09,
+          clearcoat: 1,
+          clearcoatRoughness: 0.08,
+          side: THREE.DoubleSide
+        })
+      )
+      ceiling.rotation.x = Math.PI / 2
+      ceiling.position.set(0, ceilingY, roomCenterZ)
+      group.add(ceiling)
+    }
+  }
 
   const roomMaterial = new THREE.MeshPhysicalMaterial({
     color: 0x010302,
@@ -1721,7 +1783,9 @@ function createBlackGlassFloor(
       const baseOpen = THREE.MathUtils.smoothstep(progress, 0.01, 0.09)
       const ceilingClose = 1 - THREE.MathUtils.smoothstep(progress, 0.78, 1)
       const radius =
-        (0.16 + 3.85 * baseOpen * (0.3 + ceilingClose * 0.7)) *
+        3.85 *
+        baseOpen *
+        ceilingClose *
         (0.94 + Math.sin(progress * Math.PI) * 0.12)
       return new THREE.Vector3(
         Math.sin(angle) * radius,
@@ -1841,74 +1905,11 @@ function createBlackGlassFloor(
     const baseBloom = new THREE.Sprite(baseBloomMaterial)
     baseBloom.position.set(0, 0.55, 0)
     baseBloom.scale.set(8.5, 8.5, 1)
-    const ceilingBloomMaterial = makeBloom(0.14)
+    const ceilingBloomMaterial = makeBloom(0.2)
     const ceilingBloom = new THREE.Sprite(ceilingBloomMaterial)
     ceilingBloom.position.set(0, helixHeight, 0)
-    ceilingBloom.scale.set(22, 22, 1)
+    ceilingBloom.scale.set(5.5, 5.5, 1)
     helix.add(baseBloom, ceilingBloom)
-
-    const contactMaterial = new THREE.MeshBasicMaterial({
-      color: 0x78ff9c,
-      transparent: true,
-      opacity: 0.06,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      side: THREE.DoubleSide,
-      fog: false,
-      toneMapped: false
-    })
-    const ceilingContact = new THREE.Mesh(
-      new THREE.CircleGeometry(8.5, 64),
-      contactMaterial
-    )
-    ceilingContact.rotation.x = Math.PI / 2
-    ceilingContact.position.y = helixHeight + 0.1
-    helix.add(ceilingContact)
-
-    for (let rootIndex = 0; rootIndex < 3; rootIndex += 1) {
-      const rootAngle = (rootIndex / 3) * Math.PI * 2 + 0.35
-      const rootStart = strandPoint(rootIndex, 1)
-      const rootCurve = new THREE.CatmullRomCurve3([
-        rootStart,
-        new THREE.Vector3(
-          Math.cos(rootAngle) * 3.2,
-          helixHeight + 0.08,
-          Math.sin(rootAngle) * 1.7
-        ),
-        new THREE.Vector3(
-          Math.cos(rootAngle) * 6.8,
-          helixHeight + 0.12,
-          Math.sin(rootAngle) * 3.8
-        ),
-        new THREE.Vector3(
-          Math.cos(rootAngle) * 10.5,
-          helixHeight + 0.16,
-          Math.sin(rootAngle) * 5.8
-        )
-      ])
-      const rootPhase = rootIndex * 2.7 + 1.2
-      const rootGlow = new THREE.Mesh(
-        new THREE.TubeGeometry(rootCurve, 48, 0.24, 5, false),
-        createEnergyMaterial({
-          color: strandColors[rootIndex],
-          opacity: 0.07,
-          brightness: 0.82,
-          phase: rootPhase,
-          packetDensity: 31
-        })
-      )
-      const rootCore = new THREE.Mesh(
-        new THREE.TubeGeometry(rootCurve, 48, 0.045, 5, false),
-        createEnergyMaterial({
-          color: strandColors[rootIndex],
-          opacity: 0.72,
-          brightness: 1.48,
-          phase: rootPhase + 0.75,
-          packetDensity: 34
-        })
-      )
-      helix.add(rootGlow, rootCore)
-    }
 
     const packetGeometry = new THREE.SphereGeometry(0.2, 7, 7)
     const energyPackets = strandCurves.flatMap((curve, strandIndex) =>
@@ -1948,9 +1949,8 @@ function createBlackGlassFloor(
       })
       const pulse = 0.92 + Math.sin(elapsed * 0.72) * 0.08
       bondMaterial.opacity = 0.045 * pulse + surge * 0.04
-      contactMaterial.opacity = 0.065 * pulse + surge * 0.045
       baseBloomMaterial.opacity = 0.23 * pulse + surge * 0.08
-      ceilingBloomMaterial.opacity = 0.16 * pulse + surge * 0.08
+      ceilingBloomMaterial.opacity = 0.18 * pulse + surge * 0.1
       baseLight.intensity = 20 * pulse + surge * 18
       ceilingLight.intensity = 13 * pulse + surge * 12
       energyPackets.forEach((packet, index) => {
@@ -2086,6 +2086,10 @@ function createBlackGlassFloor(
       elapsedTime = elapsed
       mirrorMaterial.uniforms.time.value = elapsed
       mirrorMaterial.uniforms.surge.value = surge
+      if (ceilingMirrorMaterial) {
+        ceilingMirrorMaterial.uniforms.time.value = elapsed * 0.82
+        ceilingMirrorMaterial.uniforms.surge.value = surge * 0.55
+      }
       wallUpdaters.forEach((updateWall) => updateWall(elapsed, surge))
       edgeGlints.forEach((edge, index) => {
         if (Array.isArray(edge.material)) return
@@ -2106,6 +2110,7 @@ function createBlackGlassFloor(
     onGlyphEmerge: chargeTile,
     dispose: () => {
       mirror.dispose()
+      ceilingMirror?.dispose()
       chargeTexture.dispose()
       wallTextures.forEach((texture) => texture.dispose())
     }
