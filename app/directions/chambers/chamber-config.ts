@@ -67,7 +67,7 @@ export const blackGlassStudyConfigs: Record<
     status: 'HORIZON_LOCKED',
     instruction: 'CLICK TO CHARGE THE RAILS',
     description:
-      'Two luminous rails define the safe passage across seamless black glass. Beyond them, irregular storms frame a distant triple helix climbing into the dark.'
+      'Two luminous rails define the safe passage across seamless black glass. Beyond them, silent survey skimmers patrol almost-black water while irregular storms frame a distant triple helix.'
   },
   terminal: {
     index: 'F3',

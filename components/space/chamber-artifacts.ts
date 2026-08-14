@@ -1806,17 +1806,17 @@ function createBlackGlassFloor(
 
             float nearRail = exp(-railDistance * 13.0);
             float farFade = 1.0 - smoothstep(0.76, 1.0, vUv.y) * 0.62;
-            float reflectionStrength = mix(0.1, 0.3, fresnel) + storm * 0.12;
-            vec3 deepWater = vec3(0.0007, 0.0026, 0.00135);
+            float reflectionStrength = mix(0.025, 0.11, fresnel) + storm * 0.045;
+            vec3 deepWater = vec3(0.00018, 0.0007, 0.00034);
             vec3 surface = deepWater;
             surface += reflected * reflectionStrength * farFade;
             surface += vec3(0.08, 0.7, 0.25) *
-              (nearRail * 0.012 + lap * (0.018 + storm * 0.055)) *
+              (nearRail * 0.004 + lap * (0.008 + storm * 0.022)) *
               farFade;
             float dither = fract(
               sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453
             ) - 0.5;
-            surface += dither * 0.0012;
+            surface += dither * 0.00045;
             gl_FragColor = vec4(max(surface, 0.0), 1.0);
 
             #include <tonemapping_fragment>
@@ -1846,6 +1846,166 @@ function createBlackGlassFloor(
 
     group.add(liquidGroup)
     floorReflectionExclusions.push(liquidGroup)
+    const skimmerBodyGeometry = new THREE.SphereGeometry(0.36, 20, 12)
+    const skimmerBodyMaterial = new THREE.MeshStandardMaterial({
+      color: 0x020b06,
+      emissive: 0x003b16,
+      emissiveIntensity: 1.1,
+      metalness: 0.96,
+      roughness: 0.24
+    })
+    const skimmerFinGeometry = new THREE.BoxGeometry(0.78, 0.035, 0.075)
+    const skimmerRimGeometry = new THREE.TorusGeometry(0.285, 0.014, 8, 28)
+    const skimmerSensorGeometry = new THREE.SphereGeometry(0.042, 12, 8)
+    const skimmerSensorGlowGeometry = new THREE.SphereGeometry(0.077, 12, 8)
+    const skimmerSensorMaterial = new THREE.MeshBasicMaterial({
+      color: 0xa9ffc0,
+      toneMapped: false
+    })
+    const skimmerGlowMaterial = new THREE.MeshBasicMaterial({
+      color: 0x4cff7b,
+      transparent: true,
+      opacity: 0.24,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      toneMapped: false
+    })
+    const skimmerRimMaterial = new THREE.MeshBasicMaterial({
+      color: 0x35e66b,
+      transparent: true,
+      opacity: 0.32,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      toneMapped: false
+    })
+    const searchBeamGeometry = new THREE.BufferGeometry()
+    searchBeamGeometry.setAttribute(
+      'position',
+      new THREE.BufferAttribute(
+        new Float32Array([0, 0, -0.2, -1.08, 0, -4.8, 1.08, 0, -4.8]),
+        3
+      )
+    )
+    searchBeamGeometry.setAttribute(
+      'uv',
+      new THREE.BufferAttribute(new Float32Array([0.5, 0, 0, 1, 1, 1]), 2)
+    )
+    searchBeamGeometry.setIndex([0, 1, 2])
+
+    const skimmerConfigs = [
+      {
+        side: -1,
+        x: 14.15,
+        xDrift: 0.28,
+        z: roomNearZ - 23,
+        zDrift: 4.8,
+        speed: 0.16,
+        phase: 0.4,
+        scale: 1.35
+      },
+      {
+        side: 1,
+        x: 14.35,
+        xDrift: 0.48,
+        z: roomNearZ - 30,
+        zDrift: 5.7,
+        speed: 0.12,
+        phase: 2.2,
+        scale: 1
+      },
+      {
+        side: -1,
+        x: 14.25,
+        xDrift: 0.36,
+        z: roomFarZ + 21,
+        zDrift: 4.5,
+        speed: 0.1,
+        phase: 4.35,
+        scale: 0.72
+      },
+      {
+        side: 1,
+        x: 14.45,
+        xDrift: 0.5,
+        z: roomFarZ + 10,
+        zDrift: 3.8,
+        speed: 0.075,
+        phase: 1.25,
+        scale: 0.52
+      }
+    ]
+    const skimmers = skimmerConfigs.map((config, index) => {
+      const skimmer = new THREE.Group()
+      const body = new THREE.Mesh(skimmerBodyGeometry, skimmerBodyMaterial)
+      body.scale.set(1.1, 0.26, 0.72)
+      body.position.y = 0.035
+      const fin = new THREE.Mesh(skimmerFinGeometry, skimmerBodyMaterial)
+      fin.position.set(0, 0.015, 0.05)
+      const rim = new THREE.Mesh(skimmerRimGeometry, skimmerRimMaterial)
+      rim.rotation.x = Math.PI / 2
+      rim.scale.set(1.28, 0.82, 1)
+      rim.position.y = 0.035
+      const sensors = [-0.09, 0.09].map((x) => {
+        const sensor = new THREE.Group()
+        const eye = new THREE.Mesh(skimmerSensorGeometry, skimmerSensorMaterial)
+        const glow = new THREE.Mesh(
+          skimmerSensorGlowGeometry,
+          skimmerGlowMaterial
+        )
+        sensor.position.set(x, 0.06, -0.255)
+        sensor.add(glow, eye)
+        return sensor
+      })
+
+      const scanner = new THREE.Group()
+      const searchMaterial = new THREE.ShaderMaterial({
+        uniforms: {
+          time: { value: 0 },
+          storm: { value: 0 },
+          phase: { value: config.phase }
+        },
+        vertexShader: /* glsl */ `
+          varying vec2 vUv;
+
+          void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: /* glsl */ `
+          uniform float time;
+          uniform float storm;
+          uniform float phase;
+          varying vec2 vUv;
+
+          void main() {
+            float edge = 1.0 - abs(vUv.x * 2.0 - 1.0);
+            edge = smoothstep(0.0, 0.72, edge);
+            float lengthFade = smoothstep(0.02, 0.18, vUv.y) *
+              (1.0 - smoothstep(0.42, 1.0, vUv.y));
+            float sweepTexture = 0.82 +
+              sin(vUv.y * 36.0 - time * 0.9 + phase) * 0.08;
+            float alpha = edge * lengthFade * sweepTexture *
+              (0.06 + storm * 0.055);
+            gl_FragColor = vec4(vec3(0.08, 0.72, 0.24), alpha);
+          }
+        `,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide,
+        toneMapped: false
+      })
+      const searchBeam = new THREE.Mesh(searchBeamGeometry, searchMaterial)
+      searchBeam.position.y = -0.105
+      scanner.add(searchBeam)
+      skimmer.add(body, fin, rim, ...sensors, scanner)
+      skimmer.scale.setScalar(config.scale)
+      group.add(skimmer)
+
+      return { config, index, skimmer, scanner, searchMaterial, sensors }
+    })
+
     let reflectedStorm = 0
     wallUpdaters.push((elapsed, surge) => {
       const target = Math.max(horizonStormEnergy, surge * 0.72)
@@ -1855,6 +2015,40 @@ function createBlackGlassFloor(
         material.uniforms.time.value = elapsed
         material.uniforms.storm.value = reflectedStorm
       })
+      skimmers.forEach(
+        ({ config, index, skimmer, scanner, searchMaterial, sensors }) => {
+          const travel = elapsed * config.speed + config.phase
+          const lateralPhase = travel * 0.73 + config.phase * 0.41
+          const x =
+            config.side * (config.x + Math.sin(lateralPhase) * config.xDrift)
+          const z = config.z + Math.sin(travel) * config.zDrift
+          const velocityX =
+            config.side *
+            Math.cos(lateralPhase) *
+            config.xDrift *
+            config.speed *
+            0.73
+          const velocityZ = Math.cos(travel) * config.zDrift * config.speed
+          skimmer.position.set(
+            x,
+            floorY +
+              0.058 +
+              0.105 * config.scale +
+              Math.sin(elapsed * 0.72 + index) * 0.012 * config.scale,
+            z
+          )
+          skimmer.rotation.y = Math.atan2(-velocityX, -velocityZ)
+          scanner.rotation.y =
+            -config.side * (Math.PI / 2) -
+            skimmer.rotation.y +
+            Math.sin(elapsed * (0.34 + index * 0.035) + config.phase) * 0.34
+          searchMaterial.uniforms.time.value = elapsed
+          searchMaterial.uniforms.storm.value = reflectedStorm
+          const sensorPulse =
+            0.82 + Math.sin(elapsed * 1.15 + config.phase) * 0.18
+          sensors.forEach((sensor) => sensor.scale.setScalar(sensorPulse))
+        }
+      )
     })
   }
 
