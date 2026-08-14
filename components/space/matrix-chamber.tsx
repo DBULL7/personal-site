@@ -109,7 +109,6 @@ type MatrixChamberProps = {
   glyphSet?: 'matrix' | 'toolkit'
   environment?: ChamberEnvironment
   blackGlassBackWall?: BlackGlassBackWallStudy
-  hazardStrikesPerMinute?: number
 }
 
 type RainGlyph =
@@ -341,8 +340,7 @@ export function MatrixChamber({
   paused = false,
   glyphSet = 'matrix',
   environment = 'standard',
-  blackGlassBackWall = 'baseline',
-  hazardStrikesPerMinute = 20
+  blackGlassBackWall = 'baseline'
 }: MatrixChamberProps) {
   const hostRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -407,9 +405,18 @@ export function MatrixChamber({
       scene.add(floorLight)
     }
 
-    const camera = new THREE.PerspectiveCamera(56, 1, 0.1, 80)
+    const camera = new THREE.PerspectiveCamera(
+      56,
+      1,
+      0.1,
+      blackGlassBackWall === 'wall-lightning' ? 150 : 80
+    )
     camera.position.set(0, 1.4, 14)
-    const cameraTarget = new THREE.Vector3(0, 0.4, -7)
+    const cameraTarget = new THREE.Vector3(
+      0,
+      blackGlassBackWall === 'wall-lightning' ? 2.1 : 0.4,
+      -7
+    )
     camera.lookAt(cameraTarget)
 
     let seed = 481516
@@ -497,8 +504,7 @@ export function MatrixChamber({
       environment,
       floorY,
       artifactCenterZ,
-      blackGlassBackWall,
-      hazardStrikesPerMinute
+      blackGlassBackWall
     )
     if (artifact) scene.add(artifact.group)
 
@@ -863,7 +869,7 @@ export function MatrixChamber({
       })
       renderer.dispose()
     }
-  }, [blackGlassBackWall, environment, glyphSet, hazardStrikesPerMinute])
+  }, [blackGlassBackWall, environment, glyphSet])
 
   return (
     <div

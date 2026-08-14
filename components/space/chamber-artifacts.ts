@@ -30,6 +30,7 @@ export type ChamberArtifact = {
 const GREEN = 0x72ff9a
 const BRIGHT_GREEN = 0xb8ffc8
 const DARK_GREEN = 0x176532
+const HORIZON_STRIKES_PER_MINUTE = 90
 
 function additiveMaterial(color = GREEN, opacity = 0.5, wireframe = false) {
   return new THREE.MeshBasicMaterial({
@@ -660,8 +661,7 @@ function createCyberVault(floorY: number, centerZ: number): ChamberArtifact {
 function createBlackGlassFloor(
   floorY: number,
   centerZ: number,
-  backWallStudy: BlackGlassBackWallStudy,
-  hazardStrikesPerMinute: number
+  backWallStudy: BlackGlassBackWallStudy
 ): ChamberArtifact {
   const group = new THREE.Group()
   const reflectionSize = window.innerWidth < 700 ? 512 : 1024
@@ -1309,7 +1309,7 @@ function createBlackGlassFloor(
   }
 
   const addHazardLightning = () => {
-    const strikeRate = THREE.MathUtils.clamp(hazardStrikesPerMinute, 0, 90)
+    const strikeRate = HORIZON_STRIKES_PER_MINUTE
     const averageStrikeInterval =
       strikeRate > 0 ? 60 / strikeRate : Number.POSITIVE_INFINITY
     const actorCount = window.innerWidth < 700 ? 3 : 6
@@ -1634,6 +1634,335 @@ function createBlackGlassFloor(
     })
   }
 
+  const addHorizonHelix = () => {
+    const helix = new THREE.Group()
+    const helixHeight = 38.5
+    const helixTurns = 7.5
+    const helixSegments = window.innerWidth < 700 ? 112 : 168
+    const helixZ = roomFarZ + 1.8
+    const strandCurves: THREE.CatmullRomCurve3[] = []
+    const energyMaterials: THREE.ShaderMaterial[] = []
+    const strandColors = [0x43ff77, 0xc3ffd2, 0x35e6bd]
+
+    const createEnergyMaterial = ({
+      color,
+      opacity,
+      brightness,
+      phase,
+      packetDensity
+    }: {
+      color: number
+      opacity: number
+      brightness: number
+      phase: number
+      packetDensity: number
+    }) => {
+      const material = new THREE.ShaderMaterial({
+        uniforms: {
+          time: { value: 0 },
+          surge: { value: 0 },
+          color: { value: new THREE.Color(color) },
+          opacity: { value: opacity },
+          brightness: { value: brightness },
+          phase: { value: phase },
+          packetDensity: { value: packetDensity }
+        },
+        vertexShader: /* glsl */ `
+          varying float vAlong;
+          varying float vFacing;
+
+          void main() {
+            vAlong = uv.x;
+            vec4 viewPosition = modelViewMatrix * vec4(position, 1.0);
+            vec3 viewNormal = normalize(normalMatrix * normal);
+            vFacing = clamp(0.42 + abs(viewNormal.z) * 0.58, 0.0, 1.0);
+            gl_Position = projectionMatrix * viewPosition;
+          }
+        `,
+        fragmentShader: /* glsl */ `
+          uniform float time;
+          uniform float surge;
+          uniform vec3 color;
+          uniform float opacity;
+          uniform float brightness;
+          uniform float phase;
+          uniform float packetDensity;
+          varying float vAlong;
+          varying float vFacing;
+
+          void main() {
+            float flow = sin(vAlong * packetDensity - time * 4.6 + phase);
+            float packet = pow(max(0.0, flow), 10.0);
+            float shimmer = 0.78 + sin(vAlong * 118.0 + time * 1.7 + phase) * 0.22;
+            float baseFade = smoothstep(0.0, 0.035, vAlong);
+            float atmosphericFade = 1.0 - smoothstep(0.76, 1.0, vAlong) * 0.58;
+            float energy = shimmer + packet * (1.25 + surge * 1.5) + surge * 0.22;
+            float alpha = opacity * baseFade * atmosphericFade * energy;
+            gl_FragColor = vec4(
+              color * brightness * energy * (0.76 + vFacing * 0.24),
+              alpha
+            );
+          }
+        `,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide,
+        fog: false,
+        toneMapped: false
+      })
+      energyMaterials.push(material)
+      return material
+    }
+
+    const strandPoint = (strandIndex: number, progress: number) => {
+      const phase = (strandIndex / 3) * Math.PI * 2
+      const angle = progress * helixTurns * Math.PI * 2 + phase
+      const baseOpen = THREE.MathUtils.smoothstep(progress, 0.01, 0.09)
+      const ceilingClose = 1 - THREE.MathUtils.smoothstep(progress, 0.78, 1)
+      const radius =
+        (0.16 + 3.85 * baseOpen * (0.3 + ceilingClose * 0.7)) *
+        (0.94 + Math.sin(progress * Math.PI) * 0.12)
+      return new THREE.Vector3(
+        Math.sin(angle) * radius,
+        progress * helixHeight,
+        Math.cos(angle) * radius * 0.48
+      )
+    }
+
+    for (let strandIndex = 0; strandIndex < 3; strandIndex += 1) {
+      const points = Array.from({ length: helixSegments + 1 }, (_, index) =>
+        strandPoint(strandIndex, index / helixSegments)
+      )
+      const curve = new THREE.CatmullRomCurve3(points)
+      strandCurves.push(curve)
+      const phase = strandIndex * 2.31
+      const glowGeometry = new THREE.TubeGeometry(
+        curve,
+        helixSegments,
+        0.42,
+        5,
+        false
+      )
+      const coreGeometry = new THREE.TubeGeometry(
+        curve,
+        helixSegments,
+        0.085,
+        6,
+        false
+      )
+      const glow = new THREE.Mesh(
+        glowGeometry,
+        createEnergyMaterial({
+          color: strandColors[strandIndex],
+          opacity: 0.08,
+          brightness: 0.88,
+          phase,
+          packetDensity: 58 + strandIndex * 5
+        })
+      )
+      const core = new THREE.Mesh(
+        coreGeometry,
+        createEnergyMaterial({
+          color: strandColors[strandIndex],
+          opacity: 0.62,
+          brightness: 1.42,
+          phase: phase + 0.8,
+          packetDensity: 63 + strandIndex * 4
+        })
+      )
+      helix.add(glow, core)
+    }
+
+    const bondPositions: number[] = []
+    for (let step = 3; step < 39; step += 3) {
+      const progress = step / 40
+      const points = [0, 1, 2].map((strandIndex) =>
+        strandPoint(strandIndex, progress)
+      )
+      for (let index = 0; index < 3; index += 1) {
+        bondPositions.push(
+          ...points[index].toArray(),
+          ...points[(index + 1) % 3].toArray()
+        )
+      }
+    }
+    const bondGeometry = new THREE.BufferGeometry()
+    bondGeometry.setAttribute(
+      'position',
+      new THREE.Float32BufferAttribute(bondPositions, 3)
+    )
+    const bondMaterial = new THREE.LineBasicMaterial({
+      color: 0x79ffa0,
+      transparent: true,
+      opacity: 0.055,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      fog: false,
+      toneMapped: false
+    })
+    helix.add(new THREE.LineSegments(bondGeometry, bondMaterial))
+
+    const glowCanvas = document.createElement('canvas')
+    glowCanvas.width = 256
+    glowCanvas.height = 256
+    const glowContext = glowCanvas.getContext('2d')
+    if (glowContext) {
+      const gradient = glowContext.createRadialGradient(
+        128,
+        128,
+        0,
+        128,
+        128,
+        128
+      )
+      gradient.addColorStop(0, 'rgba(216, 255, 226, 1)')
+      gradient.addColorStop(0.08, 'rgba(112, 255, 154, .82)')
+      gradient.addColorStop(0.34, 'rgba(42, 226, 105, .19)')
+      gradient.addColorStop(1, 'rgba(0, 20, 4, 0)')
+      glowContext.fillStyle = gradient
+      glowContext.fillRect(0, 0, 256, 256)
+    }
+    const glowTexture = new THREE.CanvasTexture(glowCanvas)
+    glowTexture.colorSpace = THREE.SRGBColorSpace
+    wallTextures.push(glowTexture)
+    const makeBloom = (opacity: number) =>
+      new THREE.SpriteMaterial({
+        map: glowTexture,
+        color: 0x83ffa2,
+        transparent: true,
+        opacity,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        fog: false,
+        toneMapped: false
+      })
+    const baseBloomMaterial = makeBloom(0.28)
+    const baseBloom = new THREE.Sprite(baseBloomMaterial)
+    baseBloom.position.set(0, 0.55, 0)
+    baseBloom.scale.set(8.5, 8.5, 1)
+    const ceilingBloomMaterial = makeBloom(0.14)
+    const ceilingBloom = new THREE.Sprite(ceilingBloomMaterial)
+    ceilingBloom.position.set(0, helixHeight, 0)
+    ceilingBloom.scale.set(22, 22, 1)
+    helix.add(baseBloom, ceilingBloom)
+
+    const contactMaterial = new THREE.MeshBasicMaterial({
+      color: 0x78ff9c,
+      transparent: true,
+      opacity: 0.06,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
+      fog: false,
+      toneMapped: false
+    })
+    const ceilingContact = new THREE.Mesh(
+      new THREE.CircleGeometry(8.5, 64),
+      contactMaterial
+    )
+    ceilingContact.rotation.x = Math.PI / 2
+    ceilingContact.position.y = helixHeight + 0.1
+    helix.add(ceilingContact)
+
+    for (let rootIndex = 0; rootIndex < 3; rootIndex += 1) {
+      const rootAngle = (rootIndex / 3) * Math.PI * 2 + 0.35
+      const rootStart = strandPoint(rootIndex, 1)
+      const rootCurve = new THREE.CatmullRomCurve3([
+        rootStart,
+        new THREE.Vector3(
+          Math.cos(rootAngle) * 3.2,
+          helixHeight + 0.08,
+          Math.sin(rootAngle) * 1.7
+        ),
+        new THREE.Vector3(
+          Math.cos(rootAngle) * 6.8,
+          helixHeight + 0.12,
+          Math.sin(rootAngle) * 3.8
+        ),
+        new THREE.Vector3(
+          Math.cos(rootAngle) * 10.5,
+          helixHeight + 0.16,
+          Math.sin(rootAngle) * 5.8
+        )
+      ])
+      const rootPhase = rootIndex * 2.7 + 1.2
+      const rootGlow = new THREE.Mesh(
+        new THREE.TubeGeometry(rootCurve, 48, 0.24, 5, false),
+        createEnergyMaterial({
+          color: strandColors[rootIndex],
+          opacity: 0.07,
+          brightness: 0.82,
+          phase: rootPhase,
+          packetDensity: 31
+        })
+      )
+      const rootCore = new THREE.Mesh(
+        new THREE.TubeGeometry(rootCurve, 48, 0.045, 5, false),
+        createEnergyMaterial({
+          color: strandColors[rootIndex],
+          opacity: 0.58,
+          brightness: 1.25,
+          phase: rootPhase + 0.75,
+          packetDensity: 34
+        })
+      )
+      helix.add(rootGlow, rootCore)
+    }
+
+    const packetGeometry = new THREE.SphereGeometry(0.2, 7, 7)
+    const energyPackets = strandCurves.flatMap((curve, strandIndex) =>
+      Array.from({ length: 3 }, (_, packetIndex) => {
+        const material = new THREE.MeshBasicMaterial({
+          color: strandColors[strandIndex],
+          transparent: true,
+          opacity: 0.9,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+          fog: false,
+          toneMapped: false
+        })
+        const mesh = new THREE.Mesh(packetGeometry, material)
+        helix.add(mesh)
+        return {
+          curve,
+          mesh,
+          material,
+          offset: (packetIndex + strandIndex / 3) / 3
+        }
+      })
+    )
+
+    const baseLight = new THREE.PointLight(0x72ff9a, 24, 22, 1.65)
+    baseLight.position.set(0, floorY + 0.8, helixZ + 1)
+    const ceilingLight = new THREE.PointLight(0x72ff9a, 16, 26, 1.8)
+    ceilingLight.position.set(0, floorY + helixHeight - 1, helixZ)
+    helix.position.set(0, floorY + 0.08, helixZ)
+    group.add(helix, baseLight, ceilingLight)
+
+    wallUpdaters.push((elapsed, surge) => {
+      helix.rotation.y = elapsed * 0.045
+      energyMaterials.forEach((material) => {
+        material.uniforms.time.value = elapsed
+        material.uniforms.surge.value = surge
+      })
+      const pulse = 0.92 + Math.sin(elapsed * 0.72) * 0.08
+      bondMaterial.opacity = 0.045 * pulse + surge * 0.04
+      contactMaterial.opacity = 0.045 * pulse + surge * 0.035
+      baseBloomMaterial.opacity = 0.23 * pulse + surge * 0.08
+      ceilingBloomMaterial.opacity = 0.1 * pulse + surge * 0.06
+      baseLight.intensity = 20 * pulse + surge * 18
+      ceilingLight.intensity = 13 * pulse + surge * 12
+      energyPackets.forEach((packet, index) => {
+        const progress = (elapsed * 0.075 + packet.offset) % 1
+        packet.mesh.position.copy(packet.curve.getPointAt(progress))
+        const packetPulse = 0.7 + Math.sin(elapsed * 4.2 + index * 1.7) * 0.3
+        packet.material.opacity = packetPulse * (1 - progress * 0.48)
+        packet.mesh.scale.setScalar(0.72 + packetPulse * 0.85)
+      })
+    })
+  }
+
   if (backWallStudy === 'terminal') addTerminalWall()
   if (backWallStudy === 'matrix-rain') addMatrixRainWall()
   if (backWallStudy === 'server-wall') addServerWall()
@@ -1641,6 +1970,7 @@ function createBlackGlassFloor(
   if (backWallStudy === 'lightning') addDepthLightning({ count: 15 })
   if (backWallStudy === 'wall-lightning') {
     addHorizonRails()
+    addHorizonHelix()
     addHazardLightning()
   }
   if (backWallStudy === 'server-lightning') {
@@ -1786,19 +2116,13 @@ export function createChamberArtifact(
   environment: ChamberEnvironment,
   floorY: number,
   centerZ: number,
-  blackGlassBackWall: BlackGlassBackWallStudy = 'baseline',
-  hazardStrikesPerMinute = 20
+  blackGlassBackWall: BlackGlassBackWallStudy = 'baseline'
 ): ChamberArtifact | null {
   if (environment === 'relic') return createRelic(floorY, centerZ)
   if (environment === 'reactor') return createReactor(floorY, centerZ)
   if (environment === 'invocation') return createInvocation(floorY, centerZ)
   if (environment === 'cyber') return createCyberVault(floorY, centerZ)
   if (environment === 'black-glass')
-    return createBlackGlassFloor(
-      floorY,
-      centerZ,
-      blackGlassBackWall,
-      hazardStrikesPerMinute
-    )
+    return createBlackGlassFloor(floorY, centerZ, blackGlassBackWall)
   return null
 }

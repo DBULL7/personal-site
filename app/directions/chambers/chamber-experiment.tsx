@@ -29,7 +29,6 @@ export function ChamberExperiment({
   blackGlassStudy?: BlackGlassStudy
 }) {
   const [paused, setPaused] = useState(false)
-  const [hazardStrikesPerMinute, setHazardStrikesPerMinute] = useState(20)
   const config =
     variant === 'black-glass'
       ? blackGlassStudyConfigs[blackGlassStudy]
@@ -47,7 +46,6 @@ export function ChamberExperiment({
         glyphSet="toolkit"
         environment={variant}
         blackGlassBackWall={blackGlassStudy}
-        hazardStrikesPerMinute={hazardStrikesPerMinute}
       />
       <div className={styles.scanlines} aria-hidden="true" />
       <div className={styles.vignette} aria-hidden="true" />
@@ -143,24 +141,6 @@ export function ChamberExperiment({
       ) : null}
 
       <div className={styles.controls}>
-        {blackGlassStudy === 'wall-lightning' ? (
-          <label className={styles.strikeRate}>
-            <span>STRIKES/MIN</span>
-            <select
-              aria-label="Automatic lightning strikes per minute"
-              value={hazardStrikesPerMinute}
-              onChange={(event) =>
-                setHazardStrikesPerMinute(Number(event.target.value))
-              }
-            >
-              {[0, 6, 12, 20, 30, 60, 75, 90].map((rate) => (
-                <option key={rate} value={rate}>
-                  {rate === 0 ? 'OFF' : rate}
-                </option>
-              ))}
-            </select>
-          </label>
-        ) : null}
         <button
           type="button"
           aria-pressed={paused}
