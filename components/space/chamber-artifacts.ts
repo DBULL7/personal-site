@@ -750,6 +750,8 @@ function createBlackGlassFloor(
   mirror.position.set(0, floorY, roomCenterZ)
   group.add(mirror)
   const mirrorMaterial = mirror.material as THREE.ShaderMaterial
+  const floorReflectionExclusions: THREE.Object3D[] = []
+  const renderFloorReflection = mirror.onBeforeRender.bind(mirror)
   let ceilingMirror: Reflector | null = null
   let ceilingMirrorMaterial: THREE.ShaderMaterial | null = null
 
@@ -771,18 +773,8 @@ function createBlackGlassFloor(
       ceilingMirror.position.set(0, ceilingY, roomCenterZ)
       ceilingMirrorMaterial = ceilingMirror.material as THREE.ShaderMaterial
 
-      const renderFloorReflection = mirror.onBeforeRender.bind(mirror)
       const renderCeilingReflection =
         ceilingMirror.onBeforeRender.bind(ceilingMirror)
-      mirror.onBeforeRender = (...args) => {
-        if (!ceilingMirror) return
-        ceilingMirror.visible = false
-        try {
-          renderFloorReflection(...args)
-        } finally {
-          ceilingMirror.visible = true
-        }
-      }
       ceilingMirror.onBeforeRender = (...args) => {
         if (!ceilingMirror) return
         mirror.visible = false
@@ -810,6 +802,26 @@ function createBlackGlassFloor(
       ceiling.rotation.x = Math.PI / 2
       ceiling.position.set(0, ceilingY, roomCenterZ)
       group.add(ceiling)
+    }
+  }
+
+  if (isHorizonRailStudy) {
+    mirror.onBeforeRender = (...args) => {
+      const visibility = floorReflectionExclusions.map(
+        (object) => object.visible
+      )
+      floorReflectionExclusions.forEach((object) => {
+        object.visible = false
+      })
+      if (ceilingMirror) ceilingMirror.visible = false
+      try {
+        renderFloorReflection(...args)
+      } finally {
+        floorReflectionExclusions.forEach((object, index) => {
+          object.visible = visibility[index]
+        })
+        if (ceilingMirror) ceilingMirror.visible = true
+      }
     }
   }
 
@@ -862,6 +874,7 @@ function createBlackGlassFloor(
 
   const wallUpdaters: Array<(elapsed: number, surge: number) => void> = []
   const wallTextures: THREE.CanvasTexture[] = []
+  let horizonStormEnergy = 0
   let wallSeed = 93017
   const wallRandom = () => {
     wallSeed = (wallSeed * 16807) % 2147483647
@@ -1548,6 +1561,7 @@ function createBlackGlassFloor(
         actorCursor = (actorCursor + 1) % actors.length
       }
 
+      let strongestEnergy = 0
       actors.forEach((actor, index) => {
         const age = elapsed - actor.startedAt
         const active = age >= 0 && age < actor.duration
@@ -1567,7 +1581,9 @@ function createBlackGlassFloor(
         actor.flashLight.intensity =
           energy * THREE.MathUtils.lerp(28, 95, actor.depth)
         actor.group.rotation.y = Math.sin(index * 2.17) * 0.018
+        strongestEnergy = Math.max(strongestEnergy, energy)
       })
+      horizonStormEnergy = strongestEnergy
     })
   }
 
@@ -1575,6 +1591,7 @@ function createBlackGlassFloor(
     const railLength = roomDepth - 0.8
     const railCenterZ = roomCenterZ + 0.25
     const railMaterials: THREE.ShaderMaterial[] = []
+    const railGroup = new THREE.Group()
 
     const createRailMaterial = ({
       opacity,
@@ -1670,7 +1687,7 @@ function createBlackGlassFloor(
         })
       )
       wallBloom.position.set(railX + side * 0.075, floorY + 0.36, railCenterZ)
-      group.add(core, floorBloom, wallBloom)
+      railGroup.add(core, floorBloom, wallBloom)
       ;[
         { z: roomNearZ - 7, intensity: 15, distance: 11 },
         { z: centerZ - 5, intensity: 7, distance: 9 },
@@ -1687,11 +1704,141 @@ function createBlackGlassFloor(
         })
       })
     })
+    group.add(railGroup)
+    floorReflectionExclusions.push(railGroup)
 
     wallUpdaters.push((elapsed, surge) => {
       railMaterials.forEach((material) => {
         material.uniforms.time.value = elapsed
         material.uniforms.surge.value = surge
+      })
+    })
+  }
+
+  const addHorizonLiquid = () => {
+    if (window.innerWidth < 900) return
+
+    const innerEdge = 13.42
+    const liquidWidth = roomWidth / 2 - innerEdge
+    const liquidGroup = new THREE.Group()
+    const liquidMaterials: THREE.ShaderMaterial[] = []
+
+    ;[-1, 1].forEach((side) => {
+      const material = new THREE.ShaderMaterial({
+        uniforms: {
+          time: { value: 0 },
+          storm: { value: 0 },
+          side: { value: side },
+          color: { value: new THREE.Color(0x58f58a) }
+        },
+        vertexShader: /* glsl */ `
+          uniform float time;
+          uniform float side;
+          varying vec2 vUv;
+          varying float vCrest;
+
+          void main() {
+            vUv = uv;
+            float railDistance = side > 0.0 ? uv.x : 1.0 - uv.x;
+            float shore = 1.0 - smoothstep(0.0, 0.16, railDistance);
+            float longWave = sin(position.y * 0.52 + time * 0.62 + side * 1.7) * 0.026;
+            float crossWave = sin(position.y * 0.24 - position.x * 0.88 - time * 0.48) * 0.016;
+            float shoreWave = sin(position.y * 1.36 - time * 0.96 + side) * 0.03 * shore;
+            float microWave = sin(position.y * 2.7 + position.x * 1.2 + time * 0.34) * 0.006;
+            float wave = longWave + crossWave + shoreWave + microWave;
+            vec3 transformed = position;
+            transformed.z += wave;
+            vCrest = wave * 17.0;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
+          }
+        `,
+        fragmentShader: /* glsl */ `
+          uniform float time;
+          uniform float storm;
+          uniform float side;
+          uniform vec3 color;
+          varying vec2 vUv;
+          varying float vCrest;
+
+          void main() {
+            float railDistance = side > 0.0 ? vUv.x : 1.0 - vUv.x;
+            float lapCenter = 0.018 +
+              sin(vUv.y * 51.0 - time * 0.82 + side) * 0.007 +
+              sin(vUv.y * 19.0 + time * 0.37) * 0.004;
+            float lap = 1.0 - smoothstep(
+              0.003,
+              0.025,
+              abs(railDistance - lapCenter)
+            );
+            float ridgeA = 0.5 + 0.5 * sin(vUv.y * 83.0 - time * 1.08 + side * 2.1);
+            float ridgeB = 0.5 + 0.5 * sin(vUv.y * 37.0 + vUv.x * 24.0 + time * 0.46);
+            float ripple = pow(max(0.0, ridgeA * ridgeB), 8.0);
+            float waveletPattern = 0.5 + 0.5 * sin(
+              vUv.y * 71.0 - time * 0.9 +
+              sin(vUv.x * 22.0 + time * 0.26) * 1.7
+            );
+            float wavelet = pow(waveletPattern, 18.0) *
+              (1.0 - smoothstep(0.15, 0.95, railDistance));
+            float broadSheen = pow(
+              0.5 + 0.5 * sin(
+                vUv.y * 21.0 - time * 0.32 +
+                sin(vUv.x * 8.0 + side) * 1.2
+              ),
+              22.0
+            ) * (1.0 - smoothstep(0.35, 1.0, railDistance));
+            float brokenLap = lap *
+              (0.36 + 0.64 * pow(0.5 + 0.5 * sin(vUv.y * 97.0 - time * 0.5 + side), 4.0));
+            float crest = pow(max(0.0, vCrest), 4.0);
+            float railReflection = exp(-railDistance * 12.0) *
+              (0.045 + ripple * 0.11 + brokenLap * 0.12);
+            float stormReflection = storm *
+              (0.04 + brokenLap * 0.28 + ripple * 0.22 + crest * 0.12) *
+              (1.0 - smoothstep(0.5, 1.0, railDistance));
+            float farFade = 1.0 - smoothstep(0.8, 1.0, vUv.y) * 0.72;
+            vec3 deepWater = vec3(0.0015, 0.008, 0.004);
+            vec3 reflectedLight = color *
+              (
+                railReflection + ripple * 0.038 +
+                wavelet * 0.075 + broadSheen * 0.055 +
+                max(vCrest, 0.0) * 0.028 +
+                stormReflection
+              ) * 1.3 *
+              farFade;
+            float alpha = 0.8 - ripple * 0.05 - storm * 0.04;
+            gl_FragColor = vec4(deepWater + reflectedLight, alpha);
+          }
+        `,
+        transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        fog: false,
+        toneMapped: false
+      })
+      const liquid = new THREE.Mesh(
+        new THREE.PlaneGeometry(liquidWidth, roomDepth, 36, 72),
+        material
+      )
+      liquid.rotation.x = -Math.PI / 2
+      liquid.position.set(
+        side * (innerEdge + liquidWidth / 2),
+        floorY + 0.052,
+        roomCenterZ
+      )
+      liquid.renderOrder = 2
+      liquidGroup.add(liquid)
+      liquidMaterials.push(material)
+    })
+
+    group.add(liquidGroup)
+    floorReflectionExclusions.push(liquidGroup)
+    let reflectedStorm = 0
+    wallUpdaters.push((elapsed, surge) => {
+      const target = Math.max(horizonStormEnergy, surge * 0.72)
+      const response = target > reflectedStorm ? 0.38 : 0.032
+      reflectedStorm += (target - reflectedStorm) * response
+      liquidMaterials.forEach((material) => {
+        material.uniforms.time.value = elapsed
+        material.uniforms.storm.value = reflectedStorm
       })
     })
   }
@@ -1972,6 +2119,7 @@ function createBlackGlassFloor(
     addHorizonRails()
     addHorizonHelix()
     addHazardLightning()
+    addHorizonLiquid()
   }
   if (backWallStudy === 'server-lightning') {
     addServerWall()
