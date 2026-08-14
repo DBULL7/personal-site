@@ -67,7 +67,7 @@ export const blackGlassStudyConfigs: Record<
     status: 'HORIZON_LOCKED',
     instruction: 'CLICK TO CHARGE THE RAILS',
     description:
-      'Two luminous rails hold the floor-wall seam, throwing green light across the glass before fading toward a remote vanishing point.'
+      'Two luminous rails define the safe passage across seamless black glass. Beyond them, irregular storms punish the surrounding landscape.'
   },
   terminal: {
     index: 'F3',

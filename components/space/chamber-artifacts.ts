@@ -733,10 +733,11 @@ function createBlackGlassFloor(
   }
   const isHorizonRailStudy = backWallStudy === 'wall-lightning'
   const roomDepth = isHorizonRailStudy ? 72 : 38
+  const roomWidth = isHorizonRailStudy ? 64 : 27
   const roomNearZ = centerZ + 20
   const roomFarZ = roomNearZ - roomDepth
   const roomCenterZ = (roomNearZ + roomFarZ) / 2
-  const mirror = new Reflector(new THREE.PlaneGeometry(27, roomDepth), {
+  const mirror = new Reflector(new THREE.PlaneGeometry(roomWidth, roomDepth), {
     color: 0x7c827e,
     textureWidth: reflectionSize,
     textureHeight: reflectionSize,
@@ -760,28 +761,31 @@ function createBlackGlassFloor(
     side: THREE.DoubleSide
   })
   const roomCenterY = floorY + 7.55
-  const leftWall = new THREE.Mesh(
-    new THREE.PlaneGeometry(roomDepth, 15.1),
-    roomMaterial
-  )
-  leftWall.rotation.y = Math.PI / 2
-  leftWall.position.set(-13.45, roomCenterY, roomCenterZ)
-  const rightWall = leftWall.clone()
-  rightWall.rotation.y = -Math.PI / 2
-  rightWall.position.x = 13.45
-  const ceiling = new THREE.Mesh(
-    new THREE.PlaneGeometry(27, roomDepth),
-    roomMaterial
-  )
-  ceiling.rotation.x = Math.PI / 2
-  ceiling.position.set(0, floorY + 15.1, roomCenterZ)
   const backWall = new THREE.Mesh(
-    new THREE.PlaneGeometry(27, 15.1),
+    new THREE.PlaneGeometry(roomWidth, 15.1),
     roomMaterial
   )
   const backWallZ = roomFarZ
   backWall.position.set(0, roomCenterY, backWallZ)
-  group.add(leftWall, rightWall, ceiling, backWall)
+  group.add(backWall)
+  if (!isHorizonRailStudy) {
+    const leftWall = new THREE.Mesh(
+      new THREE.PlaneGeometry(roomDepth, 15.1),
+      roomMaterial
+    )
+    leftWall.rotation.y = Math.PI / 2
+    leftWall.position.set(-13.45, roomCenterY, roomCenterZ)
+    const rightWall = leftWall.clone()
+    rightWall.rotation.y = -Math.PI / 2
+    rightWall.position.x = 13.45
+    const ceiling = new THREE.Mesh(
+      new THREE.PlaneGeometry(roomWidth, roomDepth),
+      roomMaterial
+    )
+    ceiling.rotation.x = Math.PI / 2
+    ceiling.position.set(0, floorY + 15.1, roomCenterZ)
+    group.add(leftWall, rightWall, ceiling)
+  }
 
   const studyWallZ = centerZ - 14
   if (backWallStudy !== 'baseline' && !isHorizonRailStudy) {
@@ -1087,7 +1091,8 @@ function createBlackGlassFloor(
       opacity: 0,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
-      fog: false
+      fog: false,
+      toneMapped: false
     })
     const branchMaterial = new THREE.MeshBasicMaterial({
       color: GREEN,
@@ -1095,7 +1100,8 @@ function createBlackGlassFloor(
       opacity: 0,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
-      fog: false
+      fog: false,
+      toneMapped: false
     })
     const glowMaterial = branchMaterial.clone()
     const boltGroup = new THREE.Group()
@@ -1129,13 +1135,12 @@ function createBlackGlassFloor(
     radius: number,
     material: THREE.MeshBasicMaterial
   ) => {
+    const path = new THREE.CurvePath<THREE.Vector3>()
+    for (let index = 1; index < points.length; index += 1) {
+      path.add(new THREE.LineCurve3(points[index - 1], points[index]))
+    }
     const mesh = new THREE.Mesh(
-      new THREE.TubeGeometry(
-        new THREE.CatmullRomCurve3(points),
-        Math.max(8, points.length * 2),
-        radius,
-        5
-      ),
+      new THREE.TubeGeometry(path, Math.max(8, points.length * 3), radius, 4),
       material
     )
     actor.group.add(mesh)
@@ -1302,6 +1307,198 @@ function createBlackGlassFloor(
     })
   }
 
+  const addHazardLightning = () => {
+    const actorCount = window.innerWidth < 700 ? 3 : 6
+    const actors = Array.from({ length: actorCount }, () =>
+      createLightningActor()
+    )
+    let actorCursor = 0
+    let nextStrikeAt = 0.65
+    let lastStrikeAt = -100
+    let lastSide = wallRandom() < 0.5 ? -1 : 1
+    let lastZ = centerZ
+
+    const buildFractalPath = (
+      start: THREE.Vector3,
+      end: THREE.Vector3,
+      iterations: number,
+      displacement: number
+    ) => {
+      let points = [start, end]
+      let amplitude = displacement
+      for (let iteration = 0; iteration < iterations; iteration += 1) {
+        const displaced: THREE.Vector3[] = [points[0]]
+        for (let index = 1; index < points.length; index += 1) {
+          const previous = points[index - 1]
+          const current = points[index]
+          const midpoint = previous.clone().lerp(current, 0.5)
+          midpoint.x += (wallRandom() - 0.5) * amplitude
+          midpoint.z += (wallRandom() - 0.5) * amplitude * 0.46
+          midpoint.y += (wallRandom() - 0.5) * amplitude * 0.12
+          displaced.push(midpoint, current)
+        }
+        points = displaced
+        amplitude *= 0.52
+      }
+      return points
+    }
+
+    const selectStrikePosition = () => {
+      const side = wallRandom() < 0.82 ? -lastSide : lastSide
+      const distanceSample = Math.pow(wallRandom(), 1.28)
+      let z = THREE.MathUtils.lerp(roomFarZ + 18, centerZ + 10, distanceSample)
+      if (side === lastSide && Math.abs(z - lastZ) < 7) {
+        z += z < lastZ ? -8 : 8
+        z = THREE.MathUtils.clamp(z, roomFarZ + 15, centerZ + 10)
+      }
+      const proximity = THREE.MathUtils.clamp(
+        (z - (roomFarZ + 18)) / (centerZ + 10 - (roomFarZ + 18)),
+        0,
+        1
+      )
+      const x =
+        side *
+        THREE.MathUtils.lerp(
+          18.5 + wallRandom() * 8,
+          16.5 + wallRandom() * 3.5,
+          proximity
+        )
+      lastSide = side
+      lastZ = z
+      return { side, x, z, proximity }
+    }
+
+    const prepareHazardStrike = (actor: LightningActor, elapsed: number) => {
+      clearLightningActor(actor)
+      const { side, x, z, proximity } = selectStrikePosition()
+      const height = THREE.MathUtils.lerp(9.5, 17.5, proximity)
+      const radius = THREE.MathUtils.lerp(0.025, 0.095, proximity)
+      const ground = new THREE.Vector3(0, 0, 0)
+      const leader = new THREE.Vector3(
+        side * (0.9 + wallRandom() * THREE.MathUtils.lerp(2.2, 4.8, proximity)),
+        height,
+        (wallRandom() - 0.5) * 2.4
+      )
+      const mainPoints = buildFractalPath(
+        leader,
+        ground,
+        proximity > 0.5 ? 5 : 4,
+        THREE.MathUtils.lerp(1.25, 2.5, proximity)
+      )
+      actor.group.position.set(x, floorY + 0.1, z)
+      actor.group.scale.set(1, 1, 1)
+      addLightningPath(actor, mainPoints, radius * 3.8, actor.glowMaterial)
+      addLightningPath(actor, mainPoints, radius, actor.coreMaterial)
+
+      const majorForks = 1 + Math.floor(wallRandom() * 3)
+      for (let forkIndex = 0; forkIndex < majorForks; forkIndex += 1) {
+        const originIndex = Math.floor(
+          mainPoints.length * (0.24 + wallRandom() * 0.38)
+        )
+        const origin = mainPoints[originIndex]
+        const forkEnd = new THREE.Vector3(
+          origin.x + side * (2.4 + wallRandom() * (4.2 + proximity * 3)),
+          Math.max(0.65, origin.y - (2.4 + wallRandom() * 6.2)),
+          origin.z + (wallRandom() - 0.5) * (4.5 + proximity * 3)
+        )
+        const forkPoints = buildFractalPath(
+          origin.clone(),
+          forkEnd,
+          3 + (forkIndex % 2),
+          THREE.MathUtils.lerp(0.8, 1.65, proximity)
+        )
+        addLightningPath(actor, forkPoints, radius * 1.7, actor.glowMaterial)
+        addLightningPath(actor, forkPoints, radius * 0.46, actor.branchMaterial)
+      }
+
+      const branchCount = 4 + Math.floor(wallRandom() * 5)
+      for (let branchIndex = 0; branchIndex < branchCount; branchIndex += 1) {
+        const originIndex =
+          3 + Math.floor(wallRandom() * Math.max(2, mainPoints.length - 7))
+        const origin = mainPoints[originIndex]
+        const branchEnd = new THREE.Vector3(
+          origin.x + side * (0.8 + wallRandom() * (2.4 + proximity * 2)),
+          Math.max(0.45, origin.y - (1.1 + wallRandom() * 4.2)),
+          origin.z + (wallRandom() - 0.5) * (2.2 + proximity * 1.8)
+        )
+        const branchPoints = buildFractalPath(
+          origin.clone(),
+          branchEnd,
+          2 + (branchIndex % 2),
+          THREE.MathUtils.lerp(0.4, 1.05, proximity)
+        )
+        addLightningPath(
+          actor,
+          branchPoints,
+          radius * THREE.MathUtils.lerp(0.28, 0.52, wallRandom()),
+          actor.branchMaterial
+        )
+      }
+
+      const groundForks = 2 + Math.floor(wallRandom() * 3)
+      for (let forkIndex = 0; forkIndex < groundForks; forkIndex += 1) {
+        const forkEnd = new THREE.Vector3(
+          side * (1.4 + wallRandom() * 3.8),
+          0.035,
+          (wallRandom() - 0.5) * 5.5
+        )
+        const floorPoints = buildFractalPath(
+          new THREE.Vector3(0, 0.035, 0),
+          forkEnd,
+          2,
+          0.65
+        )
+        addLightningPath(
+          actor,
+          floorPoints,
+          radius * 0.38,
+          actor.branchMaterial
+        )
+      }
+
+      actor.depth = proximity
+      actor.duration = 1.05 + wallRandom() * 0.45
+      actor.startedAt = elapsed
+      actor.group.visible = true
+      actor.flashLight.position.set(x, floorY + 1.1, z)
+      actor.flashLight.distance = THREE.MathUtils.lerp(9, 27, proximity)
+      lastStrikeAt = elapsed
+      nextStrikeAt = elapsed + 1.35 + wallRandom() * 2.9
+    }
+
+    const flashPulse = (age: number, center: number, width: number) =>
+      Math.exp(-Math.pow((age - center) / width, 2))
+
+    wallUpdaters.push((elapsed, surge) => {
+      const forcedStrike = surge > 0.82 && elapsed - lastStrikeAt > 1.05
+      if (elapsed >= nextStrikeAt || forcedStrike) {
+        prepareHazardStrike(actors[actorCursor], elapsed)
+        actorCursor = (actorCursor + 1) % actors.length
+      }
+
+      actors.forEach((actor, index) => {
+        const age = elapsed - actor.startedAt
+        const active = age >= 0 && age < actor.duration
+        const energy = active
+          ? Math.min(
+              1,
+              flashPulse(age, 0.025, 0.022) +
+                flashPulse(age, 0.13, 0.035) * 0.72 +
+                flashPulse(age, 0.29, 0.055) * 0.42 +
+                Math.exp(-age * 1.9) * 0.28
+            )
+          : 0
+        actor.group.visible = energy > 0.004
+        actor.coreMaterial.opacity = energy
+        actor.glowMaterial.opacity = energy * 0.26
+        actor.branchMaterial.opacity = energy * 0.68
+        actor.flashLight.intensity =
+          energy * THREE.MathUtils.lerp(28, 95, actor.depth)
+        actor.group.rotation.y = Math.sin(index * 2.17) * 0.018
+      })
+    })
+  }
+
   const addHorizonRails = () => {
     const railLength = roomDepth - 0.8
     const railCenterZ = roomCenterZ + 0.25
@@ -1434,7 +1631,7 @@ function createBlackGlassFloor(
   if (backWallStudy === 'lightning') addDepthLightning({ count: 15 })
   if (backWallStudy === 'wall-lightning') {
     addHorizonRails()
-    addDepthLightning({ count: 8, farOnly: true })
+    addHazardLightning()
   }
   if (backWallStudy === 'server-lightning') {
     addServerWall()
@@ -1449,7 +1646,7 @@ function createBlackGlassFloor(
     roughness: 0.94
   })
   const seamGeometryX = new THREE.BoxGeometry(0.052, 0.035, roomDepth)
-  const seamGeometryZ = new THREE.BoxGeometry(27, 0.035, 0.052)
+  const seamGeometryZ = new THREE.BoxGeometry(roomWidth, 0.035, 0.052)
   const seams = new THREE.Group()
 
   for (let x = -12; x <= 12; x += 3) {
@@ -1464,7 +1661,7 @@ function createBlackGlassFloor(
     seam.position.set(0, floorY + 0.018, z)
     seams.add(seam)
   }
-  group.add(seams)
+  if (!isHorizonRailStudy) group.add(seams)
 
   const edgeMaterial = new THREE.MeshBasicMaterial({
     color: 0x26342b,
@@ -1474,12 +1671,14 @@ function createBlackGlassFloor(
     blending: THREE.AdditiveBlending
   })
   const edgeGeometry = new THREE.BoxGeometry(0.018, 0.018, roomDepth)
-  const edgeGlints = [-12, -9, -6, -3, 0, 3, 6, 9, 12].map((x) => {
-    const edge = new THREE.Mesh(edgeGeometry, edgeMaterial.clone())
-    edge.position.set(x + 0.055, floorY + 0.041, roomCenterZ)
-    group.add(edge)
-    return edge
-  })
+  const edgeGlints = isHorizonRailStudy
+    ? []
+    : [-12, -9, -6, -3, 0, 3, 6, 9, 12].map((x) => {
+        const edge = new THREE.Mesh(edgeGeometry, edgeMaterial.clone())
+        edge.position.set(x + 0.055, floorY + 0.041, roomCenterZ)
+        group.add(edge)
+        return edge
+      })
 
   const chargeCanvas = document.createElement('canvas')
   chargeCanvas.width = 128
