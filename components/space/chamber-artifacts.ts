@@ -13,6 +13,7 @@ export type ChamberEnvironment =
 export type BlackGlassBackWallStudy =
   | 'baseline'
   | 'lightning'
+  | 'wall-lightning'
   | 'terminal'
   | 'matrix-rain'
   | 'server-wall'
@@ -1059,7 +1060,20 @@ function createBlackGlassFloor(
     })
   }
 
-  const addReverseLightning = () => {
+  type LightningActor = {
+    group: THREE.Group
+    coreMaterial: THREE.MeshBasicMaterial
+    branchMaterial: THREE.MeshBasicMaterial
+    glowMaterial: THREE.MeshBasicMaterial
+    flashLight: THREE.PointLight
+    meshes: THREE.Mesh[]
+    startedAt: number
+    nextStrikeAt: number
+    duration: number
+    depth: number
+  }
+
+  const createLightningActor = (): LightningActor => {
     const coreMaterial = new THREE.MeshBasicMaterial({
       color: BRIGHT_GREEN,
       transparent: true,
@@ -1078,95 +1092,292 @@ function createBlackGlassFloor(
     })
     const glowMaterial = branchMaterial.clone()
     const boltGroup = new THREE.Group()
-    boltGroup.position.set(0, floorY + 0.25, studyWallZ + 0.18)
-    group.add(boltGroup)
-    const flashLight = new THREE.PointLight(GREEN, 0, 22, 1.5)
-    flashLight.position.set(0, roomCenterY, studyWallZ + 2.4)
-    group.add(flashLight)
-    let boltMeshes: THREE.Mesh[] = []
-    let strikeStartedAt = -100
-    let nextStrikeAt = 4.2
+    const flashLight = new THREE.PointLight(GREEN, 0, 18, 1.7)
+    group.add(boltGroup, flashLight)
+    return {
+      group: boltGroup,
+      coreMaterial,
+      branchMaterial,
+      glowMaterial,
+      flashLight,
+      meshes: [],
+      startedAt: -100,
+      nextStrikeAt: 0,
+      duration: 1.5,
+      depth: 0
+    }
+  }
 
-    const clearBolt = () => {
-      boltMeshes.forEach((mesh) => {
-        boltGroup.remove(mesh)
-        mesh.geometry.dispose()
-      })
-      boltMeshes = []
-    }
-    const addBoltPath = (
-      points: THREE.Vector3[],
-      radius: number,
-      material: THREE.MeshBasicMaterial
+  const clearLightningActor = (actor: LightningActor) => {
+    actor.meshes.forEach((mesh) => {
+      actor.group.remove(mesh)
+      mesh.geometry.dispose()
+    })
+    actor.meshes = []
+  }
+
+  const addLightningPath = (
+    actor: LightningActor,
+    points: THREE.Vector3[],
+    radius: number,
+    material: THREE.MeshBasicMaterial
+  ) => {
+    const mesh = new THREE.Mesh(
+      new THREE.TubeGeometry(
+        new THREE.CatmullRomCurve3(points),
+        Math.max(8, points.length * 2),
+        radius,
+        5
+      ),
+      material
+    )
+    actor.group.add(mesh)
+    actor.meshes.push(mesh)
+  }
+
+  const setLightningEnergy = (
+    actor: LightningActor,
+    energy: number,
+    reveal: number,
+    lightScale = 1
+  ) => {
+    actor.group.scale.y = Math.max(0.01, reveal)
+    actor.group.visible = energy > 0.002
+    actor.coreMaterial.opacity = energy
+    actor.glowMaterial.opacity = energy * 0.22
+    actor.branchMaterial.opacity = energy * 0.7
+    actor.flashLight.intensity = energy * lightScale
+  }
+
+  const addDepthLightning = ({
+    count,
+    farOnly = false,
+    restrained = false
+  }: {
+    count: number
+    farOnly?: boolean
+    restrained?: boolean
+  }) => {
+    const actorCount =
+      window.innerWidth < 700 && !restrained ? Math.min(count, 10) : count
+    const actors = Array.from({ length: actorCount }, () =>
+      createLightningActor()
+    )
+    let lastSurgeStrike = -100
+
+    const prepareStrike = (
+      actor: LightningActor,
+      elapsed: number,
+      actorIndex: number
     ) => {
-      const curve = new THREE.CatmullRomCurve3(points)
-      const mesh = new THREE.Mesh(
-        new THREE.TubeGeometry(
-          curve,
-          Math.max(8, points.length * 2),
-          radius,
-          5
-        ),
-        material
-      )
-      boltGroup.add(mesh)
-      boltMeshes.push(mesh)
-      return curve
-    }
-    const prepareStrike = (elapsed: number) => {
-      clearBolt()
+      clearLightningActor(actor)
+      const randomDepth = wallRandom()
+      const depth = farOnly
+        ? randomDepth * 0.24
+        : THREE.MathUtils.clamp(
+            (actorIndex + randomDepth * 1.8) / Math.max(1, actorCount - 0.5),
+            0,
+            1
+          )
+      const height = THREE.MathUtils.lerp(3.1, 14.35, Math.pow(depth, 0.78))
+      const z = THREE.MathUtils.lerp(studyWallZ + 0.32, centerZ + 11.2, depth)
       const side = wallRandom() < 0.5 ? -1 : 1
-      const startX = side * (8.3 + wallRandom() * 1.7)
+      const edgeBias = THREE.MathUtils.lerp(8.5, 9.8, depth)
+      const startX = side * (edgeBias + wallRandom() * (2.4 - depth * 0.7))
+      const radius = THREE.MathUtils.lerp(0.022, 0.105, depth)
       const mainPoints: THREE.Vector3[] = []
-      let x = startX
-      const segments = 22
+      let x = 0
+      const segments = 12 + Math.round(depth * 11)
       for (let index = 0; index <= segments; index += 1) {
         const progress = index / segments
-        x += (wallRandom() - 0.5) * (0.9 - progress * 0.45)
+        x +=
+          (wallRandom() - 0.5) *
+          THREE.MathUtils.lerp(0.26, 0.72, depth) *
+          (1 - progress * 0.34)
         mainPoints.push(
-          new THREE.Vector3(x, progress * 14.1, (wallRandom() - 0.5) * 0.03)
+          new THREE.Vector3(
+            x,
+            progress * height,
+            (wallRandom() - 0.5) * THREE.MathUtils.lerp(0.03, 0.18, depth)
+          )
         )
       }
-      addBoltPath(mainPoints, 0.13, glowMaterial)
-      addBoltPath(mainPoints, 0.048, coreMaterial)
-      Array.from({ length: 3 }, (_, branchIndex) => {
-        const originIndex = 7 + branchIndex * 4
+      actor.group.position.set(startX, floorY + 0.12, z)
+      addLightningPath(actor, mainPoints, radius * 2.7, actor.glowMaterial)
+      addLightningPath(actor, mainPoints, radius, actor.coreMaterial)
+
+      const branchCount = 1 + Math.round(depth * 3)
+      Array.from({ length: branchCount }, (_, branchIndex) => {
+        const originIndex = Math.min(
+          segments - 2,
+          4 + Math.floor(((branchIndex + 1) / (branchCount + 1)) * segments)
+        )
         const origin = mainPoints[originIndex]
         const direction = branchIndex % 2 === 0 ? -1 : 1
-        const points = [origin.clone()]
-        for (let step = 1; step <= 6; step += 1) {
-          points.push(
+        const branchPoints = [origin.clone()]
+        const steps = 3 + Math.round(depth * 3)
+        for (let step = 1; step <= steps; step += 1) {
+          branchPoints.push(
             new THREE.Vector3(
-              origin.x + direction * step * (0.42 + wallRandom() * 0.24),
-              origin.y + step * (0.34 + wallRandom() * 0.22),
-              0.012
+              origin.x +
+                direction *
+                  step *
+                  THREE.MathUtils.lerp(0.18, 0.44, depth) *
+                  (0.72 + wallRandom() * 0.5),
+              origin.y + step * THREE.MathUtils.lerp(0.16, 0.38, depth),
+              (wallRandom() - 0.5) * 0.08
             )
           )
         }
-        addBoltPath(points, 0.026, branchMaterial)
+        addLightningPath(
+          actor,
+          branchPoints,
+          radius * 0.48,
+          actor.branchMaterial
+        )
       })
-      flashLight.position.x = startX
-      strikeStartedAt = elapsed
-      nextStrikeAt = elapsed + 11 + wallRandom() * 8
-      boltGroup.scale.y = 0.01
-      boltGroup.visible = true
+
+      actor.depth = depth
+      actor.duration = restrained
+        ? THREE.MathUtils.lerp(1.05, 1.75, depth)
+        : THREE.MathUtils.lerp(1.7, 2.8, depth)
+      actor.startedAt = elapsed
+      actor.nextStrikeAt =
+        elapsed +
+        (restrained ? 8.5 : 3.1) +
+        wallRandom() * (restrained ? 6.5 : 2.7)
+      actor.group.scale.y = 0.01
+      actor.group.visible = true
+      actor.flashLight.position.set(
+        startX,
+        floorY + height * 0.44,
+        z + THREE.MathUtils.lerp(0.4, 1.8, depth)
+      )
+      actor.flashLight.distance = THREE.MathUtils.lerp(7, 22, depth)
     }
 
+    actors.forEach((actor, index) => {
+      actor.nextStrikeAt = restrained
+        ? 0.18 + index * 1.45
+        : 0.18 + ((index * 7) % actorCount) * 0.2
+    })
+
     wallUpdaters.push((elapsed, surge) => {
-      const canReactToSurge = surge > 0.82 && elapsed - strikeStartedAt > 2.5
-      if (elapsed >= nextStrikeAt || canReactToSurge) prepareStrike(elapsed)
-      const age = elapsed - strikeStartedAt
-      const energy =
-        age >= 0 && age < 1.55
-          ? Math.exp(-age * 1.7) * (0.72 + Math.abs(Math.sin(age * 32)) * 0.28)
+      const shouldSurge = surge > 0.82 && elapsed - lastSurgeStrike > 2.2
+      actors.forEach((actor, index) => {
+        if (elapsed >= actor.nextStrikeAt || (shouldSurge && index % 2 === 0))
+          prepareStrike(actor, elapsed, index)
+
+        const age = elapsed - actor.startedAt
+        const active = age >= 0 && age < actor.duration
+        const energy = active
+          ? Math.exp(
+              -age *
+                (restrained
+                  ? THREE.MathUtils.lerp(2.35, 1.15, actor.depth)
+                  : THREE.MathUtils.lerp(1.28, 0.68, actor.depth))
+            ) *
+            (0.68 + Math.abs(Math.sin(age * 31 + index)) * 0.32)
           : 0
-      const reveal = THREE.MathUtils.clamp(age / 0.17, 0, 1)
-      boltGroup.scale.y = Math.max(0.01, reveal)
-      boltGroup.visible = energy > 0.002
-      coreMaterial.opacity = energy
-      glowMaterial.opacity = energy * 0.2
-      branchMaterial.opacity = energy * 0.72
-      flashLight.intensity = energy * 46
+        const reveal = THREE.MathUtils.clamp(
+          age / THREE.MathUtils.lerp(0.1, 0.22, actor.depth),
+          0,
+          1
+        )
+        setLightningEnergy(
+          actor,
+          energy,
+          reveal,
+          THREE.MathUtils.lerp(12, 52, actor.depth)
+        )
+      })
+      if (shouldSurge) lastSurgeStrike = elapsed
+    })
+  }
+
+  const addWallCrawlLightning = () => {
+    const crawlers = [-1, 1, -1, 1].map((side, index) => ({
+      actor: createLightningActor(),
+      side,
+      delay: index * 2.7,
+      cycle: 10.5 + index * 0.85,
+      initialized: false
+    }))
+
+    const prepareCrawler = (
+      crawler: (typeof crawlers)[number],
+      elapsed: number,
+      index: number
+    ) => {
+      const { actor, side } = crawler
+      clearLightningActor(actor)
+      const height = 14.55
+      const segments = 28
+      const startZ = centerZ + 8.8 - (index % 2) * 7.2
+      const mainPoints: THREE.Vector3[] = []
+      let z = startZ
+      for (let pointIndex = 0; pointIndex <= segments; pointIndex += 1) {
+        const progress = pointIndex / segments
+        z -= 0.42 + wallRandom() * 0.36
+        mainPoints.push(
+          new THREE.Vector3(
+            (wallRandom() - 0.5) * 0.09 - side * 0.04,
+            progress * height,
+            z
+          )
+        )
+      }
+      actor.group.position.set(side * 13.29, floorY + 0.12, 0)
+      addLightningPath(actor, mainPoints, 0.16, actor.glowMaterial)
+      addLightningPath(actor, mainPoints, 0.052, actor.coreMaterial)
+      ;[8, 15, 22].forEach((originIndex, branchIndex) => {
+        const origin = mainPoints[originIndex]
+        const branchPoints = [origin.clone()]
+        for (let step = 1; step <= 5; step += 1) {
+          branchPoints.push(
+            new THREE.Vector3(
+              origin.x - side * step * (0.08 + wallRandom() * 0.06),
+              origin.y + step * (0.2 + wallRandom() * 0.11),
+              origin.z +
+                (branchIndex % 2 === 0 ? -1 : 1) *
+                  step *
+                  (0.28 + wallRandom() * 0.18)
+            )
+          )
+        }
+        addLightningPath(actor, branchPoints, 0.025, actor.branchMaterial)
+      })
+      actor.startedAt = elapsed
+      actor.duration = crawler.cycle - 1.2
+      actor.flashLight.distance = 12
+      actor.flashLight.position.set(side * 12.1, floorY + 1, mainPoints[0].z)
+    }
+
+    crawlers.forEach((crawler) => {
+      crawler.actor.nextStrikeAt = crawler.delay
+    })
+
+    wallUpdaters.push((elapsed, surge) => {
+      crawlers.forEach((crawler, index) => {
+        const actor = crawler.actor
+        if (elapsed >= actor.nextStrikeAt) {
+          prepareCrawler(crawler, elapsed, index)
+          actor.nextStrikeAt = elapsed + crawler.cycle
+          crawler.initialized = true
+        }
+        if (!crawler.initialized) return
+        const age = elapsed - actor.startedAt
+        const climb = THREE.MathUtils.smoothstep(
+          THREE.MathUtils.clamp(age / 6.8, 0, 1),
+          0,
+          1
+        )
+        const fade = 1 - THREE.MathUtils.smoothstep(age, 7.1, actor.duration)
+        const idlePulse = 0.72 + Math.sin(elapsed * 2.6 + index) * 0.18
+        const energy = Math.max(0, fade) * idlePulse * (0.6 + surge * 0.28)
+        setLightningEnergy(actor, energy, climb, 18)
+        actor.flashLight.position.y = floorY + 0.7 + climb * 13.2
+      })
     })
   }
 
@@ -1174,10 +1385,14 @@ function createBlackGlassFloor(
   if (backWallStudy === 'matrix-rain') addMatrixRainWall()
   if (backWallStudy === 'server-wall') addServerWall()
   if (backWallStudy === 'aperture') addSignalAperture()
-  if (backWallStudy === 'lightning') addReverseLightning()
+  if (backWallStudy === 'lightning') addDepthLightning({ count: 15 })
+  if (backWallStudy === 'wall-lightning') {
+    addWallCrawlLightning()
+    addDepthLightning({ count: 8, farOnly: true })
+  }
   if (backWallStudy === 'server-lightning') {
     addServerWall()
-    addReverseLightning()
+    addDepthLightning({ count: 4, restrained: true })
   }
 
   const groutMaterial = new THREE.MeshStandardMaterial({

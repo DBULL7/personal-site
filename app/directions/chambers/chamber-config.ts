@@ -19,6 +19,7 @@ export type ChamberConfig = {
 export const blackGlassStudies = [
   'baseline',
   'lightning',
+  'wall-lightning',
   'terminal',
   'matrix-rain',
   'server-wall',
@@ -46,18 +47,30 @@ export const blackGlassStudyConfigs: Record<
   },
   lightning: {
     index: 'F1',
-    code: 'REVERSE_LIGHTNING',
-    shortLabel: 'BOLT',
-    name: 'Reverse Lightning',
-    artifact: 'UPWARD_DISCHARGE',
-    setting: 'ELECTRIFIED FAR WALL',
-    status: 'CHARGE_BUILDING',
-    instruction: 'CLICK TO FORCE A STRIKE',
+    code: 'DEPTH_STORM',
+    shortLabel: 'STORM',
+    name: 'Depth Storm',
+    artifact: 'SCALED_DISCHARGE_FIELD',
+    setting: 'FULL DEPTH LIGHTNING',
+    status: 'STORM_ACTIVE',
+    instruction: 'CLICK TO SURGE THE STORM',
     description:
-      'Rare green discharges strike upward from the base of the far wall, briefly revealing the room and its reflection.'
+      'A field of green discharges maps the chamber in depth: short, narrow strikes break at the horizon while towering bolts ignite closer to the glass.'
+  },
+  'wall-lightning': {
+    index: 'F2',
+    code: 'WALL_CRAWL',
+    shortLabel: 'WALL',
+    name: 'Wall Crawl',
+    artifact: 'ARCHITECTURAL_DISCHARGE',
+    setting: 'CHARGED SIDE WALLS',
+    status: 'CURRENT_ASCENDING',
+    instruction: 'CLICK TO CHARGE THE WALLS',
+    description:
+      'Slow electrical veins climb both side walls and hold their glow against the architecture while smaller lightning breaks across the far distance.'
   },
   terminal: {
-    index: 'F2',
+    index: 'F3',
     code: 'GHOST_TERMINAL',
     shortLabel: 'TERM',
     name: 'Ghost Terminal',
@@ -69,7 +82,7 @@ export const blackGlassStudyConfigs: Record<
       'A monumental terminal quietly inspects the field, types a sparse sequence, and restarts without taking over the chamber.'
   },
   'matrix-rain': {
-    index: 'F3',
+    index: 'F4',
     code: 'RAIN_WALL',
     shortLabel: 'RAIN',
     name: 'Matrix Rain',
@@ -81,7 +94,7 @@ export const blackGlassStudyConfigs: Record<
       'A slow veil of code descends behind the far wall while the software glyphs continue rising through the floor in opposition.'
   },
   'server-wall': {
-    index: 'F4',
+    index: 'F5',
     code: 'SERVER_MONOLITH',
     shortLabel: 'RACK',
     name: 'Server Monolith',
@@ -93,7 +106,7 @@ export const blackGlassStudyConfigs: Record<
       'Seven black server bays turn the far wall into physical infrastructure, using scale and restrained status light instead of spectacle.'
   },
   aperture: {
-    index: 'F5',
+    index: 'F6',
     code: 'SIGNAL_APERTURE',
     shortLabel: 'SEAM',
     name: 'Signal Aperture',
@@ -105,7 +118,7 @@ export const blackGlassStudyConfigs: Record<
       'A narrow vertical seam suggests a much larger machine beyond the chamber, projecting one severe line into the glass floor.'
   },
   'server-lightning': {
-    index: 'F6',
+    index: 'F7',
     code: 'STORM_RACK',
     shortLabel: 'DUAL',
     name: 'Storm Rack',
