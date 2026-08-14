@@ -660,7 +660,8 @@ function createCyberVault(floorY: number, centerZ: number): ChamberArtifact {
 function createBlackGlassFloor(
   floorY: number,
   centerZ: number,
-  backWallStudy: BlackGlassBackWallStudy
+  backWallStudy: BlackGlassBackWallStudy,
+  hazardStrikesPerMinute: number
 ): ChamberArtifact {
   const group = new THREE.Group()
   const reflectionSize = window.innerWidth < 700 ? 512 : 1024
@@ -1308,12 +1309,18 @@ function createBlackGlassFloor(
   }
 
   const addHazardLightning = () => {
+    const strikeRate = THREE.MathUtils.clamp(hazardStrikesPerMinute, 0, 60)
+    const averageStrikeInterval =
+      strikeRate > 0 ? 60 / strikeRate : Number.POSITIVE_INFINITY
     const actorCount = window.innerWidth < 700 ? 3 : 6
     const actors = Array.from({ length: actorCount }, () =>
       createLightningActor()
     )
     let actorCursor = 0
-    let nextStrikeAt = 0.65
+    let nextStrikeAt =
+      strikeRate > 0
+        ? Math.min(0.65, averageStrikeInterval * 0.35)
+        : Number.POSITIVE_INFINITY
     let lastStrikeAt = -100
     let lastSide = wallRandom() < 0.5 ? -1 : 1
     let lastZ = centerZ
@@ -1463,7 +1470,10 @@ function createBlackGlassFloor(
       actor.flashLight.position.set(x, floorY + 1.1, z)
       actor.flashLight.distance = THREE.MathUtils.lerp(9, 27, proximity)
       lastStrikeAt = elapsed
-      nextStrikeAt = elapsed + 1.35 + wallRandom() * 2.9
+      nextStrikeAt =
+        strikeRate > 0
+          ? elapsed + averageStrikeInterval * (0.65 + wallRandom() * 0.7)
+          : Number.POSITIVE_INFINITY
     }
 
     const flashPulse = (age: number, center: number, width: number) =>
@@ -1776,13 +1786,19 @@ export function createChamberArtifact(
   environment: ChamberEnvironment,
   floorY: number,
   centerZ: number,
-  blackGlassBackWall: BlackGlassBackWallStudy = 'baseline'
+  blackGlassBackWall: BlackGlassBackWallStudy = 'baseline',
+  hazardStrikesPerMinute = 20
 ): ChamberArtifact | null {
   if (environment === 'relic') return createRelic(floorY, centerZ)
   if (environment === 'reactor') return createReactor(floorY, centerZ)
   if (environment === 'invocation') return createInvocation(floorY, centerZ)
   if (environment === 'cyber') return createCyberVault(floorY, centerZ)
   if (environment === 'black-glass')
-    return createBlackGlassFloor(floorY, centerZ, blackGlassBackWall)
+    return createBlackGlassFloor(
+      floorY,
+      centerZ,
+      blackGlassBackWall,
+      hazardStrikesPerMinute
+    )
   return null
 }

@@ -109,6 +109,7 @@ type MatrixChamberProps = {
   glyphSet?: 'matrix' | 'toolkit'
   environment?: ChamberEnvironment
   blackGlassBackWall?: BlackGlassBackWallStudy
+  hazardStrikesPerMinute?: number
 }
 
 type RainGlyph =
@@ -340,7 +341,8 @@ export function MatrixChamber({
   paused = false,
   glyphSet = 'matrix',
   environment = 'standard',
-  blackGlassBackWall = 'baseline'
+  blackGlassBackWall = 'baseline',
+  hazardStrikesPerMinute = 20
 }: MatrixChamberProps) {
   const hostRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -495,7 +497,8 @@ export function MatrixChamber({
       environment,
       floorY,
       artifactCenterZ,
-      blackGlassBackWall
+      blackGlassBackWall,
+      hazardStrikesPerMinute
     )
     if (artifact) scene.add(artifact.group)
 
@@ -860,7 +863,7 @@ export function MatrixChamber({
       })
       renderer.dispose()
     }
-  }, [blackGlassBackWall, environment, glyphSet])
+  }, [blackGlassBackWall, environment, glyphSet, hazardStrikesPerMinute])
 
   return (
     <div
