@@ -731,7 +731,12 @@ function createBlackGlassFloor(
       }
     `
   }
-  const mirror = new Reflector(new THREE.PlaneGeometry(27, 38), {
+  const isHorizonRailStudy = backWallStudy === 'wall-lightning'
+  const roomDepth = isHorizonRailStudy ? 72 : 38
+  const roomNearZ = centerZ + 20
+  const roomFarZ = roomNearZ - roomDepth
+  const roomCenterZ = (roomNearZ + roomFarZ) / 2
+  const mirror = new Reflector(new THREE.PlaneGeometry(27, roomDepth), {
     color: 0x7c827e,
     textureWidth: reflectionSize,
     textureHeight: reflectionSize,
@@ -740,7 +745,7 @@ function createBlackGlassFloor(
     shader: blackGlassShader
   })
   mirror.rotation.x = -Math.PI / 2
-  mirror.position.set(0, floorY, centerZ + 1)
+  mirror.position.set(0, floorY, roomCenterZ)
   group.add(mirror)
   const mirrorMaterial = mirror.material as THREE.ShaderMaterial
 
@@ -754,10 +759,9 @@ function createBlackGlassFloor(
     clearcoatRoughness: 0.06,
     side: THREE.DoubleSide
   })
-  const roomCenterZ = centerZ + 1
   const roomCenterY = floorY + 7.55
   const leftWall = new THREE.Mesh(
-    new THREE.PlaneGeometry(38, 15.1),
+    new THREE.PlaneGeometry(roomDepth, 15.1),
     roomMaterial
   )
   leftWall.rotation.y = Math.PI / 2
@@ -765,19 +769,22 @@ function createBlackGlassFloor(
   const rightWall = leftWall.clone()
   rightWall.rotation.y = -Math.PI / 2
   rightWall.position.x = 13.45
-  const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(27, 38), roomMaterial)
+  const ceiling = new THREE.Mesh(
+    new THREE.PlaneGeometry(27, roomDepth),
+    roomMaterial
+  )
   ceiling.rotation.x = Math.PI / 2
   ceiling.position.set(0, floorY + 15.1, roomCenterZ)
   const backWall = new THREE.Mesh(
     new THREE.PlaneGeometry(27, 15.1),
     roomMaterial
   )
-  const backWallZ = centerZ - 18
+  const backWallZ = roomFarZ
   backWall.position.set(0, roomCenterY, backWallZ)
   group.add(leftWall, rightWall, ceiling, backWall)
 
   const studyWallZ = centerZ - 14
-  if (backWallStudy !== 'baseline') {
+  if (backWallStudy !== 'baseline' && !isHorizonRailStudy) {
     const studyBacking = new THREE.Mesh(
       new THREE.PlaneGeometry(27, 15.1),
       roomMaterial.clone()
@@ -1295,88 +1302,127 @@ function createBlackGlassFloor(
     })
   }
 
-  const addWallCrawlLightning = () => {
-    const crawlers = [-1, 1, -1, 1].map((side, index) => ({
-      actor: createLightningActor(),
-      side,
-      delay: index * 2.7,
-      cycle: 10.5 + index * 0.85,
-      initialized: false
-    }))
+  const addHorizonRails = () => {
+    const railLength = roomDepth - 0.8
+    const railCenterZ = roomCenterZ + 0.25
+    const railMaterials: THREE.ShaderMaterial[] = []
 
-    const prepareCrawler = (
-      crawler: (typeof crawlers)[number],
-      elapsed: number,
-      index: number
-    ) => {
-      const { actor, side } = crawler
-      clearLightningActor(actor)
-      const height = 14.55
-      const segments = 28
-      const startZ = centerZ + 8.8 - (index % 2) * 7.2
-      const mainPoints: THREE.Vector3[] = []
-      let z = startZ
-      for (let pointIndex = 0; pointIndex <= segments; pointIndex += 1) {
-        const progress = pointIndex / segments
-        z -= 0.42 + wallRandom() * 0.36
-        mainPoints.push(
-          new THREE.Vector3(
-            (wallRandom() - 0.5) * 0.09 - side * 0.04,
-            progress * height,
-            z
-          )
-        )
-      }
-      actor.group.position.set(side * 13.29, floorY + 0.12, 0)
-      addLightningPath(actor, mainPoints, 0.16, actor.glowMaterial)
-      addLightningPath(actor, mainPoints, 0.052, actor.coreMaterial)
-      ;[8, 15, 22].forEach((originIndex, branchIndex) => {
-        const origin = mainPoints[originIndex]
-        const branchPoints = [origin.clone()]
-        for (let step = 1; step <= 5; step += 1) {
-          branchPoints.push(
-            new THREE.Vector3(
-              origin.x - side * step * (0.08 + wallRandom() * 0.06),
-              origin.y + step * (0.2 + wallRandom() * 0.11),
-              origin.z +
-                (branchIndex % 2 === 0 ? -1 : 1) *
-                  step *
-                  (0.28 + wallRandom() * 0.18)
-            )
-          )
-        }
-        addLightningPath(actor, branchPoints, 0.025, actor.branchMaterial)
+    const createRailMaterial = ({
+      opacity,
+      brightness,
+      falloff,
+      phase
+    }: {
+      opacity: number
+      brightness: number
+      falloff: number
+      phase: number
+    }) => {
+      const material = new THREE.ShaderMaterial({
+        uniforms: {
+          time: { value: 0 },
+          surge: { value: 0 },
+          color: { value: new THREE.Color(BRIGHT_GREEN) },
+          opacity: { value: opacity },
+          brightness: { value: brightness },
+          falloff: { value: falloff },
+          phase: { value: phase }
+        },
+        vertexShader: /* glsl */ `
+          uniform float falloff;
+          varying float vFade;
+          varying float vRailPosition;
+
+          void main() {
+            vRailPosition = clamp(position.z / ${railLength.toFixed(2)} + 0.5, 0.0, 1.0);
+            vFade = pow(smoothstep(0.0, 1.0, vRailPosition), falloff);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: /* glsl */ `
+          uniform float time;
+          uniform float surge;
+          uniform vec3 color;
+          uniform float opacity;
+          uniform float brightness;
+          uniform float phase;
+          varying float vFade;
+          varying float vRailPosition;
+
+          void main() {
+            float breath = 0.91 + sin(time * 0.42 + phase + vRailPosition * 3.2) * 0.09;
+            float current = fract(time * 0.035 + phase * 0.07);
+            float runner = exp(-pow((vRailPosition - current) * 9.0, 2.0));
+            float energy = breath + runner * (0.1 + surge * 0.42) + surge * 0.22;
+            float alpha = opacity * max(0.006, vFade) * energy;
+            gl_FragColor = vec4(color * brightness * energy, alpha);
+          }
+        `,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide
       })
-      actor.startedAt = elapsed
-      actor.duration = crawler.cycle - 1.2
-      actor.flashLight.distance = 12
-      actor.flashLight.position.set(side * 12.1, floorY + 1, mainPoints[0].z)
+      railMaterials.push(material)
+      return material
     }
 
-    crawlers.forEach((crawler) => {
-      crawler.actor.nextStrikeAt = crawler.delay
+    ;[-1, 1].forEach((side, sideIndex) => {
+      const railX = side * 13.32
+      const core = new THREE.Mesh(
+        new THREE.BoxGeometry(0.075, 0.075, railLength),
+        createRailMaterial({
+          opacity: 0.8,
+          brightness: 0.62,
+          falloff: 0.72,
+          phase: sideIndex * Math.PI
+        })
+      )
+      core.position.set(railX, floorY + 0.082, railCenterZ)
+
+      const floorBloom = new THREE.Mesh(
+        new THREE.BoxGeometry(0.48, 0.02, railLength),
+        createRailMaterial({
+          opacity: 0.11,
+          brightness: 0.4,
+          falloff: 0.92,
+          phase: sideIndex * Math.PI + 0.7
+        })
+      )
+      floorBloom.position.set(railX - side * 0.33, floorY + 0.045, railCenterZ)
+
+      const wallBloom = new THREE.Mesh(
+        new THREE.BoxGeometry(0.022, 0.44, railLength),
+        createRailMaterial({
+          opacity: 0.085,
+          brightness: 0.34,
+          falloff: 1.02,
+          phase: sideIndex * Math.PI + 1.4
+        })
+      )
+      wallBloom.position.set(railX + side * 0.075, floorY + 0.36, railCenterZ)
+      group.add(core, floorBloom, wallBloom)
+      ;[
+        { z: roomNearZ - 7, intensity: 15, distance: 11 },
+        { z: centerZ - 5, intensity: 7, distance: 9 },
+        { z: roomFarZ + 22, intensity: 2.5, distance: 7 }
+      ].forEach(({ z, intensity, distance }, lightIndex) => {
+        const light = new THREE.PointLight(GREEN, intensity, distance, 2)
+        light.position.set(side * 12.65, floorY + 0.5, z)
+        group.add(light)
+        wallUpdaters.push((elapsed, surge) => {
+          light.intensity =
+            intensity *
+            (0.86 + Math.sin(elapsed * 0.38 + sideIndex + lightIndex) * 0.08) *
+            (1 + surge * 0.3)
+        })
+      })
     })
 
     wallUpdaters.push((elapsed, surge) => {
-      crawlers.forEach((crawler, index) => {
-        const actor = crawler.actor
-        if (elapsed >= actor.nextStrikeAt) {
-          prepareCrawler(crawler, elapsed, index)
-          actor.nextStrikeAt = elapsed + crawler.cycle
-          crawler.initialized = true
-        }
-        if (!crawler.initialized) return
-        const age = elapsed - actor.startedAt
-        const climb = THREE.MathUtils.smoothstep(
-          THREE.MathUtils.clamp(age / 6.8, 0, 1),
-          0,
-          1
-        )
-        const fade = 1 - THREE.MathUtils.smoothstep(age, 7.1, actor.duration)
-        const idlePulse = 0.72 + Math.sin(elapsed * 2.6 + index) * 0.18
-        const energy = Math.max(0, fade) * idlePulse * (0.6 + surge * 0.28)
-        setLightningEnergy(actor, energy, climb, 18)
-        actor.flashLight.position.y = floorY + 0.7 + climb * 13.2
+      railMaterials.forEach((material) => {
+        material.uniforms.time.value = elapsed
+        material.uniforms.surge.value = surge
       })
     })
   }
@@ -1387,7 +1433,7 @@ function createBlackGlassFloor(
   if (backWallStudy === 'aperture') addSignalAperture()
   if (backWallStudy === 'lightning') addDepthLightning({ count: 15 })
   if (backWallStudy === 'wall-lightning') {
-    addWallCrawlLightning()
+    addHorizonRails()
     addDepthLightning({ count: 8, farOnly: true })
   }
   if (backWallStudy === 'server-lightning') {
@@ -1402,16 +1448,18 @@ function createBlackGlassFloor(
     metalness: 0.18,
     roughness: 0.94
   })
-  const seamGeometryX = new THREE.BoxGeometry(0.052, 0.035, 38)
+  const seamGeometryX = new THREE.BoxGeometry(0.052, 0.035, roomDepth)
   const seamGeometryZ = new THREE.BoxGeometry(27, 0.035, 0.052)
   const seams = new THREE.Group()
 
   for (let x = -12; x <= 12; x += 3) {
     const seam = new THREE.Mesh(seamGeometryX, groutMaterial)
-    seam.position.set(x, floorY + 0.018, centerZ + 1)
+    seam.position.set(x, floorY + 0.018, roomCenterZ)
     seams.add(seam)
   }
-  for (let z = centerZ - 17; z <= centerZ + 19; z += 3) {
+  const seamFarZ = isHorizonRailStudy ? roomFarZ + 1 : centerZ - 17
+  const seamNearZ = isHorizonRailStudy ? roomNearZ - 1 : centerZ + 19
+  for (let z = seamFarZ; z <= seamNearZ; z += 3) {
     const seam = new THREE.Mesh(seamGeometryZ, groutMaterial)
     seam.position.set(0, floorY + 0.018, z)
     seams.add(seam)
@@ -1425,10 +1473,10 @@ function createBlackGlassFloor(
     depthWrite: false,
     blending: THREE.AdditiveBlending
   })
-  const edgeGeometry = new THREE.BoxGeometry(0.018, 0.018, 38)
+  const edgeGeometry = new THREE.BoxGeometry(0.018, 0.018, roomDepth)
   const edgeGlints = [-12, -9, -6, -3, 0, 3, 6, 9, 12].map((x) => {
     const edge = new THREE.Mesh(edgeGeometry, edgeMaterial.clone())
-    edge.position.set(x + 0.055, floorY + 0.041, centerZ + 1)
+    edge.position.set(x + 0.055, floorY + 0.041, roomCenterZ)
     group.add(edge)
     return edge
   })

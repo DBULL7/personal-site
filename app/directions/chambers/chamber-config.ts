@@ -59,15 +59,15 @@ export const blackGlassStudyConfigs: Record<
   },
   'wall-lightning': {
     index: 'F2',
-    code: 'WALL_CRAWL',
-    shortLabel: 'WALL',
-    name: 'Wall Crawl',
-    artifact: 'ARCHITECTURAL_DISCHARGE',
-    setting: 'CHARGED SIDE WALLS',
-    status: 'CURRENT_ASCENDING',
-    instruction: 'CLICK TO CHARGE THE WALLS',
+    code: 'HORIZON_RAILS',
+    shortLabel: 'RAIL',
+    name: 'Horizon Rails',
+    artifact: 'ALIEN_GUIDE_ARRAY',
+    setting: 'EXTENDED BLACK LANDSCAPE',
+    status: 'HORIZON_LOCKED',
+    instruction: 'CLICK TO CHARGE THE RAILS',
     description:
-      'Slow electrical veins climb both side walls and hold their glow against the architecture while smaller lightning breaks across the far distance.'
+      'Two luminous rails hold the floor-wall seam, throwing green light across the glass before fading toward a remote vanishing point.'
   },
   terminal: {
     index: 'F3',
