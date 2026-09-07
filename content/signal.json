@@ -1,0 +1,68 @@
+{
+  "publication": "approved",
+  "approvedOn": "2026-09-06",
+  "person": {
+    "name": "Devon Bull",
+    "title": "Solutions Architect",
+    "employer": "Big Nerd Ranch",
+    "tenure": "July 2018 to present",
+    "introduction": "I take software from architecture through delivery and support. My work includes a solo cloud-console migration for Apple and engineering leadership on Chick-fil-A delivery integrations.",
+    "contact": "https://www.linkedin.com/in/bulldevon",
+    "github": "https://github.com/DBULL7",
+    "site": "https://devonbull.com"
+  },
+  "work": [
+    {
+      "id": "cloud-portal",
+      "title": "Cloud Portal",
+      "client": "Apple",
+      "period": "October 2024 to present",
+      "role": "Solutions Architect",
+      "contribution": "Porting the Third Party Cloud Console into Portal and implementing an LLM chat interface.",
+      "highlights": ["Responsible for porting the Third Party Cloud Console into Portal.", "Implemented an LLM chat interface."],
+      "technologies": []
+    },
+    {
+      "id": "cloud-console",
+      "title": "A cloud console, rebuilt",
+      "client": "Apple",
+      "period": "July 2022 to October 2024",
+      "role": "Solo engineer",
+      "contribution": "Rebuilt an Angular application in React as the sole engineer, while adding features and supporting legacy applications.",
+      "highlights": ["Owned architecture, implementation, delivery, and ongoing support for legacy applications.", "Ported the Angular application to React while adding new features."],
+      "technologies": ["Angular", "React"],
+      "caseStudy": [
+        {"heading": "The assignment", "paragraphs": ["Apple's Third Party Cloud Console needed to move from Angular to React. The migration ran alongside new feature work and ongoing support for legacy applications."]},
+        {"heading": "My responsibility", "paragraphs": ["I was the sole engineer responsible for the port. My ownership covered architecture, implementation, delivery, and ongoing support. This was an end-to-end engineering assignment rather than one component of a larger migration team."]},
+        {"heading": "The constraint", "paragraphs": ["The work was broader than replacing a frontend. New features still needed implementation, and legacy applications still needed support. Those responsibilities remained part of my remit throughout the migration."]},
+        {"heading": "The technical direction", "paragraphs": ["The confirmed technical direction was an Angular-to-React migration. I owned the architecture and implementation of that port. This account does not claim that I selected React, or that a particular rollout or state-management strategy was used."]},
+        {"heading": "What followed", "paragraphs": ["The cloud-console engagement ran from July 2022 through October 2024. My next assignment was porting the Third Party Cloud Console into Portal, where I also implemented an LLM chat interface."]},
+        {"heading": "What this account can establish", "paragraphs": ["The work demonstrates solo ownership across architecture, delivery, feature development, and support. This public account omits internal architecture, screenshots, and performance figures. It makes no quantified claim about the migration's business impact."]}
+      ]
+    },
+    {
+      "id": "delivery-integrations",
+      "title": "Delivery integrations in production",
+      "client": "Chick-fil-A",
+      "period": "2020 to 2022",
+      "role": "Project engineering lead",
+      "contribution": "Led engineering for third-party delivery integrations, combining feature delivery with service reliability and partner coordination.",
+      "highlights": ["Implemented combo meals on UberEats.", "Coordinated with DoorDash engineering on checkout support in the Chick-fil-A iOS app.", "Oversaw and helped implement the move to AWS CloudFormation.", "Improved service logging, monitoring, and observability."],
+      "technologies": ["AWS CloudFormation", "Service observability"]
+    },
+    {
+      "id": "chatbot",
+      "title": "Chatbot services and integrations",
+      "client": "Apple",
+      "period": "2018 to 2020",
+      "role": "Backend lead",
+      "contribution": "Led backend work, implemented Apple Card integration, and contributed to frontend and runtime upgrades.",
+      "highlights": ["Implemented Apple Card integration and helped coordinate launch.", "Helped rewrite the frontend from Angular 1 to Vue.", "Refactored a critical service from ES5 to ES6 and helped upgrade Node.js."],
+      "technologies": ["Node.js", "Vue", "JavaScript"]
+    }
+  ],
+  "education": [
+    {"school": "Turing School of Software and Design", "study": "Software Engineering", "year": "2017"},
+    {"school": "University of Kansas", "study": "Bachelor's in Economics", "year": "2015"}
+  ]
+}

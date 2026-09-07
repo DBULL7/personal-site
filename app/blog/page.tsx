@@ -1,7 +1,21 @@
+import type { Metadata } from 'next'
+import { signal } from '@/content/signal'
 import { compareDesc } from 'date-fns'
 import { allPosts } from 'contentlayer2/generated'
 import PostCard from '@/components/post-card'
 import TagsSidebar from '@/components/tags-sidebar'
+
+export const metadata: Metadata = {
+  title: 'Blog',
+  description: `Writing by ${signal.person.name}.`,
+  alternates: { canonical: '/blog' },
+  openGraph: {
+    title: `Blog | ${signal.person.name}`,
+    description: `Writing by ${signal.person.name}.`,
+    url: '/blog',
+    images: ['/signal-social.png']
+  }
+}
 
 export default function Home() {
   const posts = allPosts.sort((a, b) =>
