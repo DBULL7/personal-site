@@ -149,6 +149,13 @@ for (const path of mode === 'baseline'
         }
       }
     }
+    await writeFile(
+      resolve(
+        output,
+        `${path === '/' ? 'home' : path.slice(1).replaceAll('/', '-')}-nojs.txt`
+      ),
+      body
+    )
     await plain.screenshot({
       path: resolve(
         output,
@@ -157,6 +164,22 @@ for (const path of mode === 'baseline'
       fullPage: true
     })
     return { textLength: body.length }
+  })
+}
+if (mode !== 'baseline') {
+  await check('open migration case study', async () => {
+    await page.goto(base)
+    await page.locator('main a[href="/work/cloud-console"]').first().click()
+    await page.waitForURL('**/work/cloud-console')
+    assert.match(await page.locator('main').innerText(), /The assignment/)
+  })
+  await check('lab animation starts and stops', async () => {
+    await page.goto(new URL('/lab', base).href)
+    assert.equal(await page.locator('canvas').count(), 0)
+    await page.getByRole('button', { name: 'Start Matrix rain' }).click()
+    await page.locator('canvas').waitFor({ state: 'visible' })
+    await page.getByRole('button', { name: 'Stop Matrix rain' }).click()
+    await page.locator('canvas').waitFor({ state: 'detached' })
   })
 }
 await check('graphics unavailable', async () => {

@@ -1,0 +1,74 @@
+{
+  "candidate": "Resonance",
+  "commonBase": "bc0e79872b6fbc5fdf1f176593c9fdbd64a8f6dc",
+  "productionBuild": "PASS",
+  "changedFileEslint": "PASS",
+  "browserChecks": {
+    "passed": 27,
+    "failed": 0
+  },
+  "routeChecks": {
+    "passed": 14,
+    "failed": 0
+  },
+  "pdfChecks": {
+    "result": "PASS",
+    "textChecks": 44,
+    "contentSha256": "77d341a007c4b04dddabdaf5c7f3865fa7e244e343a4e0d7a34bc17e057ddd23",
+    "pdfSha256": "0a4e7e80a36f6c905a4568c6d1df0c9d7028e5588f10e056dcb0b633f1717900",
+    "pages": 2
+  },
+  "performance": {
+    "base": "http://localhost:4312",
+    "conditions": {
+      "chrome": "installed stable",
+      "width": 390,
+      "height": 844,
+      "cpuSlowdown": 4,
+      "latencyMs": 150,
+      "downloadBytesPerSecond": 200000,
+      "reducedMotion": true,
+      "samples": 3
+    },
+    "runs": [
+      {
+        "run": 1,
+        "lcp": 644,
+        "cls": 0,
+        "resources": 40,
+        "transferBytes": 221989,
+        "idleScriptMs": 0
+      },
+      {
+        "run": 2,
+        "lcp": 644,
+        "cls": 0,
+        "resources": 40,
+        "transferBytes": 221989,
+        "idleScriptMs": 0
+      },
+      {
+        "run": 3,
+        "lcp": 640,
+        "cls": 0,
+        "resources": 40,
+        "transferBytes": 221989,
+        "idleScriptMs": 0
+      }
+    ],
+    "median": {
+      "lcp": 644,
+      "cls": 0,
+      "transferBytes": 221989,
+      "idleScriptMs": 0
+    },
+    "limitations": "Local lab only. CLS sample is limited to initial load. Does not measure field INP or real-user percentiles."
+  },
+  "limitations": [
+    "Local preview only. No merge or production verification.",
+    "Full-repository lint reports an unchanged MDX renderer error.",
+    "Global Biome reports intentional styled-list roles and an aria-label-only link; project ESLint and axe pass.",
+    "200% equivalent reflow tested. Native browser zoom and assistive-technology testing remain manual.",
+    "Lab measurements do not establish field INP or real-user percentiles."
+  ]
+}

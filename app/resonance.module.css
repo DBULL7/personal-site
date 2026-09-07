@@ -1,0 +1,410 @@
+.home {
+  padding: 0 clamp(1.5rem, 5vw, 5rem);
+}
+
+.home > div {
+  max-width: 78rem;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  column-gap: 2rem;
+  align-items: center;
+  padding-top: clamp(2.5rem, 5vw, 5rem);
+}
+
+.heroCopy {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+.home .eyebrow,
+.home .index,
+.home .period {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.7;
+  letter-spacing: 0.06em;
+  color: var(--signal-muted);
+}
+
+.home .eyebrow {
+  margin-bottom: 1.25rem;
+}
+
+.home .name {
+  max-width: 7ch;
+  margin: 0 0 1.75rem -0.045em;
+  font-size: clamp(5rem, 8.5vw, 8rem);
+  font-weight: 400;
+  letter-spacing: -0.065em;
+  line-height: 0.88;
+}
+
+.home .role {
+  margin-bottom: 1.2rem;
+  font-size: 1rem;
+  color: var(--signal-accent);
+}
+
+.home .introduction {
+  max-width: 43ch;
+  margin-bottom: 1.75rem;
+  font-size: clamp(1.0625rem, 1.4vw, 1.2rem);
+  line-height: 1.75;
+}
+
+.heroLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.75rem;
+  font-size: 0.9375rem;
+}
+
+.heroLinks a,
+.careerLink a {
+  gap: 0.75rem;
+}
+
+.engraving {
+  width: 115%;
+  max-width: calc(100% + 2rem);
+  margin-left: -1rem;
+  aspect-ratio: 1;
+  background: url('/resonance-engraving.svg') center / contain no-repeat;
+  pointer-events: none;
+}
+
+.home .workInvitation {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding-block: 2.5rem 1.5rem;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+
+.workInvitation span {
+  font-size: 1.3rem;
+}
+
+.workSection {
+  border-top: 1px solid var(--signal-border);
+  padding-top: 2rem;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.home .sectionHeading h2 {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 2rem;
+  font-weight: 400;
+}
+
+.home .sectionHeading p {
+  margin: 0;
+}
+
+.workRow {
+  display: grid;
+  grid-template-columns: 0.65fr 1.15fr 1fr;
+  gap: clamp(1.5rem, 3.5vw, 3.5rem);
+  padding-block: 2.75rem 3rem;
+}
+
+.home .workCredit p {
+  margin-bottom: 0.3rem;
+}
+
+.index {
+  display: block;
+  margin-bottom: 1.75rem;
+}
+
+.home .period {
+  max-width: 22ch;
+  letter-spacing: 0;
+}
+
+.home .workTitle h3 {
+  margin: 0 0 1rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.8rem, 2.65vw, 2.75rem);
+  font-weight: 400;
+  letter-spacing: -0.035em;
+  line-height: 1.12;
+}
+
+.home .workTitle a {
+  display: block;
+  padding: 0;
+  color: var(--signal-text);
+  text-decoration: none;
+}
+
+.home .workTitle a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+
+.workArrow {
+  display: inline-block;
+  margin-left: 0.4em;
+  color: var(--signal-accent);
+  font-family: system-ui, sans-serif;
+  font-size: 0.6em;
+  vertical-align: middle;
+}
+
+.home .workRole {
+  max-width: 30ch;
+  margin: 0;
+  color: var(--signal-muted);
+  font-size: 0.8125rem;
+}
+
+.home .contribution {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.careerLink {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--signal-border);
+  padding-block: 1rem 3.5rem;
+  font-size: 0.9375rem;
+}
+
+.currentWork {
+  display: grid;
+  grid-template-columns: 0.65fr 1.15fr 1fr;
+  gap: clamp(1.5rem, 3.5vw, 3.5rem);
+  padding-block: 2.5rem;
+  border-top: 1px solid var(--signal-border);
+}
+
+.home .currentWork h2 {
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.65;
+}
+
+.home .currentTitle {
+  margin-bottom: 0.5rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.5rem;
+}
+
+.home .currentWork > p {
+  margin: 0;
+}
+
+.contact {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 3rem;
+  padding-block: clamp(3.5rem, 7vw, 6rem);
+  border-top: 1px solid var(--signal-border);
+}
+
+.home .contact h2 {
+  margin-bottom: 1.25rem;
+  color: var(--signal-muted);
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.home .contactLink {
+  gap: 1.5rem;
+  padding-block: 0.25rem 1rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.75rem, 3.6vw, 3.5rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.045em;
+  color: var(--signal-text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--signal-accent);
+}
+
+.contactLink span {
+  color: var(--signal-accent);
+  font-family: system-ui, sans-serif;
+  font-size: 0.65em;
+}
+
+.home .contactLink:hover {
+  color: var(--signal-accent);
+}
+
+.supportingLinks {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 0.25rem 2rem;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 1000px) {
+  .hero {
+    column-gap: 1rem;
+  }
+
+  .home .name {
+    font-size: clamp(4.75rem, 10vw, 6.5rem);
+  }
+
+  .workRow,
+  .currentWork {
+    grid-template-columns: 0.7fr 1.3fr;
+  }
+
+  .home .contribution,
+  .currentWork > p {
+    grid-column: 2;
+  }
+
+  .contact {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    padding-top: 2.25rem;
+  }
+
+  .heroCopy {
+    grid-column: 1 / -1;
+  }
+
+  .home .name {
+    max-width: none;
+    margin-bottom: 1.5rem;
+    font-size: clamp(3rem, 15vw, 5.4rem);
+    line-height: 1;
+    letter-spacing: -0.06em;
+  }
+
+  .home .role {
+    max-width: 28ch;
+    margin-bottom: 1rem;
+  }
+
+  .home .introduction {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .heroLinks {
+    gap: 0.25rem 1.5rem;
+    font-size: 0.875rem;
+  }
+
+  .engraving {
+    grid-column: 2;
+    grid-row: 2;
+    width: 100%;
+    max-width: 18rem;
+    margin: 1.25rem 0;
+  }
+
+  .home .workInvitation {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: end;
+    gap: 0.5rem;
+    padding-block: 1rem 1.5rem;
+  }
+
+  .sectionHeading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .home .sectionHeading h2 {
+    font-size: 1.75rem;
+  }
+
+  .workRow,
+  .currentWork {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+    padding-block: 2rem;
+  }
+
+  .workCredit {
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    column-gap: 0.5rem;
+    align-items: baseline;
+  }
+
+  .index {
+    grid-row: 1 / 3;
+    margin: 0;
+  }
+
+  .home .period {
+    max-width: none;
+    grid-column: 2;
+  }
+
+  .home .contribution,
+  .currentWork > p {
+    grid-column: 1;
+  }
+
+  .home .workTitle h3 {
+    max-width: 19ch;
+    font-size: 2.1rem;
+  }
+
+  .careerLink {
+    justify-content: flex-start;
+    padding-bottom: 2.5rem;
+  }
+
+  .home .currentWork h2,
+  .home .currentWork .eyebrow {
+    margin: 0;
+  }
+
+  .contact {
+    padding-block: 3rem;
+  }
+
+  .home .contactLink {
+    gap: 0.75rem;
+    font-size: clamp(1.5rem, 7.5vw, 2.4rem);
+  }
+}
+
+@media print {
+  .engraving,
+  .workInvitation {
+    display: none;
+  }
+}

@@ -2,11 +2,11 @@
 .siteHeader,
 .siteFooter,
 .skipLink {
-  --signal-background: #10251e;
-  --signal-text: #f2f4e9;
-  --signal-muted: #bbccc0;
-  --signal-accent: #c5f0bc;
-  --signal-border: #496357;
+  --signal-background: #0a1c17;
+  --signal-text: #f0ede2;
+  --signal-muted: #b5c3b6;
+  --signal-accent: #c3d5b9;
+  --signal-border: #344c40;
   background: var(--signal-background);
   color: var(--signal-text);
   font-family:
@@ -45,7 +45,7 @@
 
 .siteHeader,
 .siteFooter {
-  padding: 1rem 1.25rem;
+  padding: 1rem clamp(1.5rem, 5vw, 5rem);
 }
 
 .siteHeader {
@@ -67,7 +67,46 @@
 }
 
 .wordmark {
-  font-weight: 650;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.375rem;
+  font-weight: 400;
+  letter-spacing: -0.04em;
+}
+
+.headerInner,
+.footerInner {
+  max-width: 78rem;
+}
+
+.siteHeader a,
+.siteFooter a {
+  font-size: 0.875rem;
+}
+
+.siteHeader .wordmark {
+  font-size: 1.375rem;
+}
+
+.siteHeader .headerInner a {
+  color: var(--signal-text);
+  text-decoration: none;
+}
+
+.siteHeader .headerInner a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .headerInner {
+    gap: 0.25rem;
+  }
+
+  .siteHeader .links {
+    width: 100%;
+    justify-content: space-between;
+    column-gap: 0.5rem;
+    row-gap: 0;
+  }
 }
 
 .page a,
@@ -155,7 +194,7 @@
 }
 
 .page p {
-  max-width: 70ch;
+  max-width: 60ch;
   margin-block: 0 1rem;
 }
 
