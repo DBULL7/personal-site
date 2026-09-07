@@ -1,3 +1,5 @@
+import type { Metadata } from 'next'
+import { signal } from '@/content/signal'
 import { format, parseISO } from 'date-fns'
 import { allPosts } from 'contentlayer2/generated'
 import { notFound } from 'next/navigation'
@@ -7,11 +9,27 @@ import '@/css/prism.css'
 export const generateStaticParams = async () =>
   allPosts.map((post) => ({ slug: post._raw.flattenedPath }))
 
-export const generateMetadata = async ({ params }: { params: Promise<{ slug: string }> }) => {
+export const generateMetadata = async ({
+  params
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> => {
   const { slug } = await params
   const post = allPosts.find((post) => post._raw.flattenedPath === slug)
-  if (!post) throw new Error(`Post not found for slug: ${slug}`)
-  return { title: post.title }
+  if (!post) notFound()
+
+  return {
+    title: post.title,
+    description: post.description,
+    alternates: { canonical: post.url },
+    openGraph: {
+      type: 'article',
+      title: `${post.title} | ${signal.person.name}`,
+      description: post.description,
+      url: post.url,
+      images: ['/signal-social.png']
+    }
+  }
 }
 
 const PostLayout = async ({ params }: { params: Promise<{ slug: string }> }) => {
