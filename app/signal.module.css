@@ -2,11 +2,11 @@
 .siteHeader,
 .siteFooter,
 .skipLink {
-  --signal-background: #10251e;
-  --signal-text: #f2f4e9;
-  --signal-muted: #bbccc0;
-  --signal-accent: #c5f0bc;
-  --signal-border: #496357;
+  --signal-background: #102923;
+  --signal-text: #eee9da;
+  --signal-muted: #b8c3b7;
+  --signal-accent: #d1df92;
+  --signal-border: #496056;
   background: var(--signal-background);
   color: var(--signal-text);
   font-family:
@@ -273,6 +273,50 @@
 .experiment canvas {
   width: 100%;
   height: 100%;
+}
+
+@media screen {
+  .page,
+  .siteHeader,
+  .siteFooter {
+    padding-inline: clamp(1.25rem, 4.5vw, 5rem);
+  }
+
+  .container,
+  .headerInner,
+  .footerInner {
+    max-width: 76rem;
+  }
+
+  .siteHeader .wordmark {
+    color: var(--signal-text);
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .siteHeader .links,
+  .siteFooter {
+    font-size: 0.875rem;
+  }
+
+  .siteHeader a,
+  .siteFooter a {
+    color: var(--signal-text);
+  }
+
+  .page h2,
+  .page h3 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 400;
+  }
+
+  .page p {
+    max-width: 62ch;
+  }
 }
 
 @media print {
