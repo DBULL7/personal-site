@@ -1,122 +1,126 @@
-import React from 'react'
-import Image from 'next/image'
-import MatrixRain from '@/components/matrix-rain'
-import {
-  faGithub,
-  faReact,
-  faNodeJs,
-  faJs,
-  faGolang,
-  faVuejs,
-  faHtml5,
-  faCss3,
-  faGitAlt,
-  faAws
-} from '@fortawesome/free-brands-svg-icons'
-import {
-  faCloud,
-  faCode,
-  faDatabase,
-  faGear,
-  faServer,
-  faShieldDog
-} from '@fortawesome/free-solid-svg-icons'
-import { Tile, tileProps } from '@/components/tile'
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import { signal } from '@/content/signal'
+import styles from './fieldwork.module.css'
+
+const title = `${signal.person.name} | ${signal.person.title}`
 
 export const metadata: Metadata = {
-  title: 'Devon Bull - Senior Software Engineer',
-  description:
-    'Explore the portfolio and blog of Devon Bull, a Senior Software Engineer and futurist. Discover unique blog posts and technical resources.'
+  title: { absolute: title },
+  description: signal.person.introduction,
+  alternates: { canonical: '/' },
+  openGraph: {
+    title,
+    description: signal.person.introduction,
+    url: '/',
+    images: ['/signal-social.png']
+  }
 }
 
-const programmingLanguagesAndFrameworks: tileProps[] = [
-  // TODO - add Typescript and Express.js icons but Font Awesome doesn't have it
-  { icon: faJs, text: 'JavaScript', link: 'https://www.javascript.com' },
-  { icon: faCode, text: 'TypeScript', link: 'https://www.typescriptlang.org' },
-  { icon: faGolang, text: 'Golang', link: 'https://go.dev' },
-  { icon: faNodeJs, text: 'Node.js', link: 'https://nodejs.org/en/' },
-  { icon: faServer, text: 'Express.js', link: 'https://expressjs.com' },
-  { icon: faReact, text: 'React', link: 'https://reactjs.org' },
-  { icon: faVuejs, text: 'Vue.js', link: 'https://vuejs.org' },
-  {
-    icon: faHtml5,
-    text: 'HTML',
-    link: 'https://developer.mozilla.org/en-US/docs/Glossary/HTML5'
-  },
-  {
-    icon: faCss3,
-    text: 'CSS',
-    link: 'https://developer.mozilla.org/en-US/docs/Web/CSS'
-  }
-]
-
-const tooling: tileProps[] = [
-  {
-    icon: faDatabase,
-    text: 'DynamoDB',
-    link: 'https://aws.amazon.com/dynamodb/'
-  },
-  { icon: faDatabase, text: 'MongoDB', link: 'https://www.mongodb.com' },
-  { icon: faDatabase, text: 'Postgress', link: 'https://www.postgresql.org' },
-  { icon: faAws, text: 'AWS', link: 'https://aws.amazon.com' },
-  { icon: faCloud, text: 'Google Cloud', link: 'https://cloud.google.com' },
-  {
-    icon: faGithub,
-    text: 'Github Actions',
-    link: 'https://github.com/features/actions'
-  },
-  { icon: faGear, text: 'Kubernetes', link: 'https://kubernetes.io' },
-  { icon: faShieldDog, text: 'DataDog', link: 'https://www.datadoghq.com' },
-  { icon: faGitAlt, text: 'Git', link: 'https://git-scm.com' }
-]
-
 export default function Home() {
-  const programmingLanguagesTiles = programmingLanguagesAndFrameworks.map(
-    ({ text, icon, link }) => (
-      <Tile text={text} icon={icon} link={link} key={text} />
-    )
+  const selectedWork = signal.work.filter(
+    (work) => work.id === 'cloud-console' || work.id === 'delivery-integrations'
   )
-  const toolingTiles = tooling.map(({ text, icon, link }) => (
-    <Tile text={text} icon={icon} link={link} key={text} />
-  ))
+  const currentWork = signal.work.find((work) => work.id === 'cloud-portal')
 
   return (
-    <main>
-      <MatrixRain />
-      <div className="container mx-auto flex justify-center">
-        <div className="pt-24">
-          <div className="flex justify-center">
-            <Image
-              src="/profile_pic.jpg"
-              alt={'Picture of Devon'}
-              className="rounded-full"
-              height={125}
-              width={125}
-              priority
-              quality={20}
-            />
+    <main className={styles.index}>
+      <header className={styles.masthead}>
+        <div className={styles.mastheadInner}>
+          <div className={styles.topline}>
+            <p className={styles.label}>Signal index</p>
+            <a href="#selected-work">
+              Selected work <span aria-hidden="true">↓</span>
+            </a>
           </div>
-          <div className="flex justify-center py-4">
-            <h1 className="text-4xl font-bold dark:text-blue-500 ">
-              Devon Bull
-            </h1>
+          <div className={styles.field} aria-hidden="true" />
+          <div className={styles.intro}>
+            <h1>{signal.person.name}</h1>
+            <p className={styles.role}>
+              {signal.person.title} at {signal.person.employer}
+            </p>
+            <p className={styles.introduction}>{signal.person.introduction}</p>
+            <nav className={styles.links} aria-label="Get in touch">
+              <a href={signal.person.contact}>Contact on LinkedIn</a>
+              <a href="/resume.pdf">Resume PDF</a>
+            </nav>
           </div>
         </div>
-      </div>
-      <div className="container mx-auto mb-4 mt-16 py-4 md:px-64">
-        <p className="text-center text-2xl">Hi there I&apos;m Dev 👋</p>
-        <p className="pt-2 text-center">I&apos;m a Software Engineer</p>
-      </div>
-      <h2 className="mt-8 text-center text-2xl">
-        Programming Languages & Frameworks
-      </h2>
-      <div className="container mx-auto grid max-w-screen-lg grid-cols-2 gap-4 px-4 py-6 md:grid-cols-4 md:px-8 lg:px-16">
-        {programmingLanguagesTiles}
-      </div>
-      <h2 className="mt-8 text-center text-2xl">Tooling</h2>
-      <div className="container mx-auto grid max-w-screen-lg grid-cols-2 gap-4 px-4 pb-16 pt-6 md:grid-cols-4 md:px-8 lg:px-16">
-        {toolingTiles}
+      </header>
+
+      <div className={styles.paper}>
+        <section aria-labelledby="selected-work">
+          <div className={styles.sectionHeading}>
+            <p className={styles.label}>Project records</p>
+            <h2 id="selected-work">Selected work</h2>
+          </div>
+          <ol className={styles.entries} role="list">
+            {selectedWork.map((work) => (
+              <li key={work.id}>
+                <article className={styles.entry}>
+                  <div className={styles.margin}>
+                    <p className={styles.client}>{work.client}</p>
+                    <p>{work.period}</p>
+                    <p className={styles.projectRole}>{work.role}</p>
+                    <p>{signal.person.employer}</p>
+                  </div>
+                  <div className={styles.entryContent}>
+                    <h3>
+                      <Link
+                        href={
+                          work.id === 'cloud-console'
+                            ? '/work/cloud-console'
+                            : '/career#delivery-integrations'
+                        }
+                      >
+                        {work.title}
+                        <span className={styles.arrow} aria-hidden="true">
+                          ↗
+                        </span>
+                      </Link>
+                    </h3>
+                    <p className={styles.contribution}>{work.contribution}</p>
+                    <ul className={styles.evidence} role="list">
+                      {work.highlights.map((highlight) => (
+                        <li key={highlight}>{highlight}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </article>
+              </li>
+            ))}
+          </ol>
+          <div className={styles.careerLink}>
+            <Link href="/career">
+              Read the full career record <span aria-hidden="true">↗</span>
+            </Link>
+          </div>
+        </section>
+
+        {currentWork ? (
+          <section className={styles.current} aria-labelledby="current-work">
+            <div className={styles.margin}>
+              <h2 id="current-work" className={styles.label}>
+                Current work
+              </h2>
+              <p className={styles.client}>{currentWork.client}</p>
+              <p>{currentWork.period}</p>
+            </div>
+            <div className={styles.entryContent}>
+              <h3>{currentWork.title}</h3>
+              <p className={styles.contribution}>{currentWork.contribution}</p>
+            </div>
+          </section>
+        ) : null}
+
+        <nav className={styles.more} aria-label="More from Devon">
+          <p className={styles.label}>Elsewhere in the index</p>
+          <div className={styles.links}>
+            <Link href="/career">Career</Link>
+            <Link href="/blog">Blog</Link>
+            <Link href="/lab">Lab experiments</Link>
+          </div>
+        </nav>
       </div>
     </main>
   )
