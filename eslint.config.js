@@ -1,11 +1,8 @@
-const { FlatCompat } = require('@eslint/eslintrc')
-const path = require('path')
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-})
+const nextVitals = require('eslint-config-next/core-web-vitals')
+const prettier = require('eslint-config-prettier/flat')
 
 module.exports = [
-  ...compat.extends('next/core-web-vitals', 'prettier'),
+  { ignores: ['.contentlayer/**', '.pi/**'] },
+  ...nextVitals,
+  prettier
 ]
-

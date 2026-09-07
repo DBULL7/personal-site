@@ -1,122 +1,141 @@
-import React from 'react'
-import Image from 'next/image'
-import MatrixRain from '@/components/matrix-rain'
-import {
-  faGithub,
-  faReact,
-  faNodeJs,
-  faJs,
-  faGolang,
-  faVuejs,
-  faHtml5,
-  faCss3,
-  faGitAlt,
-  faAws
-} from '@fortawesome/free-brands-svg-icons'
-import {
-  faCloud,
-  faCode,
-  faDatabase,
-  faGear,
-  faServer,
-  faShieldDog
-} from '@fortawesome/free-solid-svg-icons'
-import { Tile, tileProps } from '@/components/tile'
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import { signal } from '@/content/signal'
+import styles from './signal.module.css'
+import transmission from './transmission.module.css'
+
+const title = `${signal.person.name} | ${signal.person.title}`
 
 export const metadata: Metadata = {
-  title: 'Devon Bull - Senior Software Engineer',
-  description:
-    'Explore the portfolio and blog of Devon Bull, a Senior Software Engineer and futurist. Discover unique blog posts and technical resources.'
+  title: { absolute: title },
+  description: signal.person.introduction,
+  alternates: { canonical: '/' },
+  openGraph: {
+    title,
+    description: signal.person.introduction,
+    url: '/',
+    images: ['/signal-social.png']
+  }
 }
 
-const programmingLanguagesAndFrameworks: tileProps[] = [
-  // TODO - add Typescript and Express.js icons but Font Awesome doesn't have it
-  { icon: faJs, text: 'JavaScript', link: 'https://www.javascript.com' },
-  { icon: faCode, text: 'TypeScript', link: 'https://www.typescriptlang.org' },
-  { icon: faGolang, text: 'Golang', link: 'https://go.dev' },
-  { icon: faNodeJs, text: 'Node.js', link: 'https://nodejs.org/en/' },
-  { icon: faServer, text: 'Express.js', link: 'https://expressjs.com' },
-  { icon: faReact, text: 'React', link: 'https://reactjs.org' },
-  { icon: faVuejs, text: 'Vue.js', link: 'https://vuejs.org' },
-  {
-    icon: faHtml5,
-    text: 'HTML',
-    link: 'https://developer.mozilla.org/en-US/docs/Glossary/HTML5'
-  },
-  {
-    icon: faCss3,
-    text: 'CSS',
-    link: 'https://developer.mozilla.org/en-US/docs/Web/CSS'
-  }
-]
-
-const tooling: tileProps[] = [
-  {
-    icon: faDatabase,
-    text: 'DynamoDB',
-    link: 'https://aws.amazon.com/dynamodb/'
-  },
-  { icon: faDatabase, text: 'MongoDB', link: 'https://www.mongodb.com' },
-  { icon: faDatabase, text: 'Postgress', link: 'https://www.postgresql.org' },
-  { icon: faAws, text: 'AWS', link: 'https://aws.amazon.com' },
-  { icon: faCloud, text: 'Google Cloud', link: 'https://cloud.google.com' },
-  {
-    icon: faGithub,
-    text: 'Github Actions',
-    link: 'https://github.com/features/actions'
-  },
-  { icon: faGear, text: 'Kubernetes', link: 'https://kubernetes.io' },
-  { icon: faShieldDog, text: 'DataDog', link: 'https://www.datadoghq.com' },
-  { icon: faGitAlt, text: 'Git', link: 'https://git-scm.com' }
-]
-
 export default function Home() {
-  const programmingLanguagesTiles = programmingLanguagesAndFrameworks.map(
-    ({ text, icon, link }) => (
-      <Tile text={text} icon={icon} link={link} key={text} />
-    )
+  const selectedWork = signal.work.filter(
+    (work) => work.id === 'cloud-console' || work.id === 'delivery-integrations'
   )
-  const toolingTiles = tooling.map(({ text, icon, link }) => (
-    <Tile text={text} icon={icon} link={link} key={text} />
-  ))
+  const currentWork = signal.work.find((work) => work.id === 'cloud-portal')
 
   return (
-    <main>
-      <MatrixRain />
-      <div className="container mx-auto flex justify-center">
-        <div className="pt-24">
-          <div className="flex justify-center">
-            <Image
-              src="/profile_pic.jpg"
-              alt={'Picture of Devon'}
-              className="rounded-full"
-              height={125}
-              width={125}
-              priority
-              quality={20}
-            />
+    <main className={`${styles.page} ${transmission.index}`}>
+      <div className={styles.container}>
+        <header className={transmission.hero}>
+          <div className={transmission.waveField} aria-hidden="true" />
+          <p className={transmission.kicker}>Signal index</p>
+          <h1 className={transmission.masthead}>{signal.person.name}</h1>
+          <div className={transmission.opening}>
+            <p className={transmission.role}>
+              {signal.person.title} <span>at {signal.person.employer}</span>
+            </p>
+            <p className={transmission.introduction}>
+              {signal.person.introduction}
+            </p>
+            <nav className={styles.links} aria-label="Get in touch">
+              <a href={signal.person.contact}>
+                Contact on LinkedIn <span aria-hidden="true">↗</span>
+              </a>
+              <a href="/resume.pdf">
+                Resume PDF <span aria-hidden="true">↓</span>
+              </a>
+            </nav>
           </div>
-          <div className="flex justify-center py-4">
-            <h1 className="text-4xl font-bold dark:text-blue-500 ">
-              Devon Bull
-            </h1>
+        </header>
+
+        <section aria-labelledby="selected-work">
+          <div className={transmission.sectionHeading}>
+            <h2 id="selected-work">Selected work</h2>
+            <a href="#work-index" aria-label="Explore selected work">
+              <span aria-hidden="true">↓</span>
+            </a>
           </div>
-        </div>
-      </div>
-      <div className="container mx-auto mb-4 mt-16 py-4 md:px-64">
-        <p className="text-center text-2xl">Hi there I&apos;m Dev 👋</p>
-        <p className="pt-2 text-center">I&apos;m a Software Engineer</p>
-      </div>
-      <h2 className="mt-8 text-center text-2xl">
-        Programming Languages & Frameworks
-      </h2>
-      <div className="container mx-auto grid max-w-screen-lg grid-cols-2 gap-4 px-4 py-6 md:grid-cols-4 md:px-8 lg:px-16">
-        {programmingLanguagesTiles}
-      </div>
-      <h2 className="mt-8 text-center text-2xl">Tooling</h2>
-      <div className="container mx-auto grid max-w-screen-lg grid-cols-2 gap-4 px-4 pb-16 pt-6 md:grid-cols-4 md:px-8 lg:px-16">
-        {toolingTiles}
+          <ol className={transmission.workIndex} id="work-index" role="list">
+            {selectedWork.map((work, index) => (
+              <li key={work.id}>
+                <article className={transmission.workRow}>
+                  <span className={transmission.ordinal} aria-hidden="true">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <div className={transmission.workBody}>
+                    <h3>
+                      <Link
+                        href={
+                          work.id === 'cloud-console'
+                            ? '/work/cloud-console'
+                            : '/career#delivery-integrations'
+                        }
+                      >
+                        {work.title}
+                        <span aria-hidden="true">↗</span>
+                      </Link>
+                    </h3>
+                    <p>{work.contribution}</p>
+                  </div>
+                  <dl className={transmission.projectCredits}>
+                    <div>
+                      <dt>Client</dt>
+                      <dd>{work.client}</dd>
+                    </div>
+                    <div>
+                      <dt>Period</dt>
+                      <dd>{work.period}</dd>
+                    </div>
+                    <div>
+                      <dt>Responsibility</dt>
+                      <dd>{work.role}</dd>
+                      <dd>{signal.person.employer}</dd>
+                    </div>
+                  </dl>
+                </article>
+              </li>
+            ))}
+          </ol>
+          <div className={transmission.careerLink}>
+            <Link href="/career">
+              Read the full career record <span aria-hidden="true">↗</span>
+            </Link>
+          </div>
+        </section>
+
+        {currentWork ? (
+          <section
+            className={transmission.current}
+            aria-labelledby="current-work"
+          >
+            <h2 id="current-work">Current work</h2>
+            <div>
+              <p className={transmission.currentPeriod}>{currentWork.period}</p>
+              <h3>{currentWork.title}</h3>
+              <p>{currentWork.contribution}</p>
+              <p className={transmission.currentCredit}>
+                {currentWork.client} · {currentWork.role} ·{' '}
+                {signal.person.employer}
+              </p>
+            </div>
+          </section>
+        ) : null}
+
+        <section className={transmission.elsewhere} aria-labelledby="elsewhere">
+          <h2 id="elsewhere">Elsewhere</h2>
+          <nav className={styles.links} aria-label="More from Devon">
+            <Link href="/career">
+              Career <span aria-hidden="true">↗</span>
+            </Link>
+            <Link href="/blog">
+              Blog <span aria-hidden="true">↗</span>
+            </Link>
+            <Link href="/lab">
+              Lab experiments <span aria-hidden="true">↗</span>
+            </Link>
+          </nav>
+        </section>
       </div>
     </main>
   )

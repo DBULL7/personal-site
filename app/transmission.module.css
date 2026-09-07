@@ -1,0 +1,332 @@
+.index {
+  padding-top: 2.25rem;
+  padding-bottom: 0;
+}
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  padding-block: 0 4.5rem;
+}
+
+.waveField {
+  position: absolute;
+  z-index: -1;
+  inset: 0 -1rem 1.5rem auto;
+  width: 43%;
+  background: url('/transmission-wave.svg') center / contain no-repeat;
+  pointer-events: none;
+}
+
+.index .kicker,
+.index .sectionHeading h2,
+.index .current > h2,
+.index .elsewhere h2 {
+  margin: 0;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.index .kicker {
+  color: var(--signal-accent);
+}
+
+.index .masthead {
+  max-width: none;
+  margin-block: 1.75rem 2rem;
+  font-size: clamp(4.5rem, 10.8vw, 9.5rem);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: -0.065em;
+}
+
+.opening {
+  width: 56%;
+}
+
+.index .role {
+  margin-bottom: 1.4rem;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.role span {
+  color: var(--signal-muted);
+  font-weight: 400;
+}
+
+.index .introduction {
+  max-width: 47ch;
+  margin-bottom: 1.5rem;
+  font-size: clamp(1.125rem, 1.65vw, 1.375rem);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.index a {
+  gap: 0.65rem;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 4rem;
+  border-top: 1px solid var(--signal-text);
+  border-bottom: 1px solid var(--signal-border);
+}
+
+.sectionHeading > a {
+  justify-content: center;
+  text-decoration: none;
+  font-size: 1.5rem;
+}
+
+.workIndex {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  scroll-margin-top: 1.5rem;
+}
+
+.workIndex > li {
+  border-bottom: 1px solid var(--signal-border);
+}
+
+.workRow {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr) 15rem;
+  gap: 2rem;
+  padding-block: 2.5rem 2.75rem;
+}
+
+.ordinal {
+  padding-top: 0.75rem;
+  color: var(--signal-accent);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.index .workBody h3 {
+  margin-bottom: 1rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+  font-weight: 400;
+  line-height: 1.16;
+  letter-spacing: -0.04em;
+}
+
+.workBody h3 a {
+  color: var(--signal-text);
+  padding: 0;
+  text-decoration: none;
+}
+
+.workBody h3 a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+
+.workBody h3 a span {
+  align-self: flex-start;
+  padding-top: 0.45rem;
+  color: var(--signal-accent);
+  font-family: system-ui, sans-serif;
+  font-size: 1.25rem;
+}
+
+.index .workBody p {
+  max-width: 58ch;
+  margin: 0;
+  color: var(--signal-muted);
+  line-height: 1.75;
+}
+
+.projectCredits {
+  display: grid;
+  align-content: start;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0.5rem 0 0 1.5rem;
+  border-left: 1px solid var(--signal-border);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+.projectCredits dt {
+  color: var(--signal-muted);
+}
+
+.projectCredits dd {
+  margin: 0;
+}
+
+.careerLink {
+  padding-block: 1.25rem 3.5rem;
+  padding-left: 5rem;
+}
+
+.current,
+.elsewhere {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  gap: 2rem;
+  border-top: 1px solid var(--signal-border);
+  padding-block: 2.5rem;
+}
+
+.index .current > h2,
+.index .elsewhere h2 {
+  padding-top: 0.5rem;
+}
+
+.index .currentPeriod,
+.index .currentCredit {
+  color: var(--signal-muted);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 0.75rem;
+  line-height: 1.75;
+}
+
+.index .currentPeriod {
+  color: var(--signal-accent);
+  margin-bottom: 1rem;
+}
+
+.index .current h3 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 2rem;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+
+.current p {
+  max-width: 58ch;
+}
+
+.index .currentCredit {
+  margin-bottom: 0;
+}
+
+.elsewhere {
+  padding-block: 1.5rem 2rem;
+}
+
+@media (max-width: 900px) {
+  .waveField {
+    width: 38%;
+    inset-block: 5rem 2rem;
+  }
+
+  .opening {
+    width: 64%;
+  }
+
+  .workRow {
+    grid-template-columns: 2rem minmax(0, 1fr) 12rem;
+    gap: 1.25rem;
+  }
+
+  .projectCredits {
+    padding-left: 1rem;
+  }
+
+  .careerLink {
+    padding-left: 3.25rem;
+  }
+
+  .current,
+  .elsewhere {
+    grid-template-columns: 10rem minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .index {
+    padding-top: 1.5rem;
+  }
+
+  .hero {
+    padding-bottom: 2.5rem;
+  }
+
+  .waveField {
+    inset: 0 0 auto auto;
+    width: 40%;
+    height: 9rem;
+    opacity: 0.6;
+  }
+
+  .index .masthead {
+    width: 70%;
+    margin-block: 1.5rem 1.75rem;
+    font-size: clamp(4rem, 17vw, 6rem);
+    line-height: 0.95;
+    text-wrap: initial;
+  }
+
+  .opening {
+    width: 100%;
+  }
+
+  .role span {
+    display: block;
+  }
+
+  .index .introduction {
+    font-size: 1.125rem;
+  }
+
+  .workRow {
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+    gap: 1.25rem 0.75rem;
+    padding-block: 1.75rem 2rem;
+  }
+
+  .ordinal {
+    padding-top: 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .projectCredits {
+    grid-column: 2;
+    grid-template-columns: 1fr;
+    padding: 0;
+    border: 0;
+    gap: 0.5rem;
+  }
+
+  .projectCredits > div {
+    display: grid;
+    grid-template-columns: 6.75rem minmax(0, 1fr);
+    column-gap: 0.5rem;
+  }
+
+  .projectCredits dd {
+    grid-column: 2;
+  }
+
+  .careerLink {
+    padding-left: 2.25rem;
+    padding-bottom: 2rem;
+  }
+
+  .current,
+  .elsewhere {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding-block: 1.75rem;
+  }
+}
+
+@media print {
+  .waveField {
+    display: none;
+  }
+}
