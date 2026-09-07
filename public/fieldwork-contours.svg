@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 360" fill="none">
+  <defs>
+    <path id="contour" d="M-128-30C-142-90-70-137-12-121C34-110 49-62 95-48C153-31 153 44 106 77C66 105 48 147-9 132C-59 118-56 72-98 53C-132 38-114 3-128-30Z"/>
+  </defs>
+  <g transform="translate(180 180) rotate(-24)" stroke="#8b9d78" stroke-width="0.8">
+    <use href="#contour" transform="scale(1.23)"/>
+    <use href="#contour" transform="scale(1.16)"/>
+    <use href="#contour" transform="scale(1.09)"/>
+    <use href="#contour" transform="scale(1.02)"/>
+    <use href="#contour" transform="scale(.95)"/>
+    <use href="#contour" transform="scale(.88)"/>
+    <use href="#contour" transform="scale(.81)"/>
+    <use href="#contour" transform="scale(.74)"/>
+    <use href="#contour" transform="scale(.67)"/>
+    <use href="#contour" transform="scale(.60)"/>
+    <use href="#contour" transform="scale(.53)"/>
+    <use href="#contour" transform="scale(.46)"/>
+    <use href="#contour" transform="scale(.39)"/>
+    <use href="#contour" transform="scale(.32)"/>
+    <use href="#contour" transform="scale(.25)"/>
+    <use href="#contour" transform="scale(.18)"/>
+  </g>
+  <g stroke="#8b9d78" stroke-width="0.6" opacity=".3">
+    <path d="M14 136C90 53 137 295 346 191M14 148C90 65 137 307 346 203M14 160C90 77 137 319 346 215M14 172C90 89 137 331 346 227M14 184C90 101 137 343 346 239"/>
+  </g>
+</svg>

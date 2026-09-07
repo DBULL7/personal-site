@@ -11,7 +11,7 @@ export function CareerRecords() {
           {signal.person.title} at {signal.person.employer}
         </p>
         <p className={styles.muted}>{signal.person.tenure}</p>
-        <ol className={styles.records}>
+        <ol className={styles.records} role="list">
           {signal.work.map((work) => (
             <li key={work.id}>
               <article id={work.id} className={styles.record}>
@@ -53,7 +53,7 @@ export function CareerRecords() {
       </section>
       <section className={styles.section} aria-labelledby="education">
         <h2 id="education">Education</h2>
-        <ul className={styles.education}>
+        <ul className={styles.education} role="list">
           {signal.education.map((education) => (
             <li key={education.school}>
               <h3>{education.school}</h3>

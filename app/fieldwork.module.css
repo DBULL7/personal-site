@@ -1,0 +1,376 @@
+.index {
+  --paper: #f1ede3;
+  --ink: #24362d;
+  --muted: #596359;
+  --rule: #c4c8ba;
+  --dark: #10251e;
+  background: var(--paper);
+  color: var(--ink);
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  font-size: 1rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.index a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 44px;
+  min-width: 44px;
+  padding-block: 0.5rem;
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+
+.index a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.index a:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 5px;
+}
+
+.index h1,
+.index h2,
+.index h3 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.index p {
+  margin: 0;
+}
+
+.masthead {
+  background: var(--dark);
+  color: #f1ede3;
+  padding: 1.5rem 2rem 3.5rem;
+}
+
+.mastheadInner {
+  position: relative;
+  max-width: 72rem;
+  margin-inline: auto;
+}
+
+.topline {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
+  margin-bottom: 1.5rem;
+  color: #bccbbd;
+}
+
+.label,
+.margin,
+.topline a {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 0.75rem;
+  line-height: 1.7;
+  letter-spacing: 0.025em;
+}
+
+.label {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.intro {
+  position: relative;
+  z-index: 1;
+  width: 67%;
+}
+
+.intro h1 {
+  margin: 0 0 1.1rem;
+  font-size: clamp(3.5rem, 7.5vw, 6.75rem);
+  letter-spacing: -0.055em;
+}
+
+.index .role {
+  margin-bottom: 1.6rem;
+  color: #cbd6c9;
+  font-size: 1rem;
+}
+
+.index .introduction {
+  max-width: 53ch;
+  font-size: clamp(1.125rem, 1.6vw, 1.375rem);
+  line-height: 1.6;
+  margin-bottom: 1.4rem;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.75rem;
+}
+
+.masthead .links {
+  color: #d4ddbf;
+}
+
+.field {
+  position: absolute;
+  top: 3.5rem;
+  right: 0;
+  width: 32%;
+  height: calc(100% - 3.5rem);
+  background: url('/fieldwork-contours.svg') center / contain no-repeat;
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.paper {
+  max-width: 76rem;
+  padding: 3rem 2rem 2rem;
+  margin-inline: auto;
+}
+
+.sectionHeading,
+.entry,
+.current,
+.more {
+  display: grid;
+  grid-template-columns: minmax(9rem, 1fr) minmax(0, 3fr);
+  column-gap: clamp(2rem, 6vw, 6rem);
+}
+
+.sectionHeading {
+  align-items: baseline;
+  padding-bottom: 2rem;
+}
+
+.sectionHeading .label {
+  color: var(--muted);
+}
+
+.sectionHeading h2 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  letter-spacing: -0.035em;
+  scroll-margin-top: 2rem;
+}
+
+.entries {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entries > li {
+  border-top: 1px solid var(--rule);
+}
+
+.entry {
+  padding-block: 2.5rem 3rem;
+}
+
+.margin {
+  color: var(--muted);
+  padding-top: 0.55rem;
+}
+
+.margin p {
+  max-width: 24ch;
+  margin-bottom: 0.4rem;
+}
+
+.margin .client {
+  color: var(--ink);
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.margin .projectRole {
+  margin-top: 1.75rem;
+  color: var(--ink);
+}
+
+.entryContent {
+  min-width: 0;
+}
+
+.entryContent h3 {
+  margin: 0 0 1rem;
+  font-size: clamp(1.8rem, 3vw, 2.65rem);
+  letter-spacing: -0.025em;
+}
+
+.entryContent h3 a {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-top: 0;
+  text-decoration: none;
+}
+
+.entryContent h3 a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+
+.arrow {
+  flex-shrink: 0;
+  font-family: system-ui, sans-serif;
+  font-size: 1.35rem;
+}
+
+.index .contribution {
+  max-width: 58ch;
+  font-size: 1.125rem;
+  line-height: 1.75;
+}
+
+.evidence {
+  max-width: 62ch;
+  margin: 1.5rem 0 0;
+  padding: 0 0 0 1.25rem;
+  border-left: 1px solid #9ba995;
+  list-style: none;
+  color: var(--muted);
+}
+
+.evidence li + li {
+  margin-top: 0.65rem;
+}
+
+.careerLink {
+  border-top: 1px solid var(--rule);
+  padding-block: 1rem 2.5rem;
+  text-align: right;
+}
+
+.current {
+  border-top: 1px solid var(--ink);
+  padding-block: 2.5rem 3rem;
+}
+
+.current .label {
+  margin: 0 0 1.5rem;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+.more {
+  align-items: center;
+  border-top: 1px solid var(--rule);
+  padding-block: 1.25rem;
+}
+
+.more .label {
+  color: var(--muted);
+}
+
+@media (max-width: 900px) {
+  .intro {
+    width: 76%;
+  }
+
+  .field {
+    width: 22%;
+    opacity: 0.45;
+  }
+
+  .sectionHeading,
+  .entry,
+  .current,
+  .more {
+    grid-template-columns: minmax(8rem, 1fr) minmax(0, 2.5fr);
+    column-gap: 2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .masthead {
+    padding: 0.75rem 1.25rem 2.5rem;
+  }
+
+  .topline {
+    margin-bottom: 1.75rem;
+  }
+
+  .intro {
+    width: 100%;
+  }
+
+  .intro h1 {
+    font-size: clamp(3rem, 13vw, 4.5rem);
+  }
+
+  .field {
+    top: 3.6rem;
+    width: 38%;
+    height: 8rem;
+    opacity: 0.15;
+  }
+
+  .paper {
+    padding: 2rem 1.25rem 1rem;
+  }
+
+  .sectionHeading,
+  .entry,
+  .current,
+  .more {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+
+  .sectionHeading {
+    gap: 0.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .entry,
+  .current {
+    padding-block: 1.5rem 2rem;
+  }
+
+  .margin {
+    padding-top: 0;
+  }
+
+  .margin p {
+    max-width: none;
+  }
+
+  .margin .projectRole {
+    margin-top: 0.75rem;
+  }
+
+  .entryContent h3 {
+    font-size: 2rem;
+  }
+
+  .careerLink {
+    text-align: left;
+  }
+
+  .more {
+    gap: 0.5rem;
+  }
+}

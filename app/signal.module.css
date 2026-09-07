@@ -275,6 +275,91 @@
   height: 100%;
 }
 
+@media screen {
+  .page {
+    --signal-background: #f1ede3;
+    --signal-text: #24362d;
+    --signal-muted: #596359;
+    --signal-accent: #294b37;
+    --signal-border: #c4c8ba;
+  }
+
+  .siteHeader,
+  .siteFooter {
+    --signal-text: #f1ede3;
+    --signal-muted: #cbd6c9;
+    --signal-accent: #d4ddbf;
+    padding-inline: 2rem;
+  }
+
+  .headerInner,
+  .footerInner {
+    max-width: 72rem;
+  }
+
+  .siteHeader {
+    padding-block: 0.75rem;
+  }
+
+  .wordmark {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.25rem;
+    font-weight: 400;
+  }
+
+  .siteHeader a {
+    text-decoration: none;
+  }
+
+  .siteHeader a:hover {
+    text-decoration: underline;
+  }
+
+  .page h2,
+  .page h3 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 400;
+  }
+
+  .page p,
+  .highlights {
+    max-width: 62ch;
+  }
+
+  .eyebrow,
+  .credits dt {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+  }
+
+  .record {
+    padding-block: 2.5rem;
+  }
+
+  .credits {
+    border-left: 1px solid var(--signal-border);
+    padding-left: 1.25rem;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .siteHeader,
+  .siteFooter {
+    padding-inline: 1.25rem;
+  }
+
+  .siteHeader .headerInner {
+    column-gap: 1rem;
+    row-gap: 0.25rem;
+  }
+
+  .siteHeader .links {
+    column-gap: 1rem;
+    row-gap: 0;
+  }
+}
+
 @media print {
   .siteHeader,
   .siteFooter,
