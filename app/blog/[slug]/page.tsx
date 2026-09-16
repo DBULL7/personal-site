@@ -38,7 +38,7 @@ const PostLayout = async ({
       <h1 className="text-ink mt-3 text-[40px] leading-[1.15] font-semibold tracking-[-0.022em]">
         {post.title}
       </h1>
-      <div className="prose text-ink prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-ink prose-p:text-[17px] prose-p:leading-[1.47] prose-p:text-ink prose-a:text-link prose-a:no-underline hover:prose-a:underline prose-strong:text-ink prose-code:text-ink prose-li:text-ink mt-10 max-w-none">
+      <div className="prose text-ink prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-ink prose-h2:mt-10 prose-h2:text-[28px] prose-p:text-[17px] prose-p:leading-[1.47] prose-p:text-ink prose-a:text-link prose-a:no-underline hover:prose-a:underline prose-strong:text-ink prose-code:text-ink prose-li:text-ink mt-10 max-w-none [&>h1:first-child]:hidden [&>h1:first-child+time]:hidden">
         <MDXContent
           code={post.body.code}
           postDate={format(parseISO(post.date), 'LLLL d, yyyy')}
