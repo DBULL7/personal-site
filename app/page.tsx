@@ -1,5 +1,7 @@
 import { Metadata } from 'next'
 
+import { Hero } from '@/components/hero'
+
 export const metadata: Metadata = {
   title: 'Devon Bull - Solutions Architect',
   description: 'Solutions Architect at Big Nerd Ranch.'
@@ -8,10 +10,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <main>
-      <section className="identity">
-        <h1>Devon Bull</h1>
-        <p>Solutions Architect</p>
-      </section>
+      <Hero />
     </main>
   )
 }

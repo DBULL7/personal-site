@@ -2,7 +2,8 @@ export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
   name: 'Devon Bull',
-  description: 'Solutions Architect at Big Nerd Ranch.',
+  description:
+    'Solutions Architect at Big Nerd Ranch. Architecture through delivery and support.',
   mainNav: [
     {
       title: 'Home',
