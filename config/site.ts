@@ -1,11 +1,8 @@
-import * as process from 'process'
-
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-  name: 'DBULL7',
-  description:
-    'Beautifully designed components built with Radix UI and Tailwind CSS.',
+  name: 'Devon Bull',
+  description: 'Solutions Architect at Big Nerd Ranch.',
   mainNav: [
     {
       title: 'Home',
@@ -19,6 +16,6 @@ export const siteConfig = {
   links: {
     twitter: 'https://twitter.com/Devon_Bull',
     github: 'https://github.com/DBULL7',
-    linkedin: 'https:///www.linkedin.com/in/bulldevon'
+    linkedin: 'https://www.linkedin.com/in/bulldevon'
   }
 }
