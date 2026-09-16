@@ -7,22 +7,43 @@ import '@/css/prism.css'
 export const generateStaticParams = async () =>
   allPosts.map((post) => ({ slug: post._raw.flattenedPath }))
 
-export const generateMetadata = async ({ params }: { params: Promise<{ slug: string }> }) => {
+export const generateMetadata = async ({
+  params
+}: {
+  params: Promise<{ slug: string }>
+}) => {
   const { slug } = await params
   const post = allPosts.find((post) => post._raw.flattenedPath === slug)
   if (!post) throw new Error(`Post not found for slug: ${slug}`)
   return { title: post.title }
 }
 
-const PostLayout = async ({ params }: { params: Promise<{ slug: string }> }) => {
+const PostLayout = async ({
+  params
+}: {
+  params: Promise<{ slug: string }>
+}) => {
   const { slug } = await params
   const post = allPosts.find((post) => post._raw.flattenedPath === slug)
-  // 404 if the post does not exist.
   if (!post) notFound()
 
   return (
-    <article className="prose mx-auto max-w-xl py-8 dark:prose-invert">
-      <MDXContent code={post.body.code} postDate={format(parseISO(post.date), 'LLLL d, yyyy')} />
+    <article className="mx-auto max-w-[680px] px-6 py-16">
+      <time
+        dateTime={post.date}
+        className="text-mute text-[12px] tracking-[0.04em]"
+      >
+        {format(parseISO(post.date), 'LLLL d, yyyy')}
+      </time>
+      <h1 className="text-ink mt-3 text-[40px] leading-[1.15] font-semibold tracking-[-0.022em]">
+        {post.title}
+      </h1>
+      <div className="prose text-ink prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-ink prose-p:text-[17px] prose-p:leading-[1.47] prose-p:text-ink prose-a:text-link prose-a:no-underline hover:prose-a:underline prose-strong:text-ink prose-code:text-ink prose-li:text-ink mt-10 max-w-none">
+        <MDXContent
+          code={post.body.code}
+          postDate={format(parseISO(post.date), 'LLLL d, yyyy')}
+        />
+      </div>
     </article>
   )
 }

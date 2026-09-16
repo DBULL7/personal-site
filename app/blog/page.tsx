@@ -10,27 +10,18 @@ export default function Home() {
   const filteredPosts = posts.filter((post) => post.draft !== true)
 
   return (
-    <section className="mx-auto max-w-3xl px-4 dark:prose-invert sm:px-6 xl:max-w-5xl xl:px-0">
-      <main className="mb-auto">
-        <div className="pb-6 pt-6">
-          <h1 className="text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100 sm:hidden sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">
-            Latest and Greatest
-          </h1>
-        </div>
-        <div className="flex sm:space-x-24">
-          <TagsSidebar />
-          <div>
-            <ul>
-              {filteredPosts.map((post) => {
-                return <PostCard key={post.path} {...post} />
-              })}
-            </ul>
-            {/*{pagination && pagination.totalPages > 1 && (*/}
-            {/*    <Pagination currentPage={pagination.currentPage} totalPages={pagination.totalPages} />*/}
-            {/*)}*/}
-          </div>
-        </div>
-      </main>
+    <section className="mx-auto max-w-[980px] px-6 py-16">
+      <h1 className="text-ink text-[40px] font-semibold tracking-[-0.022em]">
+        Writing
+      </h1>
+      <div className="mt-12 flex flex-col gap-12 sm:flex-row sm:gap-16">
+        <TagsSidebar />
+        <ul className="min-w-0 flex-1">
+          {filteredPosts.map((post) => {
+            return <PostCard key={post.path} {...post} />
+          })}
+        </ul>
+      </div>
     </section>
   )
 }

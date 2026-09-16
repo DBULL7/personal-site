@@ -6,34 +6,34 @@ import Tag from '@/components/tag'
 function PostCard(post: Post) {
   const { path, date, title, description, tags } = post
   return (
-    <li key={path} className="py-5">
-      <article className="flex flex-col space-y-2 xl:space-y-0">
-        <dl>
-          <dt className="sr-only">Published on</dt>
-          <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
-            <time dateTime={date}>
-              {format(parseISO(post.date), 'LLLL d, yyyy')}
-            </time>
-          </dd>
-        </dl>
-        <div className="space-y-3">
-          <div>
-            <h2 className="text-2xl font-bold leading-8 tracking-tight">
-              <Link
-                href={path}
-                className="text-gray-900 hover:text-indigo-500 dark:text-gray-100 dark:hover:text-sky-500"
-              >
-                {title}
-              </Link>
-            </h2>
-            <div className="flex flex-wrap">
-              {tags?.map((tag) => <Tag key={tag} text={tag} />)}
-            </div>
+    <li
+      key={path}
+      className="border-b border-black/10 py-8 last:border-b-0 dark:border-white/15"
+    >
+      <article>
+        <time
+          dateTime={date}
+          className="text-mute text-[12px] tracking-[0.04em]"
+        >
+          {format(parseISO(post.date), 'LLLL d, yyyy')}
+        </time>
+        <h2 className="mt-2 text-[28px] leading-[1.15] font-semibold tracking-[-0.02em]">
+          <Link href={path} className="text-ink hover:text-mute">
+            {title}
+          </Link>
+        </h2>
+        {tags?.length ? (
+          <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1">
+            {tags.map((tag) => (
+              <Tag key={tag} text={tag} />
+            ))}
           </div>
-          <div className="prose max-w-none text-gray-500 dark:text-gray-400">
+        ) : null}
+        {description ? (
+          <p className="text-mute mt-3 text-[17px] leading-[1.47]">
             {description}
-          </div>
-        </div>
+          </p>
+        ) : null}
       </article>
     </li>
   )
