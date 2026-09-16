@@ -1,123 +1,17 @@
-import React from 'react'
-import Image from 'next/image'
-import MatrixRain from '@/components/matrix-rain'
-import {
-  faGithub,
-  faReact,
-  faNodeJs,
-  faJs,
-  faGolang,
-  faVuejs,
-  faHtml5,
-  faCss3,
-  faGitAlt,
-  faAws
-} from '@fortawesome/free-brands-svg-icons'
-import {
-  faCloud,
-  faCode,
-  faDatabase,
-  faGear,
-  faServer,
-  faShieldDog
-} from '@fortawesome/free-solid-svg-icons'
-import { Tile, tileProps } from '@/components/tile'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Devon Bull - Senior Software Engineer',
-  description:
-    'Explore the portfolio and blog of Devon Bull, a Senior Software Engineer and futurist. Discover unique blog posts and technical resources.'
+  title: 'Devon Bull - Solutions Architect',
+  description: 'Solutions Architect at Big Nerd Ranch.'
 }
 
-const programmingLanguagesAndFrameworks: tileProps[] = [
-  // TODO - add Typescript and Express.js icons but Font Awesome doesn't have it
-  { icon: faJs, text: 'JavaScript', link: 'https://www.javascript.com' },
-  { icon: faCode, text: 'TypeScript', link: 'https://www.typescriptlang.org' },
-  { icon: faGolang, text: 'Golang', link: 'https://go.dev' },
-  { icon: faNodeJs, text: 'Node.js', link: 'https://nodejs.org/en/' },
-  { icon: faServer, text: 'Express.js', link: 'https://expressjs.com' },
-  { icon: faReact, text: 'React', link: 'https://reactjs.org' },
-  { icon: faVuejs, text: 'Vue.js', link: 'https://vuejs.org' },
-  {
-    icon: faHtml5,
-    text: 'HTML',
-    link: 'https://developer.mozilla.org/en-US/docs/Glossary/HTML5'
-  },
-  {
-    icon: faCss3,
-    text: 'CSS',
-    link: 'https://developer.mozilla.org/en-US/docs/Web/CSS'
-  }
-]
-
-const tooling: tileProps[] = [
-  {
-    icon: faDatabase,
-    text: 'DynamoDB',
-    link: 'https://aws.amazon.com/dynamodb/'
-  },
-  { icon: faDatabase, text: 'MongoDB', link: 'https://www.mongodb.com' },
-  { icon: faDatabase, text: 'Postgress', link: 'https://www.postgresql.org' },
-  { icon: faAws, text: 'AWS', link: 'https://aws.amazon.com' },
-  { icon: faCloud, text: 'Google Cloud', link: 'https://cloud.google.com' },
-  {
-    icon: faGithub,
-    text: 'Github Actions',
-    link: 'https://github.com/features/actions'
-  },
-  { icon: faGear, text: 'Kubernetes', link: 'https://kubernetes.io' },
-  { icon: faShieldDog, text: 'DataDog', link: 'https://www.datadoghq.com' },
-  { icon: faGitAlt, text: 'Git', link: 'https://git-scm.com' }
-]
-
 export default function Home() {
-  const programmingLanguagesTiles = programmingLanguagesAndFrameworks.map(
-    ({ text, icon, link }) => (
-      <Tile text={text} icon={icon} link={link} key={text} />
-    )
-  )
-  const toolingTiles = tooling.map(({ text, icon, link }) => (
-    <Tile text={text} icon={icon} link={link} key={text} />
-  ))
-
   return (
     <main>
-      <MatrixRain />
-      <div className="container mx-auto flex justify-center">
-        <div className="pt-24">
-          <div className="flex justify-center">
-            <Image
-              src="/profile_pic.jpg"
-              alt={'Picture of Devon'}
-              className="rounded-full"
-              height={125}
-              width={125}
-              priority
-              quality={20}
-            />
-          </div>
-          <div className="flex justify-center py-4">
-            <h1 className="text-4xl font-bold dark:text-blue-500 ">
-              Devon Bull
-            </h1>
-          </div>
-        </div>
-      </div>
-      <div className="container mx-auto mb-4 mt-16 py-4 md:px-64">
-        <p className="text-center text-2xl">Hi there I&apos;m Dev 👋</p>
-        <p className="pt-2 text-center">I&apos;m a Software Engineer</p>
-      </div>
-      <h2 className="mt-8 text-center text-2xl">
-        Programming Languages & Frameworks
-      </h2>
-      <div className="container mx-auto grid max-w-screen-lg grid-cols-2 gap-4 px-4 py-6 md:grid-cols-4 md:px-8 lg:px-16">
-        {programmingLanguagesTiles}
-      </div>
-      <h2 className="mt-8 text-center text-2xl">Tooling</h2>
-      <div className="container mx-auto grid max-w-screen-lg grid-cols-2 gap-4 px-4 pb-16 pt-6 md:grid-cols-4 md:px-8 lg:px-16">
-        {toolingTiles}
-      </div>
+      <section className="identity">
+        <h1>Devon Bull</h1>
+        <p>Solutions Architect</p>
+      </section>
     </main>
   )
 }

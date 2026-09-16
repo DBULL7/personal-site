@@ -68,9 +68,8 @@
     "tailwindcss": "^4.1.18"
   },
   "lint-staged": {
-    "*.{ts, tsx,js,jsx}": [
-      "prettier --write",
-      "eslint --fix"
+    "*.{ts,tsx,js,jsx,css}": [
+      "prettier --write"
     ]
   }
 }

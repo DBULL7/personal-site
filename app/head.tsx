@@ -5,7 +5,7 @@ export default function Head() {
       <meta content="width=device-width, initial-scale=1" name="viewport" />
       <meta
         name="description"
-        content="Personal website for software engineer Devon Bull"
+        content="Solutions Architect at Big Nerd Ranch."
       />
       <link rel="icon" href="/favicon.svg" />
     </>
