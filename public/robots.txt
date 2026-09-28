@@ -1,8 +1,0 @@
-Sitemap: https://devonbull.com/sitemap.xml
-
-User-agent: *
-Disallow: /blog
-Disallow: /blog/
-
-User-agent: *
-Allow: /

@@ -8,7 +8,7 @@ import type { MDXComponents } from 'mdx/types'
 // Define your custom MDX components.
 const mdxComponents: MDXComponents = {
   // Override the default <a> element to use the next/link component.
-  a: ({ href, children }) => <Link href={href as string}>{children}</Link>,
+  a: ({ href, children }) => <Link href={href as string}>{children}</Link>
 
   // Add a custom component.
 }
@@ -20,6 +20,7 @@ interface MDXContentProps {
 
 export function MDXContent({ code, ...props }: MDXContentProps) {
   const Component = useMDXComponent(code)
+  // Contentlayer memoizes the compiled component by its code string.
+  // eslint-disable-next-line react-hooks/static-components
   return <Component components={mdxComponents} {...props} />
 }
-

@@ -1,24 +1,21 @@
-import * as process from 'process'
+import { profile } from './profile'
 
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-  name: 'DBULL7',
+  name: profile.name,
+  url: 'https://devonbull.com',
   description:
-    'Beautifully designed components built with Radix UI and Tailwind CSS.',
+    'Solutions Architect at Big Nerd Ranch. Architecture through delivery and support.',
   mainNav: [
     {
-      title: 'Home',
-      href: '/'
+      title: 'Work',
+      href: '/work'
     },
     {
-      title: 'Blog',
+      title: 'Writing',
       href: '/blog'
     }
   ],
-  links: {
-    twitter: 'https://twitter.com/Devon_Bull',
-    github: 'https://github.com/DBULL7',
-    linkedin: 'https:///www.linkedin.com/in/bulldevon'
-  }
+  links: profile.links
 }
