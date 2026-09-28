@@ -23,20 +23,25 @@ function ClientMark({ engagement }: { engagement: Engagement }) {
 
 export function WorkChapters() {
   return (
-    <div id="work" className="scroll-mt-[44px]">
+    <div id="work" className="scroll-mt-16">
       {profile.engagements.map((engagement, index) => {
         const inverted = index % 2 === 1
         return (
           <section
             key={engagement.id}
-            className={inverted ? 'bg-black text-white' : 'bg-canvas text-ink'}
+            id={engagement.id}
+            aria-labelledby={`${engagement.id}-title`}
+            className={`work-chapter scroll-mt-16 ${inverted ? 'bg-black text-white' : 'bg-canvas text-ink'}`}
           >
             <div className="mx-auto max-w-[980px] px-6 py-24 sm:py-32">
               <ClientMark engagement={engagement} />
               <p className="text-[12px] text-current opacity-70">
                 {engagement.period}
               </p>
-              <h2 className="mt-3 text-[40px] leading-[1.07] font-semibold tracking-[-0.022em] sm:text-[64px]">
+              <h2
+                id={`${engagement.id}-title`}
+                className="mt-3 text-[36px] leading-[1.1] font-semibold tracking-[-0.022em] sm:text-[56px]"
+              >
                 {engagement.product}
               </h2>
               <p className="mt-5 max-w-[640px] text-[19px] leading-[1.47] opacity-80">

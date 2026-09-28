@@ -1,11 +1,13 @@
 import { format, parseISO } from 'date-fns'
-import { allPosts } from 'contentlayer2/generated'
+import { publicPosts } from '@/lib/public-posts'
 import { notFound } from 'next/navigation'
 import { MDXContent } from '@/components/mdx-content'
 import '@/css/prism.css'
 
+export const dynamicParams = false
+
 export const generateStaticParams = async () =>
-  allPosts.map((post) => ({ slug: post._raw.flattenedPath }))
+  publicPosts.map((post) => ({ slug: post._raw.flattenedPath }))
 
 export const generateMetadata = async ({
   params
@@ -13,9 +15,13 @@ export const generateMetadata = async ({
   params: Promise<{ slug: string }>
 }) => {
   const { slug } = await params
-  const post = allPosts.find((post) => post._raw.flattenedPath === slug)
-  if (!post) throw new Error(`Post not found for slug: ${slug}`)
-  return { title: post.title }
+  const post = publicPosts.find((post) => post._raw.flattenedPath === slug)
+  if (!post) notFound()
+  return {
+    title: post.title,
+    description: post.description,
+    alternates: { canonical: post.path }
+  }
 }
 
 const PostLayout = async ({
@@ -24,7 +30,7 @@ const PostLayout = async ({
   params: Promise<{ slug: string }>
 }) => {
   const { slug } = await params
-  const post = allPosts.find((post) => post._raw.flattenedPath === slug)
+  const post = publicPosts.find((post) => post._raw.flattenedPath === slug)
   if (!post) notFound()
 
   return (

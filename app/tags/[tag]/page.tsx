@@ -1,32 +1,29 @@
 import { slug } from 'github-slugger'
+import { notFound } from 'next/navigation'
 import ListLayout from './ListLayout'
-import { allPosts } from 'contentlayer2/generated'
-import tagData from 'app/tag-data.json'
-import { allCoreContent, sortPosts } from '@/lib/utils'
+import { publicPosts } from '@/lib/public-posts'
 
-export const generateStaticParams = async () => {
-  const tagCounts = tagData as Record<string, number>
-  const tagKeys = Object.keys(tagCounts)
-  const paths = tagKeys.map((tag) => ({
-    tag: encodeURI(tag)
-  }))
-  return paths
-}
+const tags = [...new Set(publicPosts.flatMap((post) => post.tags ?? []))]
+export const dynamicParams = false
+
+export const generateStaticParams = async () =>
+  [...new Set(tags.map((tag) => slug(tag)))].map((tag) => ({ tag }))
 
 export default async function TagPage({
   params
 }: {
   params: Promise<{ tag: string }>
 }) {
-  const { tag: tagParam } = await params
-  const tag = decodeURI(tagParam)
-  const title = tag[0].toUpperCase() + tag.split(' ').join('-').slice(1)
-  const filteredPosts = allCoreContent(
-    sortPosts(
-      allPosts.filter(
-        (post) => post.tags && post.tags.map((t) => slug(t)).includes(tag)
-      )
-    )
+  const { tag } = await params
+  const label = tags.find((item) => slug(item) === tag)
+  if (!label) notFound()
+  const posts = publicPosts.filter((post) =>
+    post.tags?.some((item) => slug(item) === tag)
   )
-  return <ListLayout posts={filteredPosts} title={title} />
+  return (
+    <ListLayout
+      posts={posts}
+      title={label.charAt(0).toUpperCase() + label.slice(1)}
+    />
+  )
 }
