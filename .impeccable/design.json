@@ -1,0 +1,392 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-16T00:40:49Z",
+  "title": "Design System: Tidal — Devon Bull",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "primary",
+        "displayName": "Deep Teal Ink",
+        "tonalRamp": [
+          "oklch(15.00% 0.04818 221.28)",
+          "oklch(26.43% 0.04818 221.28)",
+          "oklch(37.86% 0.04818 221.28)",
+          "oklch(49.29% 0.04818 221.28)",
+          "oklch(60.71% 0.04818 221.28)",
+          "oklch(72.14% 0.04818 221.28)",
+          "oklch(83.57% 0.04818 221.28)",
+          "oklch(95.00% 0.04818 221.28)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Quiet Teal",
+        "tonalRamp": [
+          "oklch(15.00% 0.04188 216.25)",
+          "oklch(26.43% 0.04188 216.25)",
+          "oklch(37.86% 0.04188 216.25)",
+          "oklch(49.29% 0.04188 216.25)",
+          "oklch(60.71% 0.04188 216.25)",
+          "oklch(72.14% 0.04188 216.25)",
+          "oklch(83.57% 0.04188 216.25)",
+          "oklch(95.00% 0.04188 216.25)"
+        ]
+      },
+      "ground": {
+        "role": "neutral",
+        "displayName": "Pearl Ground",
+        "tonalRamp": [
+          "oklch(15.00% 0.00755 186.89)",
+          "oklch(26.43% 0.00755 186.89)",
+          "oklch(37.86% 0.00755 186.89)",
+          "oklch(49.29% 0.00755 186.89)",
+          "oklch(60.71% 0.00755 186.89)",
+          "oklch(72.14% 0.00755 186.89)",
+          "oklch(83.57% 0.00755 186.89)",
+          "oklch(95.00% 0.00755 186.89)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Mist Rule",
+        "tonalRamp": [
+          "oklch(15.00% 0.02374 200.04)",
+          "oklch(26.43% 0.02374 200.04)",
+          "oklch(37.86% 0.02374 200.04)",
+          "oklch(49.29% 0.02374 200.04)",
+          "oklch(60.71% 0.02374 200.04)",
+          "oklch(72.14% 0.02374 200.04)",
+          "oklch(83.57% 0.02374 200.04)",
+          "oklch(95.00% 0.02374 200.04)"
+        ]
+      },
+      "primary-hover": {
+        "role": "primary",
+        "displayName": "Lifted Teal",
+        "tonalRamp": [
+          "oklch(15.00% 0.05373 218.57)",
+          "oklch(26.43% 0.05373 218.57)",
+          "oklch(37.86% 0.05373 218.57)",
+          "oklch(49.29% 0.05373 218.57)",
+          "oklch(60.71% 0.05373 218.57)",
+          "oklch(72.14% 0.05373 218.57)",
+          "oklch(83.57% 0.05373 218.57)",
+          "oklch(95.00% 0.05373 218.57)"
+        ]
+      },
+      "selection": {
+        "role": "primary",
+        "displayName": "Selection Teal",
+        "tonalRamp": [
+          "oklch(15.00% 0.05558 213.58)",
+          "oklch(26.43% 0.05558 213.58)",
+          "oklch(37.86% 0.05558 213.58)",
+          "oklch(49.29% 0.05558 213.58)",
+          "oklch(60.71% 0.05558 213.58)",
+          "oklch(72.14% 0.05558 213.58)",
+          "oklch(83.57% 0.05558 213.58)",
+          "oklch(95.00% 0.05558 213.58)"
+        ]
+      },
+      "scene-overlay": {
+        "role": "neutral",
+        "displayName": "Pearl Overlay",
+        "tonalRamp": [
+          "oklch(15.00% 0.00755 186.89 / 0.937255)",
+          "oklch(26.43% 0.00755 186.89 / 0.937255)",
+          "oklch(37.86% 0.00755 186.89 / 0.937255)",
+          "oklch(49.29% 0.00755 186.89 / 0.937255)",
+          "oklch(60.71% 0.00755 186.89 / 0.937255)",
+          "oklch(72.14% 0.00755 186.89 / 0.937255)",
+          "oklch(83.57% 0.00755 186.89 / 0.937255)",
+          "oklch(95.00% 0.00755 186.89 / 0.937255)"
+        ]
+      },
+      "control-border": {
+        "role": "neutral",
+        "displayName": "Control Edge",
+        "tonalRamp": [
+          "oklch(15.00% 0.02893 210.54)",
+          "oklch(26.43% 0.02893 210.54)",
+          "oklch(37.86% 0.02893 210.54)",
+          "oklch(49.29% 0.02893 210.54)",
+          "oklch(60.71% 0.02893 210.54)",
+          "oklch(72.14% 0.02893 210.54)",
+          "oklch(83.57% 0.02893 210.54)",
+          "oklch(95.00% 0.02893 210.54)"
+        ]
+      },
+      "sky-middle": {
+        "role": "neutral",
+        "displayName": "Sky Mist",
+        "tonalRamp": [
+          "oklch(15.00% 0.01065 196.98)",
+          "oklch(26.43% 0.01065 196.98)",
+          "oklch(37.86% 0.01065 196.98)",
+          "oklch(49.29% 0.01065 196.98)",
+          "oklch(60.71% 0.01065 196.98)",
+          "oklch(72.14% 0.01065 196.98)",
+          "oklch(83.57% 0.01065 196.98)",
+          "oklch(95.00% 0.01065 196.98)"
+        ]
+      },
+      "sea-ground": {
+        "role": "secondary",
+        "displayName": "Sea Ground",
+        "tonalRamp": [
+          "oklch(15.00% 0.03891 206.76)",
+          "oklch(26.43% 0.03891 206.76)",
+          "oklch(37.86% 0.03891 206.76)",
+          "oklch(49.29% 0.03891 206.76)",
+          "oklch(60.71% 0.03891 206.76)",
+          "oklch(72.14% 0.03891 206.76)",
+          "oklch(83.57% 0.03891 206.76)",
+          "oklch(95.00% 0.03891 206.76)"
+        ]
+      },
+      "moon": {
+        "role": "secondary",
+        "displayName": "Moon Blue",
+        "tonalRamp": [
+          "oklch(15.00% 0.04501 216.90)",
+          "oklch(26.43% 0.04501 216.90)",
+          "oklch(37.86% 0.04501 216.90)",
+          "oklch(49.29% 0.04501 216.90)",
+          "oklch(60.71% 0.04501 216.90)",
+          "oklch(72.14% 0.04501 216.90)",
+          "oklch(83.57% 0.04501 216.90)",
+          "oklch(95.00% 0.04501 216.90)"
+        ]
+      },
+      "reflection": {
+        "role": "secondary",
+        "displayName": "Moonlit Reflection",
+        "tonalRamp": [
+          "oklch(15.00% 0.01720 174.05)",
+          "oklch(26.43% 0.01720 174.05)",
+          "oklch(37.86% 0.01720 174.05)",
+          "oklch(49.29% 0.01720 174.05)",
+          "oklch(60.71% 0.01720 174.05)",
+          "oklch(72.14% 0.01720 174.05)",
+          "oklch(83.57% 0.01720 174.05)",
+          "oklch(95.00% 0.01720 174.05)"
+        ]
+      },
+      "wave-crest": {
+        "role": "secondary",
+        "displayName": "Wave Crest",
+        "tonalRamp": [
+          "oklch(15.00% 0.06710 215.74)",
+          "oklch(26.43% 0.06710 215.74)",
+          "oklch(37.86% 0.06710 215.74)",
+          "oklch(49.29% 0.06710 215.74)",
+          "oklch(60.71% 0.06710 215.74)",
+          "oklch(72.14% 0.06710 215.74)",
+          "oklch(83.57% 0.06710 215.74)",
+          "oklch(95.00% 0.06710 215.74)"
+        ]
+      },
+      "wave-current": {
+        "role": "secondary",
+        "displayName": "Tidal Current",
+        "tonalRamp": [
+          "oklch(15.00% 0.06359 219.52)",
+          "oklch(26.43% 0.06359 219.52)",
+          "oklch(37.86% 0.06359 219.52)",
+          "oklch(49.29% 0.06359 219.52)",
+          "oklch(60.71% 0.06359 219.52)",
+          "oklch(72.14% 0.06359 219.52)",
+          "oklch(83.57% 0.06359 219.52)",
+          "oklch(95.00% 0.06359 219.52)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Centered hero heading above the ocean."
+      },
+      "display-compact": {
+        "displayName": "Display Compact",
+        "purpose": "Hero heading at CSS widths of 700px and below."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Lower introduction heading."
+      },
+      "headline-compact": {
+        "displayName": "Headline Compact",
+        "purpose": "Lower heading at CSS widths of 700px and below."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Lower introduction paragraph."
+      },
+      "body-compact": {
+        "displayName": "Body Compact",
+        "purpose": "Lower paragraph in compact layout."
+      },
+      "hero-body": {
+        "displayName": "Hero Body",
+        "purpose": "Centered hero introduction."
+      },
+      "hero-body-compact": {
+        "displayName": "Hero Body Compact",
+        "purpose": "Hero introduction in compact layout."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Destination-row title."
+      },
+      "title-compact": {
+        "displayName": "Title Compact",
+        "purpose": "Destination-row title in compact layout."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Desktop navigation and primary action."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Scene detail, motion control, and desktop footer."
+      },
+      "identity": {
+        "displayName": "Identity",
+        "purpose": "Portfolio name in the navigation."
+      },
+      "identity-compact": {
+        "displayName": "Identity Compact",
+        "purpose": "Portfolio name in compact navigation."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "state-duration",
+        "value": "0.2s",
+        "purpose": "Primary background and destination-arrow transitions; disabled for reduced motion."
+      },
+      {
+        "name": "state-easing",
+        "value": "ease",
+        "purpose": "Implicit CSS transition easing for the two observed transitions."
+      },
+      {
+        "name": "destination-arrow-shift",
+        "value": "translateX(5px)",
+        "purpose": "Destination arrow displacement on hover."
+      },
+      {
+        "name": "canvas-draw-rate",
+        "value": "30fps",
+        "purpose": "Target maximum canvas drawing rate; RAF scheduling itself can run faster."
+      },
+      {
+        "name": "canvas-time-step-cap",
+        "value": "0.05s",
+        "purpose": "Maximum elapsed-time increment after a delayed animation frame."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact-css-inclusive",
+        "value": "700px"
+      },
+      {
+        "name": "compact-canvas-exclusive",
+        "value": "700px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The /tidal hero anchor with its final explicit ink keyboard outline. The fragment resolves within the full page.",
+      "html": "<a class=\"ds-primary\" href=\"#explore\">Explore my work<svg aria-hidden=\"true\" viewBox=\"0 0 24 24\" fill=\"none\"><path d=\"M5 12h14M13 6l6 6-6 6\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a>",
+      "css": ".ds-primary{font-family:'Helvetica Neue', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;display:inline-flex;align-items:center;gap:20px;padding:13px 21px;min-height:48px;box-sizing:border-box;border-radius:99px;background:#163d49;color:#edf4f3;text-decoration:none;font-size:14px;transition:background .2s}.ds-primary svg{width:18px;height:18px;flex-shrink:0}.ds-primary:hover{background:#376471}.ds-primary:focus-visible{outline:2px solid #163d49;outline-offset:6px;}@media(max-width:700px){.ds-primary{font-size:13px;padding:12px 18px}}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none}}"
+    },
+    {
+      "name": "Motion control",
+      "kind": "button",
+      "refersTo": "motion-control",
+      "description": "Visual specimen of the running state. The full route supplies Play/Pause behavior and reduced-motion synchronization.",
+      "html": "<button class=\"ds-motion\" type=\"button\" aria-pressed=\"false\" aria-label=\"Pause landscape animation\"><svg aria-hidden=\"true\" viewBox=\"0 0 20 20\" fill=\"none\"><path d=\"M7 4v12M13 4v12\" stroke=\"currentColor\" stroke-width=\"2\"/></svg><span>Pause</span></button>",
+      "css": ".ds-motion{font-family:'Helvetica Neue', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;min-width:92px;min-height:44px;box-sizing:border-box;border:1px solid #afc9ce;background:#edf4f3ef;border-radius:99px;color:#163d49;padding:10px 13px;cursor:pointer;font-size:12px}.ds-motion svg{width:16px;height:16px;flex-shrink:0}.ds-motion:hover{background:#edf4f3;color:#163d49}.ds-motion:focus-visible{outline:2px solid #163d49;outline-offset:6px;}@media(max-width:700px){.ds-motion{min-width:76px;padding:10px}.ds-motion span{font-size:11px}}"
+    },
+    {
+      "name": "Portfolio navigation",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "The route-owned navigation; Explore and the connection arrow disappear in the compact layout.",
+      "html": "<header class=\"ds-nav\"><a class=\"ds-identity\" href=\"/\">Devon Bull<span>Software engineer</span></a><nav aria-label=\"Portfolio\"><a href=\"#explore\">Explore</a><a href=\"/blog\">Writing</a><a href=\"https://www.linkedin.com/in/bulldevon\" target=\"_blank\" rel=\"noreferrer\">Connect<svg aria-hidden=\"true\" viewBox=\"0 0 24 24\" fill=\"none\"><path d=\"M5 12h14M13 6l6 6-6 6\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a></nav></header>",
+      "css": ".ds-nav{font-family:'Helvetica Neue', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;height:100px;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 clamp(24px,5vw,84px);background:#edf4f3;color:#163d49}.ds-nav a{text-decoration:none;color:inherit}.ds-identity{font-size:18px;font-weight:600;letter-spacing:-.02em;display:flex;flex-direction:column;gap:3px;padding:8px 0}.ds-identity span{font-size:12px;font-weight:400;color:#3d5f68;letter-spacing:0}.ds-nav nav{display:flex;align-items:center;gap:34px;font-size:14px}.ds-nav nav a{min-height:44px;display:flex;align-items:center;gap:7px}.ds-nav nav a:hover{text-decoration:underline;text-underline-offset:5px}.ds-nav a:focus-visible{outline:2px solid #163d49;outline-offset:6px;}.ds-nav svg{width:16px;height:16px;flex-shrink:0}@media(max-width:700px){.ds-nav{height:88px;padding:0 24px;gap:12px}.ds-identity{font-size:16px}.ds-identity span{font-size:11px}.ds-nav nav{gap:18px;font-size:12px}.ds-nav nav a:first-child,.ds-nav nav svg{display:none}}"
+    },
+    {
+      "name": "Scene caption",
+      "kind": "custom",
+      "refersTo": "scene-caption",
+      "description": "A translucent caption panel for artwork identification, not an eyebrow over page copy.",
+      "html": "<div class=\"ds-caption\"><strong>Tidal</strong><span>An ocean of individual points, moving as one.</span></div>",
+      "css": ".ds-caption{font-family:'Helvetica Neue', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;display:flex;flex-direction:column;gap:5px;padding:12px 16px;border-radius:8px;background:#edf4f3ef;color:#163d49}.ds-caption strong{font-size:14px;font-weight:500}.ds-caption span{font-size:12px}@media(max-width:700px){.ds-caption{padding:10px 12px;max-width:230px;box-sizing:border-box}.ds-caption strong{font-size:13px}.ds-caption span{font-size:11px;line-height:1.5;max-width:185px}}"
+    },
+    {
+      "name": "Destination row",
+      "kind": "custom",
+      "refersTo": "destination-row",
+      "description": "A whole-row destination link. The specimen shows the first row with its top and bottom rules.",
+      "html": "<a class=\"ds-destination\" href=\"https://github.com/DBULL7\" target=\"_blank\" rel=\"noreferrer\"><div><span>Code &amp; experiments</span><p>Explore my public repositories on GitHub.</p></div><svg aria-hidden=\"true\" viewBox=\"0 0 24 24\" fill=\"none\"><path d=\"M5 12h14M13 6l6 6-6 6\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a>",
+      "css": ".ds-destination{font-family:'Helvetica Neue', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:28px 0;min-height:118px;box-sizing:border-box;border-top:1px solid #bbd1d2;border-bottom:1px solid #bbd1d2;color:#163d49;text-decoration:none}.ds-destination span{font-size:24px;letter-spacing:-.02em}.ds-destination p{font-size:14px;line-height:1.5;color:#3d5f68;margin:8px 0 0}.ds-destination svg{width:22px;height:22px;flex-shrink:0;transition:transform .2s}.ds-destination:hover>svg{transform:translateX(5px)}.ds-destination:focus-visible{outline:2px solid #163d49;outline-offset:6px;}@media(max-width:700px){.ds-destination span{font-size:22px}}@media(prefers-reduced-motion:reduce){.ds-destination svg{transition:none}}"
+    },
+    {
+      "name": "Portfolio footer",
+      "kind": "nav",
+      "refersTo": "footer",
+      "description": "A ruled footer that moves the study attribution to a final full-width row on compact screens.",
+      "html": "<footer class=\"ds-footer\"><a href=\"/\">Devon Bull</a><span>Tidal · An interactive portfolio study</span><a href=\"https://www.linkedin.com/in/bulldevon\" target=\"_blank\" rel=\"noreferrer\">Let’s connect<svg aria-hidden=\"true\" viewBox=\"0 0 24 24\" fill=\"none\"><path d=\"M5 12h14M13 6l6 6-6 6\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a></footer>",
+      "css": ".ds-footer{font-family:'Helvetica Neue', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:28px clamp(24px,5vw,84px);border-top:1px solid #bbd1d2;font-size:12px;color:#3d5f68}.ds-footer a{min-height:44px;display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none}.ds-footer a:hover{text-decoration:underline;text-underline-offset:5px}.ds-footer a:focus-visible{outline:2px solid #163d49;outline-offset:6px;}.ds-footer svg{width:16px;height:16px;flex-shrink:0}@media(max-width:700px){.ds-footer{padding:22px 24px;flex-wrap:wrap;gap:4px}.ds-footer>span{order:3;flex-basis:100%;font-size:11px}.ds-footer>a:last-child{margin-left:auto}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Tidal — an ocean of individual points, moving as one",
+    "overview": "Tidal pairs restrained portfolio typography with an expansive, procedural ocean. Cool pearl space holds the introduction; teal points, a dotted moon, and a narrow reflected current create depth without competing with the text. The atmosphere is calm and curious, grounded in Devon Bull’s verified software-engineering identity.\n\nThis system has authority only over `/tidal`: `app/tidal/page.tsx`, `app/tidal/preview.tsx`, and `app/tidal/preview.module.css`. The original homepage, blog, global theme tokens, and shared components retain their incumbent authority. The system sans stack is the explicitly recorded translation of the user’s Apple-like direction for this preview; it is not a new site-wide font mandate.",
+    "keyCharacteristics": [
+      "Pearl ground, dark teal text, and restrained blue-green water.",
+      "Large, centered display copy with generous open space; compact functional navigation.",
+      "Live canvas art with a readable static state and an explicit motion control.",
+      "Flat pill controls, a soft caption panel, and open destination rows separated by fine rules."
+    ],
+    "rules": [
+      {
+        "name": "The Quiet Sky Rule",
+        "body": "Keep primary copy and its action legible in the pale sky; use the ocean’s stronger tones in the artwork rather than as competing text accents.",
+        "section": "colors"
+      },
+      {
+        "name": "The Measured Type Rule",
+        "body": "Use size, weight, and spacing to establish hierarchy within the recorded sans family; preserve the compact overrides instead of shrinking the desktop composition uniformly.",
+        "section": "typography"
+      },
+      {
+        "name": "The Point Depth Rule",
+        "body": "Build depth with the ocean’s projection, density, transparency, and tonal change; the surrounding interface remains flat.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep this system scoped to `/tidal` and preserve the original homepage’s visual authority.",
+      "Do retain clear space around the hero copy, primary action, and moon at both captured sizes.",
+      "Do preserve explicit dark teal keyboard focus, semantic links, the skip link, and controls at least 44px tall.",
+      "Do retain the static ocean when paused or reduced motion is requested, with a manual Play control.",
+      "Do use the effective final CSS values and the actual public portfolio destinations."
+    ],
+    "donts": [
+      "Don’t turn this preview’s palette or system font into a global homepage redesign.",
+      "Don’t replace the live procedural ocean with a shipping raster or imply the review captures are source artwork.",
+      "Don’t hide the artwork when motion is paused or add touch-driven parallax that the source does not implement.",
+      "Don’t introduce invented employers, project results, testimonials, metrics, or availability.",
+      "Don’t treat shadowed CSS declarations or unavailable catalog boards as evidence of the finished design."
+    ]
+  }
+}
