@@ -1,0 +1,366 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-16T00:37:48.786194Z",
+  "title": "Design System: Windfield — Devon Bull",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "primary",
+        "displayName": "Deep Pine",
+        "tonalRamp": [
+          "oklch(15% 0.04402 174.327)",
+          "oklch(25% 0.04402 174.327)",
+          "oklch(35% 0.04402 174.327)",
+          "oklch(45% 0.04402 174.327)",
+          "oklch(55% 0.04402 174.327)",
+          "oklch(65% 0.04402 174.327)",
+          "oklch(80% 0.04402 174.327)",
+          "oklch(95% 0.04402 174.327)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted Pine",
+        "tonalRamp": [
+          "oklch(15% 0.04986 170.459)",
+          "oklch(25% 0.04986 170.459)",
+          "oklch(35% 0.04986 170.459)",
+          "oklch(45% 0.04986 170.459)",
+          "oklch(55% 0.04986 170.459)",
+          "oklch(65% 0.04986 170.459)",
+          "oklch(80% 0.04986 170.459)",
+          "oklch(95% 0.04986 170.459)"
+        ]
+      },
+      "ground": {
+        "role": "neutral",
+        "displayName": "Mineral Ground",
+        "tonalRamp": [
+          "oklch(15% 0.01640 133.825)",
+          "oklch(25% 0.01640 133.825)",
+          "oklch(35% 0.01640 133.825)",
+          "oklch(45% 0.01640 133.825)",
+          "oklch(55% 0.01640 133.825)",
+          "oklch(65% 0.01640 133.825)",
+          "oklch(80% 0.01640 133.825)",
+          "oklch(95% 0.01640 133.825)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Quiet Line",
+        "tonalRamp": [
+          "oklch(15% 0.02905 138.727)",
+          "oklch(25% 0.02905 138.727)",
+          "oklch(35% 0.02905 138.727)",
+          "oklch(45% 0.02905 138.727)",
+          "oklch(55% 0.02905 138.727)",
+          "oklch(65% 0.02905 138.727)",
+          "oklch(80% 0.02905 138.727)",
+          "oklch(95% 0.02905 138.727)"
+        ]
+      },
+      "action-hover": {
+        "role": "primary",
+        "displayName": "Leaf Hover",
+        "tonalRamp": [
+          "oklch(15% 0.05824 161.977)",
+          "oklch(25% 0.05824 161.977)",
+          "oklch(35% 0.05824 161.977)",
+          "oklch(45% 0.05824 161.977)",
+          "oklch(55% 0.05824 161.977)",
+          "oklch(65% 0.05824 161.977)",
+          "oklch(80% 0.05824 161.977)",
+          "oklch(95% 0.05824 161.977)"
+        ]
+      },
+      "selection": {
+        "role": "primary",
+        "displayName": "Selection Green",
+        "tonalRamp": [
+          "oklch(15% 0.05999 165.454)",
+          "oklch(25% 0.05999 165.454)",
+          "oklch(35% 0.05999 165.454)",
+          "oklch(45% 0.05999 165.454)",
+          "oklch(55% 0.05999 165.454)",
+          "oklch(65% 0.05999 165.454)",
+          "oklch(80% 0.05999 165.454)",
+          "oklch(95% 0.05999 165.454)"
+        ]
+      },
+      "scene-overlay": {
+        "role": "neutral",
+        "displayName": "Mineral Overlay",
+        "tonalRamp": [
+          "oklch(15% 0.01640 133.825 / 0.9490)",
+          "oklch(25% 0.01640 133.825 / 0.9490)",
+          "oklch(35% 0.01640 133.825 / 0.9490)",
+          "oklch(45% 0.01640 133.825 / 0.9490)",
+          "oklch(55% 0.01640 133.825 / 0.9490)",
+          "oklch(65% 0.01640 133.825 / 0.9490)",
+          "oklch(80% 0.01640 133.825 / 0.9490)",
+          "oklch(95% 0.01640 133.825 / 0.9490)"
+        ]
+      },
+      "control-border": {
+        "role": "neutral",
+        "displayName": "Control Edge",
+        "tonalRamp": [
+          "oklch(15% 0.04571 138.991)",
+          "oklch(25% 0.04571 138.991)",
+          "oklch(35% 0.04571 138.991)",
+          "oklch(45% 0.04571 138.991)",
+          "oklch(55% 0.04571 138.991)",
+          "oklch(65% 0.04571 138.991)",
+          "oklch(80% 0.04571 138.991)",
+          "oklch(95% 0.04571 138.991)"
+        ]
+      },
+      "sky-middle": {
+        "role": "neutral",
+        "displayName": "Pale Daylight",
+        "tonalRamp": [
+          "oklch(15% 0.02445 119.510)",
+          "oklch(25% 0.02445 119.510)",
+          "oklch(35% 0.02445 119.510)",
+          "oklch(45% 0.02445 119.510)",
+          "oklch(55% 0.02445 119.510)",
+          "oklch(65% 0.02445 119.510)",
+          "oklch(80% 0.02445 119.510)",
+          "oklch(95% 0.02445 119.510)"
+        ]
+      },
+      "sky-low": {
+        "role": "neutral",
+        "displayName": "Low Meadow",
+        "tonalRamp": [
+          "oklch(15% 0.06489 125.140)",
+          "oklch(25% 0.06489 125.140)",
+          "oklch(35% 0.06489 125.140)",
+          "oklch(45% 0.06489 125.140)",
+          "oklch(55% 0.06489 125.140)",
+          "oklch(65% 0.06489 125.140)",
+          "oklch(80% 0.06489 125.140)",
+          "oklch(95% 0.06489 125.140)"
+        ]
+      },
+      "sun": {
+        "role": "tertiary",
+        "displayName": "Stippled Gold",
+        "tonalRamp": [
+          "oklch(15% 0.10374 86.593)",
+          "oklch(25% 0.10374 86.593)",
+          "oklch(35% 0.10374 86.593)",
+          "oklch(45% 0.10374 86.593)",
+          "oklch(55% 0.10374 86.593)",
+          "oklch(65% 0.10374 86.593)",
+          "oklch(80% 0.10374 86.593)",
+          "oklch(95% 0.10374 86.593)"
+        ]
+      },
+      "terrain-lit": {
+        "role": "secondary",
+        "displayName": "Sunlit Olive",
+        "tonalRamp": [
+          "oklch(15% 0.12068 126.820)",
+          "oklch(25% 0.12068 126.820)",
+          "oklch(35% 0.12068 126.820)",
+          "oklch(45% 0.12068 126.820)",
+          "oklch(55% 0.12068 126.820)",
+          "oklch(65% 0.12068 126.820)",
+          "oklch(80% 0.12068 126.820)",
+          "oklch(95% 0.12068 126.820)"
+        ]
+      },
+      "terrain-mid": {
+        "role": "secondary",
+        "displayName": "Jade",
+        "tonalRamp": [
+          "oklch(15% 0.09558 144.080)",
+          "oklch(25% 0.09558 144.080)",
+          "oklch(35% 0.09558 144.080)",
+          "oklch(45% 0.09558 144.080)",
+          "oklch(55% 0.09558 144.080)",
+          "oklch(65% 0.09558 144.080)",
+          "oklch(80% 0.09558 144.080)",
+          "oklch(95% 0.09558 144.080)"
+        ]
+      },
+      "terrain-shade": {
+        "role": "secondary",
+        "displayName": "Pine Shade",
+        "tonalRamp": [
+          "oklch(15% 0.05870 177.206)",
+          "oklch(25% 0.05870 177.206)",
+          "oklch(35% 0.05870 177.206)",
+          "oklch(45% 0.05870 177.206)",
+          "oklch(55% 0.05870 177.206)",
+          "oklch(65% 0.05870 177.206)",
+          "oklch(80% 0.05870 177.206)",
+          "oklch(95% 0.05870 177.206)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Two-line hero thought; mobile uses clamp(42px, 10.8vw, 64px) at 1.05 line height."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Exploration heading; mobile uses 38px within 300px."
+      },
+      "title": {
+        "displayName": "Destination title",
+        "purpose": "Open destination rows; mobile uses 22px."
+      },
+      "identity": {
+        "displayName": "Identity",
+        "purpose": "Name in navigation; mobile uses 16px."
+      },
+      "body": {
+        "displayName": "Introduction body",
+        "purpose": "Longer introduction within 440px; mobile uses 15px."
+      },
+      "body-hero": {
+        "displayName": "Hero body",
+        "purpose": "Short supporting statement within 380px; mobile uses 15px within 290px."
+      },
+      "label": {
+        "displayName": "Interface label",
+        "purpose": "Desktop navigation and primary action. Mobile navigation uses 12px and action uses 13px."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Scene copy, motion control, and footer. Mobile scene copy and footer study line use 11px."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "action-fill",
+        "value": "background 0.2s",
+        "purpose": "Primary action hover; disabled by prefers-reduced-motion."
+      },
+      {
+        "name": "destination-arrow",
+        "value": "transform 0.2s; translateX(5px)",
+        "purpose": "Only the trailing arrow shifts on destination hover; transition disabled by prefers-reduced-motion."
+      },
+      {
+        "name": "landscape-frame-cap",
+        "value": "30fps; maximum elapsed step 0.05s",
+        "purpose": "Bound rendering work and avoid jumps after suspension; resolution is capped at device-pixel ratio 1.5."
+      },
+      {
+        "name": "terrain-breeze",
+        "value": "sin(u * 5 + d * 9 - t * 0.7 + pointer.x * 0.8) * 0.015",
+        "purpose": "Gentle ridge movement; non-touch pointer movement shifts the phase."
+      },
+      {
+        "name": "point-sway",
+        "value": "sin(t * 0.55 + d * 8 + u * 3) * d * 2.2",
+        "purpose": "Horizontal movement grows toward the foreground."
+      },
+      {
+        "name": "motion-policy",
+        "value": "pause | offscreen | document.hidden | prefers-reduced-motion",
+        "purpose": "Pause preserves elapsed phase. Offscreen and hidden-tab states suspend frames. Reduced-motion starts paused; users may press Play."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "mobile-max",
+        "value": "700px"
+      },
+      {
+        "name": "wide-min",
+        "value": "1600px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Filled exploration link; its mobile label and padding contract without shrinking the 48px minimum height.",
+      "html": "<a class=\"ds-primary\" href=\"#explore\">Explore my work<svg aria-hidden=\"true\" viewBox=\"0 0 24 24\" fill=\"none\"><path d=\"M5 12h14M13 6l6 6-6 6\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a>",
+      "css": ".ds-primary { display:inline-flex; align-items:center; gap:20px; padding:13px 21px; min-height:48px; border-radius:99px; background:#183b32; color:#e7eee3; font-family:'Helvetica Neue', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif; font-size:14px; font-weight:400; line-height:1.5; text-decoration:none; transition:background 0.2s; } .ds-primary svg { width:18px; height:18px; flex-shrink:0; } .ds-primary:hover { background:#315b47; } .ds-primary:focus-visible { outline:2px solid #183b32; outline-offset:6px; } @media(max-width:700px) { .ds-primary { font-size:13px; padding:12px 18px; } } @media(prefers-reduced-motion:reduce) { .ds-primary { transition:none !important; scroll-behavior:auto; } }"
+    },
+    {
+      "name": "Motion control",
+      "kind": "button",
+      "refersTo": "button-motion",
+      "description": "Pause state sample of the real canvas control. The React component owns its Play/Pause behavior and aria-pressed state.",
+      "html": "<button class=\"ds-motion\" type=\"button\" aria-pressed=\"false\" aria-label=\"Pause landscape animation\"><svg aria-hidden=\"true\" viewBox=\"0 0 20 20\" fill=\"none\"><path d=\"M7 4v12M13 4v12\" stroke=\"currentColor\" stroke-width=\"2\"/></svg><span>Pause</span></button>",
+      "css": ".ds-motion { display:flex; align-items:center; justify-content:center; gap:6px; min-width:92px; min-height:44px; border:1px solid #acc2a6; background:#e7eee3f2; border-radius:99px; color:#183b32; padding:10px 13px; cursor:pointer; font-family:'Helvetica Neue', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif; font-size:12px; font-weight:400; line-height:1.5; } .ds-motion svg { width:16px; height:16px; flex-shrink:0; } .ds-motion:hover { background:#e7eee3; color:#183b32; } .ds-motion:focus-visible { outline:2px solid #183b32; outline-offset:6px; } @media(max-width:700px) { .ds-motion { min-width:76px; padding:10px; } .ds-motion span { font-size:11px; } }"
+    },
+    {
+      "name": "Portfolio navigation",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "Identity lockup and inline links; the mobile composition removes Explore and the Connect arrow.",
+      "html": "<header class=\"ds-navigation\"><a class=\"ds-identity\" href=\"/\">Devon Bull<span>Software engineer</span></a><nav aria-label=\"Portfolio\"><a href=\"#explore\">Explore</a><a href=\"/blog\">Writing</a><a href=\"https://www.linkedin.com/in/bulldevon\" target=\"_blank\" rel=\"noreferrer\">Connect<svg aria-hidden=\"true\" viewBox=\"0 0 24 24\" fill=\"none\"><path d=\"M5 12h14M13 6l6 6-6 6\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a></nav></header>",
+      "css": ".ds-navigation { height:100px; display:flex; align-items:center; justify-content:space-between; gap:24px; padding:0 clamp(24px,5vw,84px); background:#e7eee3; color:#183b32; font-family:'Helvetica Neue', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif; line-height:1.5; } .ds-navigation a { color:inherit; text-decoration:none; } .ds-identity { font-size:18px; font-weight:600; letter-spacing:-0.02em; display:flex; flex-direction:column; gap:3px; padding:8px 0; } .ds-identity span { font-size:12px; font-weight:400; color:#31584b; letter-spacing:0; } .ds-navigation nav { display:flex; align-items:center; gap:34px; font-size:14px; } .ds-navigation nav a { min-height:44px; display:flex; align-items:center; gap:7px; } .ds-navigation nav a:hover { text-decoration:underline; text-underline-offset:5px; } .ds-navigation a:focus-visible { outline:2px solid #183b32; outline-offset:6px; } .ds-navigation svg { width:16px; height:16px; flex-shrink:0; } @media(max-width:700px) { .ds-navigation { height:88px; padding:0 24px; gap:12px; } .ds-identity { font-size:16px; } .ds-identity span { font-size:11px; } .ds-navigation nav { gap:18px; font-size:12px; } .ds-navigation nav a:first-child, .ds-navigation nav svg { display:none; } }"
+    },
+    {
+      "name": "Destination row",
+      "kind": "custom",
+      "refersTo": "destination-row",
+      "description": "An open ruled link with supporting copy and a gently moving trailing arrow.",
+      "html": "<div class=\"ds-destinations\"><a href=\"https://github.com/DBULL7\" target=\"_blank\" rel=\"noreferrer\"><div><span>Code &amp; experiments</span><p>Explore my public repositories on GitHub.</p></div><svg aria-hidden=\"true\" viewBox=\"0 0 24 24\" fill=\"none\"><path d=\"M5 12h14M13 6l6 6-6 6\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a></div>",
+      "css": ".ds-destinations { color:#183b32; font-family:'Helvetica Neue', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif; font-weight:400; line-height:1.5; } .ds-destinations > a { display:flex; justify-content:space-between; align-items:center; gap:20px; padding:28px 0; border-bottom:1px solid #bdcbb9; min-height:118px; text-decoration:none; color:inherit; } .ds-destinations > a:first-child { border-top:1px solid #bdcbb9; } .ds-destinations span { font-size:24px; letter-spacing:-0.02em; } .ds-destinations p { font-size:14px; line-height:1.5; color:#31584b; margin:8px 0 0; } .ds-destinations svg { width:22px; height:22px; flex-shrink:0; transition:transform 0.2s; } .ds-destinations a:hover > svg { transform:translateX(5px); } .ds-destinations a:focus-visible { outline:2px solid #183b32; outline-offset:6px; } @media(max-width:700px) { .ds-destinations span { font-size:22px; } } @media(prefers-reduced-motion:reduce) { .ds-destinations svg { transition:none !important; } }"
+    },
+    {
+      "name": "Scene caption",
+      "kind": "custom",
+      "refersTo": "scene-caption",
+      "description": "A passive near-opaque artwork caption, with no hover or focus state because it is not interactive.",
+      "html": "<div class=\"ds-scene-caption\"><strong>Windfield</strong><span>A landscape made of points, moved by a gentle breeze.</span></div>",
+      "css": ".ds-scene-caption { display:flex; flex-direction:column; gap:5px; padding:12px 16px; border-radius:8px; background:#e7eee3f2; color:#183b32; font-family:'Helvetica Neue', Helvetica, -apple-system, BlinkMacSystemFont, sans-serif; line-height:1.5; } .ds-scene-caption strong { font-size:14px; font-weight:500; } .ds-scene-caption span { font-size:12px; } @media(max-width:700px) { .ds-scene-caption { padding:10px 12px; max-width:230px; } .ds-scene-caption strong { font-size:13px; } .ds-scene-caption span { font-size:11px; line-height:1.5; max-width:185px; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "A wider horizon",
+    "overview": "Windfield pairs a sunlit landscape made from points with quiet, precise typography. Pale mineral surfaces, deep pine text, and jade-to-olive terrain leave room for the artwork to breathe. Controls remain small and legible, with open rows directing visitors toward the portfolio's real destinations.\n\nThe owner explicitly requested Apple-like typographic restraint and animated dot-matrix art. The implemented system-sans stack is a deliberate expression of that direction. The interface is flat and spacious; perspective, density, and gentle movement give the landscape its depth.\n\nThis contract applies only to the finished `/windfield` alternative, evidenced by `app/windfield/page.tsx`, `app/windfield/preview.tsx`, and `app/windfield/preview.module.css`. It does not replace or prescribe changes to the existing homepage, blog, shared global tokens, or the other alternatives. The surface-specific story remains in `.impeccable/surfaces/app-windfield-page-tsx.md`.",
+    "keyCharacteristics": [
+      "Mineral sky, pine typography, and sunlit green points.",
+      "One restrained sans-serif family with tightly tracked headings.",
+      "Open ruled links, pill controls, and no interface shadows.",
+      "Bounded, stoppable motion with a readable static composition.",
+      "A full-width landscape that survives the single-column mobile layout."
+    ],
+    "rules": [
+      {
+        "name": "The Quiet Interface Rule",
+        "body": "Keep interface emphasis in pine and mineral tones; the olive, jade, and gold belong to the living landscape.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Family Rule",
+        "body": "Preserve the explicitly requested restrained sans-serif voice; hierarchy comes from scale, weight, tracking, and space.",
+        "section": "typography"
+      },
+      {
+        "name": "The Landscape Depth Rule",
+        "body": "Keep interface surfaces flat; let the point field supply the depth.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** keep this contract scoped to the Windfield alternative; preserve the existing homepage and blog identities.",
+      "**Do** keep text and controls readable independently of the canvas animation.",
+      "**Do** use the shared gutter, open destination rows, and restrained type hierarchy.",
+      "**Do** preserve visible keyboard focus, minimum control heights, Play/Pause behavior, and reduced-motion support.",
+      "**Do** treat the sidecar's synthesized tonal ramps as inspection aids; the frontmatter records the actual implemented palette."
+    ],
+    "donts": [
+      "**Don't** replace the owner-pinned sans-serif direction with an invented display-font pairing.",
+      "**Don't** turn scene colors into invented status categories or add shadows to this flat interface.",
+      "**Don't** convert the artwork caption into a general eyebrow pattern.",
+      "**Don't** claim catalog boards or a raster comp informed visual verification: the catalog image fetch returned HTTP 403, and this build used the approved code-first path.",
+      "**Don't** treat the review captures as shipping artwork; they document the generated canvas."
+    ]
+  }
+}
