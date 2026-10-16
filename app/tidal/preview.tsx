@@ -56,11 +56,12 @@ export default function Preview() {
       sky.addColorStop(1, '#a7cbd0')
       ctx.fillStyle = sky
       ctx.fillRect(0, 0, w, h)
-      const mx = w * 0.73,
-        my = h * 0.33,
-        mr = Math.min(w * 0.09, 66)
+      const compact = w < 700
+      const mx = w * (compact ? 0.74 : 0.73),
+        my = h * (compact ? 0.43 : 0.33),
+        mr = Math.min(w * (compact ? 0.115 : 0.09), 66)
       ctx.fillStyle = '#87aeb9'
-      ctx.globalAlpha = 0.38
+      ctx.globalAlpha = compact ? 0.55 : 0.38
       for (let y = -mr; y < mr; y += 4)
         for (let x = -mr; x < mr; x += 4)
           if (x * x + y * y < mr * mr) {
