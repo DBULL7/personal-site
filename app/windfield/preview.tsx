@@ -20,6 +20,7 @@ function Arrow() {
 
 export default function Preview() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const elapsedRef = useRef(0)
   const [paused, setPaused] = useState(true)
   const [unavailable, setUnavailable] = useState(false)
 
@@ -44,7 +45,7 @@ export default function Preview() {
       h = 1,
       frame = 0,
       last = 0,
-      elapsed = 0,
+      elapsed = elapsedRef.current,
       visible = true,
       disposed = false
     const pointer = { x: 0, y: 0 }
@@ -144,6 +145,7 @@ export default function Preview() {
     synchronize()
     return () => {
       disposed = true
+      elapsedRef.current = elapsed
       cancelAnimationFrame(frame)
       observer.disconnect()
       intersection.disconnect()
