@@ -217,7 +217,7 @@ Rendering is capped at `30fps` and a device-pixel ratio of `1.5`. The animation 
 
 ### Focus and reduced motion
 
-All route links and buttons receive a `2px` current-color focus outline offset by `6px`. The first keyboard link reveals “Skip to portfolio links” and targets the exploration section. Reduced-motion CSS removes transitions and sets scroll behavior to auto. No additional hover scaling, parallax controls, or motion styles are established by this build.
+All route links and buttons receive a `2px` Deep Pine (`ink`) focus outline offset by `6px`, explicitly independent of the element’s foreground color. The first keyboard link reveals “Skip to portfolio links” and targets the exploration section. Reduced-motion CSS removes transitions and sets scroll behavior to auto. No additional hover scaling, parallax controls, or motion styles are established by this build.
 
 ## Do's and Don'ts
 
